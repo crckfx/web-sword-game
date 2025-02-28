@@ -2,8 +2,7 @@ import { gridCells } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 
 export class Entity {
-    constructor({
-        name, position, isFacing, animations, texture}) {
+    constructor({name, position, isFacing, animations, texture}) {
         this.name = name ?? 'unnamed entity';
         this.position = position ?? new Vector2(gridCells(0), gridCells(0));
         this.destination = this.position.duplicate();

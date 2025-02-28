@@ -1,7 +1,7 @@
 import { canvas, ctx, getHtmlControls, panelCenter, resize } from "./document.js";
 
 
-import { HtmlControls, bindControls } from "./controls.js";
+import { gameControls } from "./game.js";
 import { NUM_GRID_X, NUM_GRID_Y, doodads, entities, player, game, update, CAMERA_CELLS_Y, CAMERA_CELLS_X, render, images, textures, } from "./game.js";
 import { extractSprites, loadImage, extract_single_sprite } from "./sprite.js";
 import { map_1, parseFloorMap, parseOccupantMap, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants } from "./map.js";
@@ -117,7 +117,7 @@ async function dummy_init() {
     game.textures.gameOccupants = mapOccupantCanvases;
 
     // assign pointer and keyboard listeners
-    bindControls();
+    gameControls.bind();
     // watch for resize on the canvas container
     const observer = new ResizeObserver(resize);
     observer.observe(panelCenter);

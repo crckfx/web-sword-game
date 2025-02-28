@@ -3,7 +3,7 @@
 // - defines a translation of *keyboard actions* => *control messages*
 // - maps actions to `fire_control_event` (imported function which accepts control messages)
 
-import { fire_control_event } from "./controls.js";
+import { gameControls } from "./game.js";
 // --------------------------------------------
 // the keyboard
 // define the keyAliases we want to handle
@@ -36,7 +36,8 @@ export function handleKeyDown(event) {
         // only handle if not already pressed
         if (keyboard[key] !== true) {
             keyboard[key] = true;
-            fire_control_event(keyAliases[key], true); // lookup the keycode in keyAliases[] for its control alias
+            // fire_control_event(keyAliases[key], true); // lookup the keycode in keyAliases[] for its control alias
+            gameControls.fire_control_event(keyAliases[key], true); // lookup the keycode in keyAliases[] for its control alias
         }
     }
 }
@@ -48,7 +49,8 @@ export function handleKeyUp(event) {
         event.preventDefault();
         if (keyboard[key] === true) {
             keyboard[key] = false;
-            fire_control_event(keyAliases[key], false); // lookup the keycode in keyAliases[] for its control alias
+            // fire_control_event(keyAliases[key], false); // lookup the keycode in keyAliases[] for its control alias
+            gameControls.fire_control_event(keyAliases[key], false); // lookup the keycode in keyAliases[] for its control alias
         }
     }
 }

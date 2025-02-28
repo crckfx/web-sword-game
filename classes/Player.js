@@ -3,8 +3,8 @@ import { Vector2 } from "./Vector2.js";
 
 export class Player {
     constructor({name, position, isFacing, animations, texture}) {
-        this.name = name ?? 'unnamed';
-        this.position = position ?? new Vector2(gridCells(0), gridCells(0));
+        this.name = name ?? 'unnamed player';
+        this.position = position ?? new Vector2(0, 0);
         this.destination = position.duplicate();
         this.isFacing = isFacing ?? 'down';
         this.animations = animations ?? null;

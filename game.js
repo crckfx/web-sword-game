@@ -1,4 +1,4 @@
-import { current_dpad_dir, HtmlControls } from "./controls.js";
+import { GameControls } from "./classes/GameControls.js";
 import { getSpriteIndex } from "./sprite.js";
 import { Vector2 } from "./classes/Vector2.js";
 import { gridCells, moveTowards } from "./helper/grid.js";
@@ -9,6 +9,8 @@ import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
 import { GameLoop } from "./classes/GameLoop.js";
 import { check_cell_is_in_line_of_sight } from "./helper/lineOfSight.js";
+import { getHtmlControls } from "./document.js";
+
 
 function createGameGrid(cellsX, cellsY) {
     const grid = new Array(cellsX);
@@ -90,6 +92,10 @@ export const game = {
     entities: {},
 };
 
+export const HtmlControls = getHtmlControls();
+export const gameControls = new GameControls({HtmlControls});
+
+
 export function update(delta) {
     const distance = moveTowards(player, player.destination, 1);
     const hasArrived = distance < 1;
@@ -104,7 +110,7 @@ export function render() {
 }
 
 export const tryMove = () => {
-    if (!current_dpad_dir) {
+    if (!gameControls.current_dpad_dir) {
         switch (player.isFacing) {
             case 'left':
                 player.animations.play('standLeft');
@@ -125,7 +131,7 @@ export const tryMove = () => {
     let nextX = player.destination.x;
     let nextY = player.destination.y;
 
-    player.isFacing = current_dpad_dir;
+    player.isFacing = gameControls.current_dpad_dir;
     switch (player.isFacing) {
         case 'left':
             nextX -= FLOOR_CELL_PIXELS;
