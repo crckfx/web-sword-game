@@ -8,9 +8,10 @@ import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
 import { GameLoop } from "./classes/GameLoop.js";
 import { getHtmlControls } from "./document.js";
+import { Game } from "./experimental/Game.js";
 
 
-function createGameGrid(cellsX, cellsY) {
+export function createGameGrid(cellsX, cellsY) {
     const grid = new Array(cellsX);
     for (let i = 0; i < grid.length; i++) {
         grid[i] = new Array(cellsY);
@@ -49,7 +50,6 @@ export const game = {
     entities: {},
     controls: new GameControls({HtmlControls: getHtmlControls(),}),
 };
-
 
 
 export function update(delta) {

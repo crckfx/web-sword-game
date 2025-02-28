@@ -79,11 +79,16 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantMap, entities) {
     for (const { x, y, type } of parsedOccupantMap) {
         if (grid[x] && grid[x][y]) {
             if (type === 'lachie') {
-                const oldCell = grid[player.position.x][player.position.y];
-                const cell = grid[x][y];
-                if (oldCell.occupant === 'lachie') {
-                    oldCell.occupant = null;
+                if (grid[player.position.x]) {
+                    if (grid[player.position.x][player.position.y]) {
+                        console.log('breasts');
+                        const oldCell = grid[player.position.x][player.position.y];
+                        if (oldCell.occupant === 'lachie') {
+                            oldCell.occupant = null;
+                        }
+                    }
                 }
+                const cell = grid[x][y];
                 player.position.x = gridCells(x);
                 player.position.y = gridCells(y);
                 player.destination.x = gridCells(x);

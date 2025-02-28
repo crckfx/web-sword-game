@@ -1,12 +1,15 @@
 import { canvas, ctx, panelCenter, resize } from "./document.js";
 
-import { player, game, update, CAMERA_CELLS_Y, CAMERA_CELLS_X, render, } from "./game.js";
+import { player, game, update, CAMERA_CELLS_Y, CAMERA_CELLS_X, render, NUM_GRID_X, NUM_GRID_Y, } from "./game.js";
 import { parseFloorMap, parseOccupantMap, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants } from "./helper/map-loader.js";
 import { Entity } from "./classes/Entity.js";
 import { Renderer } from "./classes/Renderer.js";
 import { GameLoop } from "./classes/GameLoop.js";
 import { map_1 } from "./maps/map_1.js";
 import { load_image_resources } from "./helper/resource-loader.js";
+import { Game } from "./experimental/Game.js";
+
+export const class_game = new Game();
 
 
 
@@ -58,10 +61,19 @@ game.gameLoop = new GameLoop(update, render);
 
 // the entry point
 async function dummy_init() {
+
+
     // async load image stuff
     await load_image_resources(game.images, game.textures);
     await load_entities(game.entities, game.textures);
     await load_map(map_1, game.grid, game.textures, game.entities);
+
+    
+    // class_game.init_game(24, 24, class_game.textures, class_game.images);    
+    // await load_image_resources(class_game.images, class_game.textures);
+    // await load_entities(class_game.entities, class_game.textures);
+    // await load_map(map_1, class_game.grid, class_game.textures, class_game.entities);
+
 
     const mapOccupantCanvases = [
         await getMapOccupants(game.grid, game.textures, game.images, 0,),
@@ -75,6 +87,15 @@ async function dummy_init() {
     game.entities.harold.hasAlert = true;
 
     game.textures.gameOccupants = mapOccupantCanvases;
+
+    class_game.init_game(
+        NUM_GRID_X, 
+        NUM_GRID_Y, 
+        game.textures, 
+        game.images
+    );
+    // console.log(class_game);
+
 
     // assign pointer and keyboard listeners
     game.controls.bind();
