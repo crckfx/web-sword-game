@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" initial-scale="1.0">
+    <title>Sword Game (canvas)</title>
+
+
+    <link rel="stylesheet" href="./layout.css">
+    <link rel="stylesheet" href="./controls.css">
+    <style>
+    </style>
+
+</head>
+
+<body style="height: 100svh; background-color: black; margin: 0;">
+
+            <div class="container">
+                <div id="panel_center" class="item large">
+                    <canvas id="game_canv" width="176" height="144"></canvas>
+                    <div id="cellSelector"></div>
+                </div>
+                <div id="panel_left" class="panel item small control">
+                    <div class="ctrlblock">
+                        <svg width="48" height="48" viewBox="0 0 48 48">
+                            <path class="dpad" id="dpad_left" d="M22,24 L16, 18 H2 V30 H16 Z" />
+                            <path class="dpad" id="dpad_up" d="M24,22 L18, 16 V2 H30 V16Z" />
+                            <path class="dpad" id="dpad_right" d="M26,24 L32,18 H46 V30 H32 Z" />
+                            <path class="dpad" id="dpad_down" d="M24,26 L18, 32 V46 H30 V32Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div id="panel_right" class="panel item small control">
+                    <div class="ctrlblock quadrant">
+                        <span class="control y south btn_circ" id="control_A">A</span>
+                        <span class="control x west btn_circ" id="control_B">B</span>
+                        <span class="control x east btn_circ" id="control_X">X</span>
+                        <span class="control y north btn_circ" id="control_Y">Y</span>
+                    </div>
+                </div>
+            </div>
+
+
+    <script type="module" src="./canvas.js"></script>
+    <!-- <script src="../../script.js"></script> -->
+
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+/* panel */
+.panel.control {
+    touch-action: none;
+}
+
+/* controls block (currently used for quadrant layout) */
+.ctrlblock {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    touch-action: none;
+
+}
+
+.ctrlblock svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* the D-PAD  */
+.dpad {
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke: #a9a9a9;
+    fill: #030303;
+}
+
+.dpad.active {
+    stroke: #030303;
+    fill: #228;
+}
+
+/* the BUTTONS (ABXY) */
+.btn_circ {
+    user-select: none;
+    height: 36px;
+    width: 36px;
+    text-align: center;
+    color: #e3e3e3;
+    background-color: #030303;
+    border-width: 3px;
+    border-style: solid;
+    border-color: #a9a9a9;
+    border-radius: 50%;
+    touch-action: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+
+}
+
+.btn_circ.active {
+    /* border-style: inset; */
+    border-width: 4px;
+    background-color: #228;
+    border-color: #030303;
+
+}
+
+.quadrant .control {
+    position: absolute;
+}
+
+.quadrant .y {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.quadrant .x {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.quadrant .east {
+    left: 0px;
+}
+.quadrant .north {
+    top: 0px;
+}
+.quadrant .west {
+    right: 0px;
+}
+.quadrant .south {
+    bottom: 0px;
+}
+
+.selector {
+    position: absolute;
+    border: 4px solid red;
+}

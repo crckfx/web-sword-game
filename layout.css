@@ -1,0 +1,95 @@
+/* THE 'GAME' DISPLAY CONTAINER */
+.container {
+    height: 100%;
+    width: 100%;
+    /* default to portrait layout */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 150px;
+    /* set maxima (arbitrary; based on estimation of near-max 'screen size') */
+    max-width: 1632px;
+    max-height: 1000px;
+    /* border-radius for rounding, overflow for enforcing the rounding */
+    border-radius: 8px;
+    overflow: hidden;
+    /* (quite possibly) NEED to set 'touch-action: none;' for pointers to work in chromium? */
+    touch-action: none;
+}
+
+.container .item {
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#panel_left {
+    background-color: #00c3e3;
+}
+
+#panel_right {
+    order: 3;
+    background-color: #ff4554;
+}
+
+/* the game screen */
+#panel_center {
+    background-color: #414548;
+    font-size: 3em;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    flex: 4;
+}
+
+canvas {
+    /* background colour is (/should not be) important for a canvas */
+    background-color: black;
+    /* use block, and sizing is assumed to be handled in JS */
+    display: block;
+    image-rendering: pixelated; /* Prevents blur if scaling up pixel art */
+}
+
+
+
+
+/* in portrait */
+@media (orientation: portrait) {
+    #panel_center {
+        /* put the 'screen' first */
+        order: 1;
+        /* and make 'screen' span 2 (horizontal) grid cells */
+        grid-column: span 2;
+    }
+    #panel_left {
+        order: 2;
+    }
+}
+
+/* in landscape */
+@media (orientation: landscape) {
+    .container {
+        /* change the layout to flex in landscape (because it seemed easier) */
+        display: flex;
+        /* we can afford lots of border radius in horizontal (due to centering of control panels)  */
+        border-radius: 24px;
+    }
+
+    #panel_center {
+        order: 2;
+    }
+
+    #panel_left {
+        order: 1;
+    }
+
+    .small {
+        flex: 1;
+        max-width: 150px;
+    }
+
+}
