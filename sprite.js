@@ -15,15 +15,6 @@ export function getSpriteIndex(isFacing) {
 }
 
 
-export async function loadImage(url) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img); // resolves when image is loaded
-        img.onerror = reject; // rejects on error
-        img.src = url;
-    });
-}
-
 
 
 export async function extractSprites(spriteSheet) {

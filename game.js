@@ -1,5 +1,4 @@
 import { GameControls } from "./classes/GameControls.js";
-import { getSpriteIndex } from "./sprite.js";
 import { Vector2 } from "./classes/Vector2.js";
 import { gridCells, moveTowards } from "./helper/grid.js";
 import { Player } from "./classes/Player.js";
@@ -8,7 +7,6 @@ import { Animations } from "./classes/Animations.js";
 import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
 import { GameLoop } from "./classes/GameLoop.js";
-import { check_cell_is_in_line_of_sight } from "./helper/lineOfSight.js";
 import { getHtmlControls } from "./document.js";
 
 
@@ -36,31 +34,10 @@ export const doodads = [];
 export const entities = {}
 // export const game_grid = createGameGrid(NUM_GRID_X, NUM_GRID_Y);
 export const FLOOR_CELL_PIXELS = 16;
-
-const waterDrawCycle = 3;
-const playerDrawCycle = 4;
-
-
 export const CAMERA_CELLS_X = 11;
 export const CAMERA_CELLS_Y = 9;
-
-function check_all_lines_of_sight() {
-    const px = player.position.x;
-    const py = player.position.y;
-    for (const key in entities) {
-        entities[key].hasAlert = check_cell_is_in_line_of_sight(px, py, entities[key]);
-    }
-}
-
-function position_is_in_bounds(pos, min, max) {
-    if (pos < min || pos > max) return false;
-    return true;
-}
-
-function cell_is_occupied(cell) {
-    return cell.occupant === null;
-}
-
+export const HtmlControls = getHtmlControls();
+export const gameControls = new GameControls({HtmlControls});
 
 
 // ------------------------------------------------------
@@ -81,8 +58,6 @@ export const player = new Player({
     })
 });
 
-export const images = {};
-export const textures = {};
 export const game = {
     renderer: null,
     gameLoop: null,
@@ -92,8 +67,6 @@ export const game = {
     entities: {},
 };
 
-export const HtmlControls = getHtmlControls();
-export const gameControls = new GameControls({HtmlControls});
 
 
 export function update(delta) {

@@ -1,8 +1,11 @@
-// map.js 
+// map-loader.js 
 // handles loading of map from text string. 
-// it seems cool to store a map as a text file. here, we don't fetch a text file or anything - we just store it as a text string.
+// it seems cool to store a map as a text file. 
+// we don't fetch a text file or anything here - just pass map strings in
 
-// 
+import { doodads, entities, player, NUM_GRID_X, NUM_GRID_Y, FLOOR_CELL_PIXELS } from "../game.js";
+import { gridCells } from "./grid.js";
+
 // define floor signifiers
 export const tileMap = {
     'g': 'grass',
@@ -22,67 +25,6 @@ export const occupantMap = {
     '1': 'fred',
     '2': 'george',
     '3': 'harold',
-};
-import { doodads, entities, player, NUM_GRID_X, NUM_GRID_Y, FLOOR_CELL_PIXELS } from "./game.js";
-import { gridCells } from "./helper/grid.js";
-// import {  } from "./sprite.js";
-
-export const map_1 = {
-    floor:
-    `   GGGGGGGdrrddGGGGGGdswwww
-        GGggggddrrddggggggdswwww
-        Ggggggdrrrdgggggggdswwww
-        Ggggggdrrddgggggggdsswww
-        Ggggggdrrddgggggggsswwww
-        Ggggggdrrdddgggggggsswww
-        Ggggggdrrrddggggggssswww
-        Ggwwggddrrddggggggssssww
-        ggwwwgddrrddggggggssssww
-        ggwwggddrrddgggggggsssww
-        gggggddrrrddggggggggssww
-        gggggddrrddggggggggggssw
-        gggggddrrddgggggggggggsw
-        gggggddrrddgggggsgddddss
-        gggggdrrddgggggsssddddds
-        gggggdrrddgggsssssssddds
-        gggggdrrddgggswwswwsssss
-        gggggdrrddggsswwswwwwwww
-        gggggdrrddggswwwswwwwwww
-        gggggdrrGdggsswwswwwssww
-        gggggGrGGdggswwwswwssssw
-        gggggGrGGdggswwwswwsssww
-        gggggGrGddggswwwssssswww
-        gggggGwGdgggsswwwwwwwwws`,
-    occupants: 
-    `   TTTT....................
-        T.......03..............
-        T.P.....................
-        T...............T.......
-        2..............TTT......
-        T..............TTT......
-        T...............T.......
-        T.......................
-        T.......................
-        ........................
-        ........................
-        ........1...............
-        ....T......T............
-        ...............T........
-        ..T........T............
-        .....T..TT..............
-        .....T..TT..............
-        .....T..TT..............
-        .....T...T..............
-        .....T...T..............
-        .....T..TT..............
-        .....T.TT...............
-        .....T.T................
-        .....T.T................
-        .....TET................`,
-    cameraStart: {
-        x: -1,
-        y: -1
-    }
 };
 
 // Decode the map into (x, y) positions

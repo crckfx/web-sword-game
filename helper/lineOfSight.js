@@ -57,3 +57,13 @@ function check_single_axis(range, viewer, cell) {
     }
     return false;
 }
+
+
+
+function check_all_lines_of_sight() {
+    const px = player.position.x;
+    const py = player.position.y;
+    for (const key in entities) {
+        entities[key].hasAlert = check_cell_is_in_line_of_sight(px, py, entities[key]);
+    }
+}
