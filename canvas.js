@@ -1,9 +1,6 @@
-import { canvas, ctx, getHtmlControls, panelCenter, resize } from "./document.js";
+import { canvas, ctx, panelCenter, resize } from "./document.js";
 
-
-import { gameControls } from "./game.js";
-import { NUM_GRID_X, NUM_GRID_Y, doodads, entities, player, game, update, CAMERA_CELLS_Y, CAMERA_CELLS_X, render, } from "./game.js";
-import { extractSprites, extract_single_sprite } from "./sprite.js";
+import { player, game, update, CAMERA_CELLS_Y, CAMERA_CELLS_X, render, } from "./game.js";
 import { parseFloorMap, parseOccupantMap, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants } from "./helper/map-loader.js";
 import { Entity } from "./classes/Entity.js";
 import { Renderer } from "./classes/Renderer.js";
@@ -34,7 +31,6 @@ async function load_entities(entities, textures) {
         name: 'harold',
         texture: textures.spriteYellow,
     });
-
 }
 
 async function load_map(map, grid, textures, entities) {
@@ -49,8 +45,8 @@ async function load_map(map, grid, textures, entities) {
 
 // create the renderer
 game.renderer = new Renderer({
-    ctx: ctx,
-    canvas: canvas,
+    canvas: document.getElementById('game_canv'),
+    ctx: document.getElementById('game_canv').getContext("2d"),
     grid: game.grid,
     cameraCellsX: CAMERA_CELLS_X,
     cameraCellsY: CAMERA_CELLS_Y,
@@ -74,18 +70,14 @@ async function dummy_init() {
         await getMapOccupants(game.grid, game.textures, game.images, 3,),
     ];
 
-
-
     // manually set some
     player.texture = game.textures.spriteDefault;
     game.entities.harold.hasAlert = true;
 
-
-
     game.textures.gameOccupants = mapOccupantCanvases;
 
     // assign pointer and keyboard listeners
-    gameControls.bind();
+    game.controls.bind();
     // watch for resize on the canvas container
     const observer = new ResizeObserver(resize);
     observer.observe(panelCenter);

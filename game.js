@@ -36,27 +36,9 @@ export const entities = {}
 export const FLOOR_CELL_PIXELS = 16;
 export const CAMERA_CELLS_X = 11;
 export const CAMERA_CELLS_Y = 9;
-export const HtmlControls = getHtmlControls();
-export const gameControls = new GameControls({HtmlControls});
-
-
+// export const HtmlControls = getHtmlControls();
 // ------------------------------------------------------
-export const player = new Player({
-    name: 'lachie',
-    position: new Vector2(gridCells(1), gridCells(1)),
-    isFacing: 'up',
-    animations: new Animations({
-        walkUp: new FrameIndexPattern(WALK_UP),
-        walkLeft: new FrameIndexPattern(WALK_LEFT),
-        walkDown: new FrameIndexPattern(WALK_DOWN),
-        walkRight: new FrameIndexPattern(WALK_RIGHT),
 
-        standUp: new FrameIndexPattern(STAND_UP),
-        standLeft: new FrameIndexPattern(STAND_LEFT),
-        standDown: new FrameIndexPattern(STAND_DOWN),
-        standRight: new FrameIndexPattern(STAND_RIGHT),
-    })
-});
 
 export const game = {
     renderer: null,
@@ -65,6 +47,7 @@ export const game = {
     textures: {},
     images:{},
     entities: {},
+    controls: new GameControls({HtmlControls: getHtmlControls(),}),
 };
 
 
@@ -83,7 +66,7 @@ export function render() {
 }
 
 export const tryMove = () => {
-    if (!gameControls.current_dpad_dir) {
+    if (!game.controls.current_dpad_dir) {
         switch (player.isFacing) {
             case 'left':
                 player.animations.play('standLeft');
@@ -104,7 +87,7 @@ export const tryMove = () => {
     let nextX = player.destination.x;
     let nextY = player.destination.y;
 
-    player.isFacing = gameControls.current_dpad_dir;
+    player.isFacing = game.controls.current_dpad_dir;
     switch (player.isFacing) {
         case 'left':
             nextX -= FLOOR_CELL_PIXELS;
@@ -139,3 +122,20 @@ export const tryMove = () => {
 }
 
 
+
+export const player = new Player({
+    name: 'lachie',
+    position: new Vector2(gridCells(1), gridCells(1)),
+    isFacing: 'up',
+    animations: new Animations({
+        walkUp: new FrameIndexPattern(WALK_UP),
+        walkLeft: new FrameIndexPattern(WALK_LEFT),
+        walkDown: new FrameIndexPattern(WALK_DOWN),
+        walkRight: new FrameIndexPattern(WALK_RIGHT),
+
+        standUp: new FrameIndexPattern(STAND_UP),
+        standLeft: new FrameIndexPattern(STAND_LEFT),
+        standDown: new FrameIndexPattern(STAND_DOWN),
+        standRight: new FrameIndexPattern(STAND_RIGHT),
+    })
+});
