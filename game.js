@@ -1,4 +1,4 @@
-import { GameControls } from "./classes/GameControls.js";
+import { GameControls } from "./controls/GameControls.js";
 import { Vector2 } from "./classes/Vector2.js";
 import { gridCells, moveTowards } from "./helper/grid.js";
 import { Player } from "./classes/Player.js";
@@ -39,89 +39,6 @@ export const CAMERA_CELLS_X = 11;
 export const CAMERA_CELLS_Y = 9;
 // export const HtmlControls = getHtmlControls();
 // ------------------------------------------------------
-
-
-export const game = {
-    renderer: null,
-    gameLoop: null,
-    grid: createGameGrid(NUM_GRID_X, NUM_GRID_Y),
-    textures: {},
-    images:{},
-    entities: {},
-    controls: new GameControls({HtmlControls: getHtmlControls(),}),
-};
-
-
-export function update(delta) {
-    const distance = moveTowards(player, player.destination, 1);
-    const hasArrived = distance < 1;
-    if (hasArrived) {
-        tryMove();
-    }
-    player.step(delta);
-}
-
-export function render() {
-    game.renderer.draw();
-}
-
-export const tryMove = () => {
-    if (!game.controls.current_dpad_dir) {
-        switch (player.isFacing) {
-            case 'left':
-                player.animations.play('standLeft');
-                break;
-            case 'right':
-                player.animations.play('standRight');
-                break;
-            case 'up':
-                player.animations.play('standUp');
-                break;
-            case 'down':
-                player.animations.play('standDown');
-                break;
-        }
-        return;
-    }
-
-    let nextX = player.destination.x;
-    let nextY = player.destination.y;
-
-    player.isFacing = game.controls.current_dpad_dir;
-    switch (player.isFacing) {
-        case 'left':
-            nextX -= FLOOR_CELL_PIXELS;
-            player.animations.play('walkLeft');
-            break;
-        case 'right':
-            player.animations.play('walkRight');
-            nextX += FLOOR_CELL_PIXELS;
-            break;
-        case 'up':
-            player.animations.play('walkUp');
-            nextY -= FLOOR_CELL_PIXELS;
-            break;
-        case 'down':
-            player.animations.play('walkDown');
-            nextY += FLOOR_CELL_PIXELS;
-            break;
-    }
-
-    const x = nextX / FLOOR_CELL_PIXELS;
-    const y = nextY / FLOOR_CELL_PIXELS;
-    // console.log(`nextX:${nextX / FLOOR_CELL_PIXELS}, nextY:${nextY / FLOOR_CELL_PIXELS}`);
-
-    if (game.grid[x] && game.grid[x][y]) {
-        if (game.grid[x][y].occupant === null) {
-            // game.gameLoop.increment_draw_count();
-            player.destination.x = nextX;
-            player.destination.y = nextY;
-        }
-
-    }
-}
-
-
 
 export const player = new Player({
     name: 'lachie',

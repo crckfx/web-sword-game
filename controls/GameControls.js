@@ -1,13 +1,5 @@
-import { KeyboardHandler } from "../experimental/KeyboardHandler.js";
-import { PointerHandler } from "../experimental/PointerHandler.js";
-import { handleKeyDown, handleKeyUp } from "../keyboard.js";
-import {
-    handlePointerDown_button,
-    handlePointerUp_button,
-    handlePointerDown_dpad,
-    handlePointerUp,
-    handlePointerMove
-} from "../pointer.js";
+import { KeyboardHandler } from "./KeyboardHandler.js";
+import { PointerHandler } from "./PointerHandler.js";
 
 export class GameControls {
     constructor({ HtmlControls }) {

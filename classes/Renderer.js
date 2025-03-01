@@ -1,5 +1,5 @@
 import { cell_size, MIDDLE_CELL } from "../document.js";
-import { entities, player, game } from "../game.js";
+import { entities, player } from "../game.js";
 import { gridCells } from "../helper/grid.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
