@@ -9,6 +9,7 @@ export class Player {
         this.isFacing = isFacing ?? 'down';
         this.animations = animations ?? null;
         this.texture = texture;
+        this.interactTarget = null;
     }
 
     step(delta) {

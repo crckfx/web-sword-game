@@ -16,6 +16,7 @@ export class KeyboardHandler {
         x: false,
         a: false,
         s: false,
+        escape: false,
     };
     keyAliases = {
         arrowleft: 'left',
@@ -26,6 +27,7 @@ export class KeyboardHandler {
         x: 'B',
         a: 'X',
         s: 'Y',
+        escape: 'ESCAPE',
     };
 
     handleKeyDown(event) {

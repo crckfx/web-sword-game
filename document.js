@@ -6,17 +6,13 @@ import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
 
 
-
+// declarations. try and put them in order of precedence.
+export const NUM_GRID = new Vector2(24, 24); // total number of map X & Y cells
 
 // game declarations
-export const NUM_GRID_X = 24; // total number of map X cells
-export const NUM_GRID_Y = 24; // total number of map Y cells
 export const doodads = [];
 export const entities = {}
-// export const game_grid = createGameGrid(NUM_GRID_X, NUM_GRID_Y);
 export const FLOOR_CELL_PIXELS = 16;
-export const CAMERA_CELLS_X = 11;
-export const CAMERA_CELLS_Y = 9;
 export const CAMERA_CELLS = new Vector2(11, 9);
 // export const HtmlControls = getHtmlControls();
 
@@ -31,15 +27,15 @@ export const ctx = canvas.getContext("2d");
 export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');
 const panelRight = document.getElementById('panel_right');
+export const pauseMenu = document.getElementById('pauseMenu');
+export const gameSpeech = document.getElementById('game_speech');
+
 
 export const cell_size = getCellSize();
 export const MIDDLE_CELL = {
-    x: cell_size.x * ((CAMERA_CELLS_X - 1) / 2),
-    y: cell_size.y * ((CAMERA_CELLS_Y - 1) /2),
+    x: cell_size.x * ((CAMERA_CELLS.x - 1) / 2),
+    y: cell_size.y * ((CAMERA_CELLS.y - 1) / 2),
 };
-
-
-// ------------------------------------------------------
 
 export const player = new Player({
     name: 'lachie',
@@ -58,39 +54,28 @@ export const player = new Player({
     })
 });
 
+// ------------------------------------------------------
+
+applyPreventsToPanel(panelLeft);
+applyPreventsToPanel(panelRight);
+// watch for resize on the canvas container
+const observer = new ResizeObserver(resize);
+observer.observe(panelCenter);
 
 
 
 
 
-
-
-// prevent right clicks on the controller panels
-panelLeft.addEventListener("contextmenu", (event) => { event.preventDefault(); });
-panelRight.addEventListener("contextmenu", (event) => { event.preventDefault(); });
-const controlBoxes = {
-    left: panelLeft.querySelector('.ctrlblock'),
-    right: panelRight.querySelector('.ctrlblock'),
-}
-// prevent right clicks on the dpad and buttons
-for (const key in controlBoxes) {
-    console.log(key);
-    // disable right-click
-    controlBoxes[key].addEventListener("contextmenu", (event) => {
-        event.preventDefault();
-    });
-
-}
-
+// ------------------------------------------------------
 function getCellSize() {
     return {
-        x: canvas.width / CAMERA_CELLS_X,
-        y: canvas.height / CAMERA_CELLS_Y,
+        x: canvas.width / CAMERA_CELLS.x,
+        y: canvas.height / CAMERA_CELLS.y,
     }
 }
 
 // function to set the canvas size based on its parent (note - overflow:hidden protects against parent growth)
-export function resize() {
+function resize() {
     // use the container's dimensions to determine orientation
     const rect = panelCenter.getBoundingClientRect();
     let width, height;
@@ -111,6 +96,8 @@ export function resize() {
     // subtract padding
     canvas.style.width = `${width - PADDING}px`;
     canvas.style.height = `${height - PADDING}px`;
+    pauseMenu.style.width = `${width - PADDING}px`;
+    pauseMenu.style.height = `${height - PADDING}px`;
 
     const newCellSize = getCellSize();
     cell_size.x = newCellSize.x;
@@ -118,9 +105,6 @@ export function resize() {
 
     // draw();
 }
-
-
-
 
 export function getHtmlControls() {
     const HTMLcontrols = {
@@ -141,19 +125,20 @@ export function getHtmlControls() {
     return HTMLcontrols;
 }
 
-export function createGameGrid(cellsX, cellsY) {
-    const grid = new Array(cellsX);
-    for (let i = 0; i < grid.length; i++) {
-        grid[i] = new Array(cellsY);
-    }
-    for (let i = 0; i < NUM_GRID_X; i++) {
-        for (let j = 0; j < NUM_GRID_Y; j++) {
-            grid[i][j] = {
-                floor: null,
-                occupant: null,
-            }
 
-        }
+function applyPreventsToPanel(panel) {
+    panel.addEventListener("contextmenu", (event) => { event.preventDefault(); });
+    const controlBlock = panel.querySelector('.ctrlblock');
+    if (controlBlock) {
+        // const paths = controlBlock.querySelectorAll('.control');
+        // paths.forEach((path) => {
+        //     console.log(path);
+        //     path.addEventListener("contextmenu", (event) => {
+        //         event.preventDefault();
+        //     });
+        // });
+        controlBlock.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+        });
     }
-    return grid;
 }

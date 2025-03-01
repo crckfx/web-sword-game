@@ -1,5 +1,5 @@
-import { cell_size, MIDDLE_CELL, entities, player } from "../document.js";
-import { gridCells } from "../helper/grid.js";
+import { cell_size, MIDDLE_CELL, entities, player, FLOOR_CELL_PIXELS } from "../document.js";
+import { facingToVector, gridCells } from "../helper/grid.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
 
@@ -47,6 +47,25 @@ export class Renderer {
             MIDDLE_CELL.y,
             cell_size.x, cell_size.y
         );
+
+        // if (player.destination.x === player.position.x && player.destination.y === player.position.y) {
+        //     let facingCell = facingToVector(player.isFacing);
+        //     let border = 'yellow';
+        //     this.drawBorder(
+        //         (player.position.x + (gridCells(facingCell.x))) - (player.position.x - MIDDLE_CELL.x),
+        //         (player.position.y + (gridCells(facingCell.y) )) - (player.position.y - MIDDLE_CELL.y),
+        //         "yellow"
+        //     );
+        // }
+
+        // draw a border around the interactTarget if it exists
+        if (player.interactTarget !== null) {
+            this.drawBorder(
+                player.interactTarget.position.x - (player.position.x - MIDDLE_CELL.x),
+                player.interactTarget.position.y - (player.position.y - MIDDLE_CELL.y),
+                "yellow"
+            );            
+        }
     }
 
     drawEntity(entity) {
@@ -89,11 +108,20 @@ export class Renderer {
         // console.log(`draw border at ${x}, ${y}`);
         this.ctx.strokeStyle = colour;
         this.ctx.lineWidth = 1;
-    
+
         // ctx.strokeWidth = 0.1;
         this.ctx.strokeRect(x, y, cell_size.x, cell_size.y);
     }
-    
+
+
+    drawPauseMenu() {
+        this.ctx.fillStyle = '#000000aa';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.font = "12px serif";
+        this.ctx.fillStyle = 'red';
+        this.ctx.fillText("paused",0,40)
+
+    }
 
 
 }

@@ -1,0 +1,33 @@
+#pauseMenu {
+    display: none;
+    
+    position: absolute;
+    color: white;
+
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    /* background-color: #0a0a0acc; */
+}
+
+
+#pauseMenu.paused {
+    display: flex;
+}
+
+#game_speech {
+    display: none;
+    position: absolute;
+    /* z-index: 10; */
+    justify-content: center;
+    align-items: center;
+
+    color: black;
+    background-color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#game_speech.active {
+    display: flex;
+}

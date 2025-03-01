@@ -3,7 +3,7 @@
 // it seems cool to store a map as a text file. 
 // we don't fetch a text file or anything here - just pass map strings in
 
-import { doodads, entities, player, NUM_GRID_X, NUM_GRID_Y, FLOOR_CELL_PIXELS } from "../document.js";
+import { player, NUM_GRID, FLOOR_CELL_PIXELS } from "../document.js";
 import { gridCells } from "./grid.js";
 
 // define floor signifiers
@@ -16,7 +16,7 @@ export const tileMap = {
     'w': 'water',
 };
 // define occupant signifiers
-export const occupantMap = {
+const occupantMap = {
     'T': 'tree',
     'W': 'water',
     'P': 'lachie',
@@ -40,7 +40,7 @@ function removeOldOccupant(grid, x, y) {
 }
 
 // Decode the map into (x, y) positions
-export function parseFloorMap(mapString) {
+export function parseFloorLayout(mapString) {
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
 
@@ -56,14 +56,12 @@ export function parseFloorMap(mapString) {
 }
 
 // Apply parsed data to the existing grid
-export function applyFloorToGameGrid(grid, parsedFloorMap) {
-    for (const { x, y, tile } of parsedFloorMap) {
+export function applyFloorToGameGrid(grid, parsedFloorLayout) {
+    for (const { x, y, tile } of parsedFloorLayout) {
         if (grid[x] && grid[x][y]) {
             grid[x][y].floor = tile;  // Apply floor type
             if (tile === 'water') {
-                // add doodad here?
-                const num = doodads.push({ type: 'water', x: x, y: y });
-                grid[x][y].occupant = doodads[num - 1].type;
+                grid[x][y].occupant = 'water';
             }
         }
     }
@@ -71,7 +69,7 @@ export function applyFloorToGameGrid(grid, parsedFloorMap) {
 
 
 // Decode the map into (x, y) positions
-export function parseOccupantMap(mapString) {
+export function parseOccupantLayout(mapString) {
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
 
@@ -87,20 +85,12 @@ export function parseOccupantMap(mapString) {
 }
 
 // note : "type" is becoming maybe a terrible name
-export function applyOccupantsToGameGrid(grid, parsedOccupantMap, entities) {
-    for (const { x, y, type } of parsedOccupantMap) {
+export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities) {
+    for (const { x, y, type } of parsedOccupantLayout) {
         if (grid[x] && grid[x][y]) {
             if (type === 'lachie') {
                 // triple check a cell exists before accessing/removing from it
                 removeOldOccupant(grid, x, y)
-                // if (grid[player.position.x]) {
-                //     if (grid[player.position.x][player.position.y]) {
-                //         const oldCell = grid[player.position.x][player.position.y];
-                //         if (oldCell.occupant === 'lachie') {
-                //             oldCell.occupant = null;
-                //         }
-                //     }
-                // }
                 const cell = grid[x][y];
                 player.position.x = gridCells(x);
                 player.position.y = gridCells(y);
@@ -111,23 +101,12 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantMap, entities) {
             } else
                 if (type === 'gary' || type === 'fred' || type === 'george' || type === 'harold') {
                     // console.log('GOT an entity BACK');
-                    const e = entities[type];
-                    // remove entity occupation from a previous cell
-                    // const cell = grid[e.position.x][e.position.y];
-                    // if (cell.occupant !== null) {
-                    // console.error(`something went WRONG applying ${e.name} to cell [${x}][${y}], it is already occupied by ${cell.occupant}`);
-                    // } else {
-
-                    // grid[e.position.x][e.position.y].occupant = null;
-                    // set new position
+                    const e = entities[type]; // remember, we pass in the entities object as an argument
                     e.position.x = gridCells(x);
                     e.position.y = gridCells(y);
-                    grid[x][y].occupant = e.name;
+                    grid[x][y].occupant = e;
                     // }
-
                 } else if (type === 'tree') {
-                    // const num = doodads.push({ type: 'tree', x: x, y: y });
-                    // grid[x][y].occupant = doodads[num-1].type;
                     grid[x][y].occupant = type;  // Apply floor type
                 } else {
                     grid[x][y].occupant = type;  // Apply floor type
@@ -140,8 +119,8 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantMap, entities) {
 
 export async function getMapBackground(grid, textures) {
     // get the pixel sizes for the map
-    const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID_X;
-    const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID_Y;
+    const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID.x;
+    const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID.y;
     // Create an offscreen canvas for each sprite
     const mapCanvas = document.createElement('canvas');
     mapCanvas.width = mapWidthPx;
@@ -150,8 +129,8 @@ export async function getMapBackground(grid, textures) {
     // mapCtx.imageSmoothingEnabled = false;
 
     // loop over the entire game grid
-    for (let i = 0; i < NUM_GRID_X; i++) {
-        for (let j = 0; j < NUM_GRID_Y; j++) {
+    for (let i = 0; i < NUM_GRID.x; i++) {
+        for (let j = 0; j < NUM_GRID.y; j++) {
             const cell = grid[i][j];
             switch (cell.floor) {
                 case 'road':
@@ -185,8 +164,8 @@ export async function getMapBackground(grid, textures) {
 
 export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
     // get the pixel sizes for the map
-    const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID_X;
-    const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID_Y;
+    const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID.x;
+    const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID.y;
     // Create an offscreen canvas for each sprite
     const mapCanvas = document.createElement('canvas');
     mapCanvas.width = mapWidthPx;
@@ -196,8 +175,8 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
 
 
     // loop over the entire game grid
-    for (let i = 0; i < NUM_GRID_X; i++) {
-        for (let j = 0; j < NUM_GRID_Y; j++) {
+    for (let i = 0; i < NUM_GRID.x; i++) {
+        for (let j = 0; j < NUM_GRID.y; j++) {
             const cell = grid[i][j];
             switch (cell.occupant) {
                 case 'tree':

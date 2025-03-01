@@ -1,3 +1,4 @@
+import { Vector2 } from "../classes/Vector2.js";
 
 export function gridCells(n) {
     return 16 * n;
@@ -45,4 +46,11 @@ export function createGrid(cellsX, cellsY) {
         }
     }
     return grid;
+}
+
+export function facingToVector(facing) {
+    if (facing === 'left') return new Vector2(-1, 0);
+    if (facing === 'up') return new Vector2(0, -1);
+    if (facing === 'right') return new Vector2(1, 0);
+    if (facing === 'down') return new Vector2(0, 1);
 }

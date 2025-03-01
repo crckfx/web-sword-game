@@ -2,7 +2,7 @@ import { KeyboardHandler } from "./KeyboardHandler.js";
 import { PointerHandler } from "./PointerHandler.js";
 
 export class GameControls {
-    constructor({ HtmlControls }) {
+    constructor({ HtmlControls, bang_A = null, bang_B = null, bang_pause = null, }) {
         //
         this.current_dpad_dir = null;
         this.buttonStates = {
@@ -14,6 +14,10 @@ export class GameControls {
         this.HtmlControls = HtmlControls;
         this.pointerHandler = new PointerHandler(this);
         this.keyboardHandler = new KeyboardHandler(this);
+
+        this.bang_A = bang_A;   // pass in functions
+        this.bang_B = bang_B;   // pass in functions
+        this.bang_pause = bang_pause;   // pass in functions
     }
 
     // function to translate keyboard events to the 'game'
@@ -33,8 +37,18 @@ export class GameControls {
                 }
                 break;
             // if not DPAD, assume we're dealing with a button
-            default:
+            case 'A': case 'B': case 'X': case 'Y':
                 on ? this.press_btn(name) : this.release_btn(name);
+                break;
+            case 'ESCAPE':
+                if (on) {
+                    this.bang_pause();
+                }
+                break;
+            default:
+                // on ? this.press_btn(name) : this.release_btn(name);
+                let state = on ? "on" : "off";
+                console.log(`sent ${state} to ${name}`);
         }
     }
 
@@ -62,7 +76,7 @@ export class GameControls {
     // the buttons (ABXY)
     // function to press a button
     press_btn(input) {
-        console.log(`pressed ${input}.`);
+        // console.log(`pressed ${input}.`);
         this.HtmlControls.buttons[input].classList.add('active');
         switch (input) {
             case 'X':
@@ -71,9 +85,11 @@ export class GameControls {
                 break;
             case 'A':
                 this.buttonStates[input] = true;
+                this.bang_A();
                 break;
             case 'B':
                 this.buttonStates[input] = true;
+                this.bang_B();
                 // clearCanvas();
                 break;
             case 'Y':
@@ -88,7 +104,7 @@ export class GameControls {
     release_btn(input) {
         this.buttonStates[input] = false;
         this.HtmlControls.buttons[input].classList.remove('active');
-        console.log(`released ${input}.`);
+        // console.log(`released ${input}.`);
     }
     // --------------------------------------------
 
@@ -96,8 +112,11 @@ export class GameControls {
         // Bind pointer down for each dpad button
         Object.entries(this.HtmlControls.dpad).forEach(([direction, element]) => {
             element.dataset.dpad = direction; // Add a custom attribute to identify the direction
-            element.addEventListener('pointerdown', (event) => this.pointerHandler.handlePointerDown_dpad(direction, event));
-        });    
+            element.addEventListener('pointerdown', (event) => {
+                event.preventDefault();
+                this.pointerHandler.handlePointerDown_dpad(direction, event)
+            });
+        });
         // Bind pointer down for each button (ABXY)
         Object.entries(this.HtmlControls.buttons).forEach(([name, element]) => {
             element.dataset.buttons = name; // Add a custom attribute to identify the direction
@@ -111,17 +130,18 @@ export class GameControls {
             element.addEventListener("contextmenu", (event) => {
                 event.preventDefault();
             });
-    
+
+
         });
         // Listen for all key presses / releases
         document.addEventListener('keydown', this.keyboardHandler.handleKeyDown);
         document.addEventListener('keyup', this.keyboardHandler.handleKeyUp);
-    
+
         // Listen for pointerup and pointermove on the document
         document.addEventListener('pointerup', this.pointerHandler.handlePointerUp);
         document.addEventListener('pointermove', this.pointerHandler.handlePointerMove);
-    
+
     }
-    
+
 
 }

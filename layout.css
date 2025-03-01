@@ -5,7 +5,7 @@
     /* default to portrait layout */
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 150px;
+    grid-template-rows: 1fr 200px;
     /* set maxima (arbitrary; based on estimation of near-max 'screen size') */
     max-width: 1632px;
     max-height: 1000px;
@@ -54,6 +54,7 @@
     align-items: center;
     overflow: hidden;
     flex: 4;
+    position: relative;
 }
 
 canvas {
@@ -78,6 +79,11 @@ canvas {
     #panel_left {
         order: 2;
     }
+
+    .ctrlblock {
+        height: 100%;
+        width: auto;
+    }
 }
 
 /* in landscape */
@@ -99,7 +105,12 @@ canvas {
 
     .small {
         flex: 1;
-        max-width: 150px;
+        max-width: 180px;
+    }
+
+    .ctrlblock {
+        height: auto;
+        width: 100%;
     }
 
 }
