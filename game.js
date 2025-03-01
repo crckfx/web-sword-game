@@ -1,14 +1,9 @@
-import { GameControls } from "./controls/GameControls.js";
 import { Vector2 } from "./classes/Vector2.js";
-import { gridCells, moveTowards } from "./helper/grid.js";
+import { gridCells } from "./helper/grid.js";
 import { Player } from "./classes/Player.js";
-import { Entity } from "./classes/Entity.js";
 import { Animations } from "./classes/Animations.js";
 import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
-import { GameLoop } from "./classes/GameLoop.js";
-import { getHtmlControls } from "./document.js";
-import { Game } from "./experimental/Game.js";
 
 
 export function createGameGrid(cellsX, cellsY) {
