@@ -14,6 +14,7 @@
     overflow: hidden;
     /* (quite possibly) NEED to set 'touch-action: none;' for pointers to work in chromium? */
     touch-action: none;
+    
 }
 
 .container .item {
@@ -25,6 +26,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#panel_left, #panel_right, .control {
+    -webkit-user-select: none; /* For Safari and iOS */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Internet Explorer */
+    user-select: none;         /* Standard syntax */    
+    touch-action: none;
+
 }
 
 #panel_left {

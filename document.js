@@ -6,22 +6,7 @@ import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
 
 
-export function createGameGrid(cellsX, cellsY) {
-    const grid = new Array(cellsX);
-    for (let i = 0; i < grid.length; i++) {
-        grid[i] = new Array(cellsY);
-    }
-    for (let i = 0; i < NUM_GRID_X; i++) {
-        for (let j = 0; j < NUM_GRID_Y; j++) {
-            grid[i][j] = {
-                floor: null,
-                occupant: null,
-            }
 
-        }
-    }
-    return grid;
-}
 
 // game declarations
 export const NUM_GRID_X = 24; // total number of map X cells
@@ -32,7 +17,28 @@ export const entities = {}
 export const FLOOR_CELL_PIXELS = 16;
 export const CAMERA_CELLS_X = 11;
 export const CAMERA_CELLS_Y = 9;
+export const CAMERA_CELLS = new Vector2(11, 9);
 // export const HtmlControls = getHtmlControls();
+
+
+// const ASPECT_RATIO = 11 / 9;
+const ASPECT_RATIO = CAMERA_CELLS.x / CAMERA_CELLS.y;
+const PADDING = 24;
+const MAX_SIZE = new Vector2(1650, 1350);
+
+export const canvas = document.getElementById('game_canv');
+export const ctx = canvas.getContext("2d");
+export const panelCenter = document.getElementById('panel_center');
+const panelLeft = document.getElementById('panel_left');
+const panelRight = document.getElementById('panel_right');
+
+export const cell_size = getCellSize();
+export const MIDDLE_CELL = {
+    x: cell_size.x * ((CAMERA_CELLS_X - 1) / 2),
+    y: cell_size.y * ((CAMERA_CELLS_Y - 1) /2),
+};
+
+
 // ------------------------------------------------------
 
 export const player = new Player({
@@ -53,27 +59,11 @@ export const player = new Player({
 });
 
 
-export const panelCenter = document.getElementById('panel_center');
-const panelLeft = document.getElementById('panel_left');
-const panelRight = document.getElementById('panel_right');
-
-export const canvas = document.getElementById('game_canv');
-export const ctx = canvas.getContext("2d");
-
-export const cell_size = getCellSize();
-export const MIDDLE_CELL = {
-    x: cell_size.x * ((CAMERA_CELLS_X - 1) / 2),
-    y: cell_size.y * ((CAMERA_CELLS_Y - 1) /2),
-};
 
 
-// declarations
-const ASPECT_RATIO = 11 / 9;
-const PADDING = 24;
-const MAX_SIZE = {
-    x: 1650,
-    y: 1350
-};
+
+
+
 
 // prevent right clicks on the controller panels
 panelLeft.addEventListener("contextmenu", (event) => { event.preventDefault(); });
@@ -91,8 +81,6 @@ for (const key in controlBoxes) {
     });
 
 }
-
-
 
 function getCellSize() {
     return {
@@ -153,3 +141,19 @@ export function getHtmlControls() {
     return HTMLcontrols;
 }
 
+export function createGameGrid(cellsX, cellsY) {
+    const grid = new Array(cellsX);
+    for (let i = 0; i < grid.length; i++) {
+        grid[i] = new Array(cellsY);
+    }
+    for (let i = 0; i < NUM_GRID_X; i++) {
+        for (let j = 0; j < NUM_GRID_Y; j++) {
+            grid[i][j] = {
+                floor: null,
+                occupant: null,
+            }
+
+        }
+    }
+    return grid;
+}
