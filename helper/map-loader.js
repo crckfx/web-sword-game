@@ -3,7 +3,7 @@
 // it seems cool to store a map as a text file. 
 // we don't fetch a text file or anything here - just pass map strings in
 
-import { doodads, entities, player, NUM_GRID_X, NUM_GRID_Y, FLOOR_CELL_PIXELS } from "../game.js";
+import { doodads, entities, player, NUM_GRID_X, NUM_GRID_Y, FLOOR_CELL_PIXELS } from "../document.js";
 import { gridCells } from "./grid.js";
 
 // define floor signifiers

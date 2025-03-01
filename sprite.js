@@ -3,20 +3,6 @@ const SPRITES_PER_ROW = 4;
 const SPRITE_COUNT = 8 * SPRITES_PER_ROW; // Total number of sprites (4 columns, 8 rows)
 
 
-
-export function getSpriteIndex(isFacing) {
-
-    switch (isFacing) {
-        case 'down': return 0;
-        case 'left': return 8;
-        case 'up': return 16;
-        case 'right': return 24;
-    }
-}
-
-
-
-
 export async function extractSprites(spriteSheet) {
     // Cache for storing sprite textures
     const spriteTextures = [];

@@ -1,8 +1,7 @@
 import { GameControls } from "../controls/GameControls.js";
-import { Renderer } from "../classes/Renderer.js";
-import { getHtmlControls } from "../document.js";
-import { CAMERA_CELLS_X, CAMERA_CELLS_Y, createGameGrid, FLOOR_CELL_PIXELS, player } from "../game.js";
-import { GameLoop } from "../classes/GameLoop.js";
+import { Renderer } from "./Renderer.js";
+import { getHtmlControls, CAMERA_CELLS_X, CAMERA_CELLS_Y, createGameGrid, FLOOR_CELL_PIXELS, player } from "../document.js";
+import { GameLoop } from "./GameLoop.js";
 import { moveTowards } from "../helper/grid.js";
 
 export class Game {
@@ -18,18 +17,15 @@ export class Game {
         this.gameLoop = new GameLoop(this.update.bind(this), this.render.bind(this));
     }
 
-    init_game(cellsX, cellsY, textures, images) {
-        this.textures = textures;
-        this.images = images;
+    init_game(cellsX, cellsY) {
+        // this.textures = textures;
+        // this.images = images;
         this.grid = createGameGrid(cellsX, cellsY);
         this.renderer = new Renderer({
             canvas: document.getElementById('game_canv'),
             ctx: document.getElementById('game_canv').getContext("2d"),
-            grid: this.grid,
             cameraCellsX: CAMERA_CELLS_X,
             cameraCellsY: CAMERA_CELLS_Y,
-            textures: textures,
-            images: images,
             game: this,
         });
         // this.controls = new GameControls({HtmlControls: getHtmlControls()});

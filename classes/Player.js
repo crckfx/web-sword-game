@@ -8,7 +8,7 @@ export class Player {
         this.destination = position.duplicate();
         this.isFacing = isFacing ?? 'down';
         this.animations = animations ?? null;
-        this.texture = this.texture;
+        this.texture = texture;
     }
 
     step(delta) {

@@ -1,5 +1,4 @@
-import { cell_size, MIDDLE_CELL } from "../document.js";
-import { entities, player } from "../game.js";
+import { cell_size, MIDDLE_CELL, entities, player } from "../document.js";
 import { gridCells } from "../helper/grid.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
@@ -8,20 +7,17 @@ export class Renderer {
     constructor({
         canvas,
         ctx,
-        grid,
         cameraCellsX,
         cameraCellsY,
-        textures,
-        images,
-        game,
+        game,   // it is assumed that the game will have textures, images, and grid already
     }) {
         this.game = game;
         this.ctx = ctx;
         this.canvas = canvas;
-        this.grid = grid ?? null;
+        this.grid = game.grid ?? null;
         this.cells = new Vector2(cameraCellsX, cameraCellsY) ?? new Vector2(4, 3);
-        this.textures = textures ?? null;
-        this.images = images ?? null;
+        this.textures = game.textures ?? null;
+        this.images = game.images ?? null;
 
         this.ctx.imageSmoothingEnabled = false;
     }

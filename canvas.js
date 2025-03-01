@@ -1,13 +1,12 @@
-import { canvas, ctx, panelCenter, resize } from "./document.js";
+import { canvas, ctx, panelCenter, resize, player, CAMERA_CELLS_Y, CAMERA_CELLS_X, NUM_GRID_X, NUM_GRID_Y } from "./document.js";
 
-import { player, CAMERA_CELLS_Y, CAMERA_CELLS_X, NUM_GRID_X, NUM_GRID_Y, } from "./game.js";
 import { parseFloorMap, parseOccupantMap, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants } from "./helper/map-loader.js";
 import { Entity } from "./classes/Entity.js";
 import { Renderer } from "./classes/Renderer.js";
 import { GameLoop } from "./classes/GameLoop.js";
 import { map_1 } from "./maps/map_1.js";
 import { load_image_resources } from "./helper/resource-loader.js";
-import { Game } from "./experimental/Game.js";
+import { Game } from "./classes/Game.js";
 
 export const game_class = new Game();
 
