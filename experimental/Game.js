@@ -1,5 +1,8 @@
+import { GameControls } from "../classes/GameControls.js";
 import { Renderer } from "../classes/Renderer.js";
+import { getHtmlControls } from "../document.js";
 import { CAMERA_CELLS_X, CAMERA_CELLS_Y, createGameGrid } from "../game.js";
+import { PointerHandler } from "./PointerHandler.js";
 
 export class Game {
     constructor() {
@@ -10,6 +13,9 @@ export class Game {
         this.textures = {};
         this.images = {};
         this.entities = {};
+        this.controls = null;
+        this.pointerHandler = null;
+        this.keyboardHandler = null;
     }
 
     init_game(cellsX, cellsY, textures, images) {
@@ -24,18 +30,10 @@ export class Game {
             cameraCellsY: CAMERA_CELLS_Y,
             textures: textures,
             images: images,
+            game: this,
         });
-        console.log(this);
+        this.controls = new GameControls({HtmlControls: getHtmlControls()});
+        this.pointerHandler = new PointerHandler(this.controls);
+        console.log(this.pointerHandler);
     }
-
 }
-
-
-// export const game = {
-//     renderer: null,
-//     gameLoop: null,
-//     grid: createGameGrid(NUM_GRID_X, NUM_GRID_Y),
-//     textures: {},
-//     images: {},
-//     entities: {},
-// };

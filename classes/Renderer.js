@@ -13,7 +13,9 @@ export class Renderer {
         cameraCellsY,
         textures,
         images,
+        game,
     }) {
+        this.game = game;
         this.ctx = ctx;
         this.canvas = canvas;
         this.grid = grid ?? null;
@@ -32,8 +34,8 @@ export class Renderer {
         this.drawFloorsAndDoodads(); // draw floors / doodads - uses an image now :)
         this.drawPlayer(); // draw player
         // draw entities
-        for (const key in game.entities) {
-            this.drawEntity(game.entities[key]);
+        for (const key in this.game.entities) {
+            this.drawEntity(this.game.entities[key]);
         }
 
     }

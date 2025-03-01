@@ -1,3 +1,5 @@
+import { KeyboardHandler } from "../experimental/KeyboardHandler.js";
+import { PointerHandler } from "../experimental/PointerHandler.js";
 import { handleKeyDown, handleKeyUp } from "../keyboard.js";
 import {
     handlePointerDown_button,
@@ -18,6 +20,8 @@ export class GameControls {
             Y: false,
         };
         this.HtmlControls = HtmlControls;
+        this.pointerHandler = new PointerHandler(this);
+        this.keyboardHandler = new KeyboardHandler(this);
     }
 
     // function to translate keyboard events to the 'game'
@@ -100,17 +104,17 @@ export class GameControls {
         // Bind pointer down for each dpad button
         Object.entries(this.HtmlControls.dpad).forEach(([direction, element]) => {
             element.dataset.dpad = direction; // Add a custom attribute to identify the direction
-            element.addEventListener('pointerdown', (event) => handlePointerDown_dpad(direction, event));
+            element.addEventListener('pointerdown', (event) => this.pointerHandler.handlePointerDown_dpad(direction, event));
         });    
         // Bind pointer down for each button (ABXY)
         Object.entries(this.HtmlControls.buttons).forEach(([name, element]) => {
             element.dataset.buttons = name; // Add a custom attribute to identify the direction
-            element.addEventListener('pointerdown', () => handlePointerDown_button(name));
+            element.addEventListener('pointerdown', () => this.pointerHandler.handlePointerDown_button(name));
             // assign the UP pointer events to 'outside of button' (doesn't catch properly for touch, but is workable)
-            element.addEventListener('pointerup', () => handlePointerUp_button(name));
-            element.addEventListener('pointerout', () => handlePointerUp_button(name));
-            element.addEventListener('pointerleave', () => handlePointerUp_button(name));
-            element.addEventListener('pointercancel', () => handlePointerUp_button(name));
+            element.addEventListener('pointerup', () => this.pointerHandler.handlePointerUp_button(name));
+            element.addEventListener('pointerout', () => this.pointerHandler.handlePointerUp_button(name));
+            element.addEventListener('pointerleave', () => this.pointerHandler.handlePointerUp_button(name));
+            element.addEventListener('pointercancel', () => this.pointerHandler.handlePointerUp_button(name));
             // disable right-click
             element.addEventListener("contextmenu", (event) => {
                 event.preventDefault();
@@ -118,12 +122,12 @@ export class GameControls {
     
         });
         // Listen for all key presses / releases
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
+        document.addEventListener('keydown', this.keyboardHandler.handleKeyDown);
+        document.addEventListener('keyup', this.keyboardHandler.handleKeyUp);
     
         // Listen for pointerup and pointermove on the document
-        document.addEventListener('pointerup', handlePointerUp);
-        document.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', this.pointerHandler.handlePointerUp);
+        document.addEventListener('pointermove', this.pointerHandler.handlePointerMove);
     
     }
     

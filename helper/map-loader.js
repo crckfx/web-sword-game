@@ -27,6 +27,18 @@ export const occupantMap = {
     '3': 'harold',
 };
 
+function removeOldOccupant(grid, x, y) {
+    // triple check a cell exists before accessing/removing from it
+    if (grid[x]) {
+        if (grid[x][y]) {
+            const oldCell = grid[x][y];
+            if (oldCell.occupant !== null) {
+                oldCell.occupant = null;
+            }
+        }
+    }
+}
+
 // Decode the map into (x, y) positions
 export function parseFloorMap(mapString) {
     const rows = mapString.trim().split("\n");
@@ -51,7 +63,7 @@ export function applyFloorToGameGrid(grid, parsedFloorMap) {
             if (tile === 'water') {
                 // add doodad here?
                 const num = doodads.push({ type: 'water', x: x, y: y });
-                grid[x][y].occupant = doodads[num-1].type;
+                grid[x][y].occupant = doodads[num - 1].type;
             }
         }
     }
@@ -65,7 +77,7 @@ export function parseOccupantMap(mapString) {
 
     for (let y = 0; y < rows.length; y++) {
         const row = rows[y].trim();
-        
+
         for (let x = 0; x < row.length; x++) {
             parsedMap.push({ x: x, y: y, type: occupantMap[row[x]] || null });
         }
@@ -79,15 +91,16 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantMap, entities) {
     for (const { x, y, type } of parsedOccupantMap) {
         if (grid[x] && grid[x][y]) {
             if (type === 'lachie') {
-                if (grid[player.position.x]) {
-                    if (grid[player.position.x][player.position.y]) {
-                        console.log('breasts');
-                        const oldCell = grid[player.position.x][player.position.y];
-                        if (oldCell.occupant === 'lachie') {
-                            oldCell.occupant = null;
-                        }
-                    }
-                }
+                // triple check a cell exists before accessing/removing from it
+                removeOldOccupant(grid, x, y)
+                // if (grid[player.position.x]) {
+                //     if (grid[player.position.x][player.position.y]) {
+                //         const oldCell = grid[player.position.x][player.position.y];
+                //         if (oldCell.occupant === 'lachie') {
+                //             oldCell.occupant = null;
+                //         }
+                //     }
+                // }
                 const cell = grid[x][y];
                 player.position.x = gridCells(x);
                 player.position.y = gridCells(y);
@@ -95,30 +108,30 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantMap, entities) {
                 player.destination.y = gridCells(y);
                 // cell.occupant = 'lachie';
                 cell.occupant = null;
-            } else 
-            if (type === 'gary' || type === 'fred' || type === 'george' || type === 'harold') {
-                // console.log('GOT an entity BACK');
-                const e = entities[type];
-                // remove entity occupation from a previous cell
-                // const cell = grid[e.position.x][e.position.y];
-                // if (cell.occupant !== null) {
+            } else
+                if (type === 'gary' || type === 'fred' || type === 'george' || type === 'harold') {
+                    // console.log('GOT an entity BACK');
+                    const e = entities[type];
+                    // remove entity occupation from a previous cell
+                    // const cell = grid[e.position.x][e.position.y];
+                    // if (cell.occupant !== null) {
                     // console.error(`something went WRONG applying ${e.name} to cell [${x}][${y}], it is already occupied by ${cell.occupant}`);
-                // } else {
+                    // } else {
 
                     // grid[e.position.x][e.position.y].occupant = null;
                     // set new position
                     e.position.x = gridCells(x);
                     e.position.y = gridCells(y);
                     grid[x][y].occupant = e.name;
-                // }
+                    // }
 
-            } else if (type === 'tree') {
-                // const num = doodads.push({ type: 'tree', x: x, y: y });
-                // grid[x][y].occupant = doodads[num-1].type;
-                grid[x][y].occupant = type;  // Apply floor type
-            } else {
-                grid[x][y].occupant = type;  // Apply floor type
-            }
+                } else if (type === 'tree') {
+                    // const num = doodads.push({ type: 'tree', x: x, y: y });
+                    // grid[x][y].occupant = doodads[num-1].type;
+                    grid[x][y].occupant = type;  // Apply floor type
+                } else {
+                    grid[x][y].occupant = type;  // Apply floor type
+                }
         }
     }
 }
@@ -170,7 +183,7 @@ export async function getMapBackground(grid, textures) {
 }
 
 
-export async function getMapOccupants(grid, textures, images, stateIndex=0) {
+export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
     // get the pixel sizes for the map
     const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID_X;
     const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID_Y;
