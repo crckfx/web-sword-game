@@ -18,6 +18,7 @@ export const tileMap = {
 // define occupant signifiers
 const occupantMap = {
     'T': 'tree',
+    't': 'largeTree',
     'W': 'water',
     'P': 'lachie',
     '.': null,
@@ -108,6 +109,8 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities) {
                     // }
                 } else if (type === 'tree') {
                     grid[x][y].occupant = type;  // Apply floor type
+                } else if (type === 'largeTree') {
+                    grid[x][y].occupant = 'largeTree';  // Apply floor type
                 } else {
                     grid[x][y].occupant = type;  // Apply floor type
                 }
@@ -174,10 +177,17 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
     mapCtx.imageSmoothingEnabled = false;
 
 
+    const overlayCanvas = document.createElement('canvas');
+    overlayCanvas.width = mapWidthPx;
+    overlayCanvas.height = mapHeightPx;
+    const overlayCtx = overlayCanvas.getContext('2d');
+    overlayCtx.imageSmoothingEnabled = false;
+
     // loop over the entire game grid
-    for (let i = 0; i < NUM_GRID.x; i++) {
-        for (let j = 0; j < NUM_GRID.y; j++) {
+    for (let j = 0; j < NUM_GRID.y; j++) {
+        for (let i = 0; i < NUM_GRID.x; i++) {
             const cell = grid[i][j];
+            if (cell.skip === true) continue;
             switch (cell.occupant) {
                 case 'tree':
                     mapCtx.drawImage(
@@ -187,6 +197,22 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
                         FLOOR_CELL_PIXELS,
                         FLOOR_CELL_PIXELS,
                     );
+                    break;
+                case 'largeTree':
+                    if (checkCell(grid, i, j)) {
+                        console.log('heyyyyy skip the down, right, and down-right cells from this one dawg')
+                        mapCtx.drawImage(
+                            images.largeTree_test,
+                            FLOOR_CELL_PIXELS * (i),
+                            FLOOR_CELL_PIXELS * (j - 1),
+                            FLOOR_CELL_PIXELS * 2,
+                            FLOOR_CELL_PIXELS * 3,
+                        )
+                        i++;
+                    } else {
+                        console.log('skipping tree cell that does not have down,right,down-right neighbours');
+                    }
+
                     break;
                 case 'water':
                     mapCtx.drawImage(
@@ -203,3 +229,28 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
     }
     return mapCanvas;
 }
+
+function checkCell(grid, x, y) {
+    if (!grid[x] || !grid[x][y]) {
+        return false;
+    }
+    // let result = false;
+    if (grid[x + 1] && grid[x + 1][y]) {
+        const cell = grid[x + 1][y];
+        if (cell.occupant !== 'largeTree') return false;
+    }
+
+    if (grid[x + 1] && grid[x + 1][y + 1]) {
+        const cell = grid[x + 1][y + 1];
+        if (cell.occupant !== 'largeTree') return false;
+    }
+
+    if (grid[x][y + 1]) {
+        const cell = grid[x][y + 1];
+        if (cell.occupant !== 'largeTree') return false;
+    }
+
+    return true;
+
+}
+

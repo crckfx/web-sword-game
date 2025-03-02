@@ -28,7 +28,12 @@ export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');
 const panelRight = document.getElementById('panel_right');
 export const pauseMenu = document.getElementById('pauseMenu');
-export const gameSpeech = document.getElementById('game_speech');
+export const gameSpeech = {
+    container: document.getElementById('game_speech'),
+    name: document.getElementById('game_speech').querySelector('.name'),
+    message: document.getElementById('game_speech').querySelector('.message'),
+
+};
 
 
 export const cell_size = getCellSize();

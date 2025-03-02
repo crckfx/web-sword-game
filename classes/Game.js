@@ -79,7 +79,7 @@ export class Game {
         // console.log(`typeof: ${typeof(interactTarget)}, value: ${interactTarget}`);
         if (player.interactTarget !== null) {
             console.log(`Interacted with ${player.interactTarget.name}`);
-            gameSpeech.classList.add('active');
+            gameSpeech.container.classList.add('active');
             this.dialogue();
             
         }
@@ -105,7 +105,7 @@ export class Game {
         this.gameLoop.stop();
         this.pauseTimestamp = performance.now(); // Capture when we paused
         console.log("pause game");
-        this.renderer.drawPauseMenu();
+        // this.renderer.drawPauseMenu();
         pauseMenu.classList.add('paused');
     }
     resume() {
@@ -123,15 +123,30 @@ export class Game {
     dialogue() {
         // this.gameLoop.stop();
         this.isInDialogue = true;
-        gameSpeech.innerHTML = player.interactTarget.interactMessage;
-        gameSpeech.classList.add('active');
+        const interactPos = player.interactTarget.position;
+
+        // if (interactPos.x > player.position.x) {
+        //     console.log('player to left')
+        // } else if (interactPos.x < player.position.x) {
+        //     console.log('player to right')
+        // } else if (interactPos.y > player.position.y) {
+        //     console.log('player to up')
+        // } else if (interactPos.y < player.position.y) {
+        //     console.log('player to down')
+        // }
+        player.interactTarget.isFacing = this.compare_two_vec2(player.position, interactPos);
+
+        gameSpeech.name.textContent = player.interactTarget.name;
+        gameSpeech.message.textContent = `\"${player.interactTarget.interactMessage}\"`;
+        gameSpeech.container.classList.add('active');
         // console.log("pause game");
         // this.renderer.drawPauseMenu();
     }    
     exitDialogue() {
-        gameSpeech.classList.remove('active');
+        gameSpeech.container.classList.remove('active');
         this.isInDialogue = false;
-        gameSpeech.innerHTML = "";
+        gameSpeech.name.innerHTML = "";
+        gameSpeech.message.innerHTML = "";
     }
     // ---------
 
@@ -191,6 +206,16 @@ export class Game {
             }
 
         }
+    }
+
+    compare_two_vec2(vecA, vecB){
+        // "on what side of vecB is vecA situated?"
+        if (vecA.x > vecB.x) return 'right';
+        if (vecA.x < vecB.x) return 'left';
+        if (vecA.y < vecB.y) return 'up';
+        if (vecA.y > vecB.y) return 'down';
+        console.error('uhh the 2 vectors seem to have the same position?')
+        return;
     }
 
 

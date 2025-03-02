@@ -30,7 +30,7 @@ async function load_entities(entities, textures) {
         name: 'george',
         isFacing: 'right',
         texture: textures.spriteRed,
-        interactMessage: "not now",
+        interactMessage: "Not now",
     });
     entities.harold = new Entity({
         name: 'harold',
@@ -51,8 +51,6 @@ async function load_map(map, grid, textures, images, entities) {
 
 // the entry point
 async function dummy_init() {
-
-    
     // async class load
     game_class.init_game(NUM_GRID.x, NUM_GRID.y, game_class.textures, game_class.images);    
     await load_image_resources(game_class.images, game_class.textures);

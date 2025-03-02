@@ -7,7 +7,8 @@
     justify-content: center;
     align-items: center;
     z-index: 10;
-    /* background-color: #0a0a0acc; */
+    background-color: #0a0a0acc;
+    font-size: 3em;
 }
 
 
@@ -24,10 +25,26 @@
 
     color: black;
     background-color: white;
-    top: 50%;
+    /* top: 50%; */
     left: 50%;
+    bottom: 24px;
     transform: translate(-50%, -50%);
+    padding: 8px;
+    border-radius: 8px;
+    border: 4px solid black;
 }
 #game_speech.active {
-    display: flex;
+    display: block;
+}
+
+#game_speech .name {
+    color: red;
+    /* font-size: 12px; */
+    font-size: 2em;
+    
+}
+#game_speech .message {
+    /* color: red; */
+    font-size: 3em;
+    padding: 8px;
 }

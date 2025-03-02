@@ -11,7 +11,9 @@ export async function load_image_resources(images, textures) {
         images.dirt = await loadImage('images/dirt.png');
 
         images.manyTextures = await loadImage('images/Textures-16.png');
-
+        images.largeTree = await loadImage('images/large_tree_1.png');
+        images.largeTree_test = await loadImage('images/overlay_tree_test.png');
+        
         // unpack the texture resources
         textures.spriteDefault = await extractSprites(images.spriteDefault);
         textures.spriteRed = await extractSprites(images.spriteRed);

@@ -28,7 +28,7 @@ export class Renderer {
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawFloorsAndDoodads(); // draw floors / doodads - uses an image now :)
-        this.drawPlayer(); // draw player
+        // this.drawPlayer(); // TRYING draw player in a floors/doodads sandwich
         // draw entities
         for (const key in this.game.entities) {
             this.drawEntity(this.game.entities[key]);
@@ -48,24 +48,15 @@ export class Renderer {
             cell_size.x, cell_size.y
         );
 
-        // if (player.destination.x === player.position.x && player.destination.y === player.position.y) {
-        //     let facingCell = facingToVector(player.isFacing);
-        //     let border = 'yellow';
-        //     this.drawBorder(
-        //         (player.position.x + (gridCells(facingCell.x))) - (player.position.x - MIDDLE_CELL.x),
-        //         (player.position.y + (gridCells(facingCell.y) )) - (player.position.y - MIDDLE_CELL.y),
-        //         "yellow"
-        //     );
-        // }
 
-        // draw a border around the interactTarget if it exists
-        if (player.interactTarget !== null) {
-            this.drawBorder(
-                player.interactTarget.position.x - (player.position.x - MIDDLE_CELL.x),
-                player.interactTarget.position.y - (player.position.y - MIDDLE_CELL.y),
-                "yellow"
-            );            
-        }
+        // // draw a border around the interactTarget if it exists
+        // if (player.interactTarget !== null) {
+        //     this.drawBorder(
+        //         player.interactTarget.position.x - (player.position.x - MIDDLE_CELL.x),
+        //         player.interactTarget.position.y - (player.position.y - MIDDLE_CELL.y),
+        //         "yellow"
+        //     );            
+        // }
     }
 
     drawEntity(entity) {
@@ -97,6 +88,8 @@ export class Renderer {
             this.images.gameMap,
             sourceX, sourceY, sourceWidth, sourceHeight,
             0, 0, this.canvas.width, this.canvas.height);
+
+        this.drawPlayer(); // draw player
 
         this.ctx.drawImage(this.textures.gameOccupants[0],
             sourceX, sourceY, sourceWidth, sourceHeight,
