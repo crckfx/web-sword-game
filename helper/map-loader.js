@@ -108,7 +108,7 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, t
                     grid[x][y].occupant = occupant;
                     break;
                 case 'apple':
-                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple);
+                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple, textures.apple2);
                     grid[x][y].occupant = newApple;
                     break;
                 case null:
@@ -133,6 +133,7 @@ export async function getMapBackground(grid, textures) {
     mapCanvas.height = mapHeightPx;
     const mapCtx = mapCanvas.getContext('2d');
     // mapCtx.imageSmoothingEnabled = false;
+    mapCtx.imageSmoothingEnabled = false;
 
     // loop over the entire game grid
     for (let i = 0; i < NUM_GRID.x; i++) {
@@ -192,13 +193,16 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
             const cell = grid[i][j];
             // if (cell.skip === true) continue;
             if (cell.occupant instanceof Item) {
-                mapCtx.drawImage(
-                    cell.occupant.texture,
-                    FLOOR_CELL_PIXELS * (i),
-                    FLOOR_CELL_PIXELS * (j),
-                    FLOOR_CELL_PIXELS,
-                    FLOOR_CELL_PIXELS,
-                );
+                if (cell.occupant.name === 'apple') {
+
+                    mapCtx.drawImage(
+                        cell.occupant.texture,
+                        FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (i)),
+                        FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (j)),
+                        (FLOOR_CELL_PIXELS * 0.5),
+                        (FLOOR_CELL_PIXELS * 0.5),
+                    );
+                }
             } else {
 
 

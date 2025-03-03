@@ -1,7 +1,8 @@
 import { Vector2 } from "../classes/Vector2.js";
+import { FLOOR_CELL_PIXELS } from "../document.js";
 
 export function gridCells(n) {
-    return 16 * n;
+    return FLOOR_CELL_PIXELS * n;
 }
 
 export function moveTowards(person, destinationPosition, speed) {

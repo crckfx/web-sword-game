@@ -12,11 +12,12 @@ export class Player {
         this.isFacing = isFacing ?? 'down';
         this.animations = animations ?? null;
         this.texture = texture;
-        this.speed = 1;
+        this.speed = 2;
+        // this.inventoryTexture = 
         // for (let i=0; i<this.inventory.length; i++) {
         //     this.inventory[i] = null;
         // }
-        this.inventory[this.findFirstInventorySlot()] = new Item('sneed', null, null);
+        
     }
 
     step(delta) {

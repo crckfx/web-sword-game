@@ -20,6 +20,7 @@ export class Game {
     isPaused = false;
     pauseTimestamp = null;
     isInDialogue = false;
+    shouldDrawPlayerInventory = false;
 
     constructor() {
         this.controls = new GameControls({
@@ -27,6 +28,7 @@ export class Game {
             bang_A: this.interact.bind(this),
             bang_B: this.back.bind(this),
             bang_Y: this.log_entity_position.bind(this),
+
             bang_X: this.showInventory.bind(this),
             bang_pause: this.press_pause_menu.bind(this),
             bang_resume: this.press_pause_menu.bind(this),
@@ -285,6 +287,7 @@ export class Game {
             console.log(`remove ${item.name} from ${oldEntity.name} slot ${oldIndex}`)
             if (oldIndex > -1) {
                 oldEntity.inventory[oldIndex] = null;
+
             }
             item.isHeldBy = null;
         } else if (item.position !== null) {
@@ -294,7 +297,7 @@ export class Game {
             const gridY = posY / FLOOR_CELL_PIXELS;
             if (this.grid[gridX] && this.grid[gridX][gridY]) {
                 console.log(`should probably remove item from map at '${gridX},${gridY}'`)
-                const replaceCtx = this.textures.gameOccupants[0].getContext('2d');
+                const replaceCtx = this.textures.mapOccupants[0].getContext('2d');
                 console.log(replaceCtx)
                 replaceCtx.clearRect(posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
                 item.position = null;
@@ -306,6 +309,10 @@ export class Game {
         console.log(`giving item '${item.name}' to '${entity.name}'`)
         item.isHeldBy = entity;
         entity.receiveItem(item);
+
+        
+        this.renderer.modifyInventoryTexture();
+
         return true;
     }
 
@@ -336,5 +343,11 @@ export class Game {
         return str;
 
     }
+
+    // toggleShowPlayerInventory() {
+    //     this.shouldDrawPlayerInventory = !this.shouldDrawPlayerInventory;
+        
+    // }
+
 
 }

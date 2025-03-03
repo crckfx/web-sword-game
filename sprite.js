@@ -31,7 +31,6 @@ export async function extractSprites(spriteSheet) {
 
 
 export async function extract_single_sprite(spriteSheet, x, y, spriteSize = 16) {
-
     const sx = x * spriteSize;
     const sy = y * spriteSize;
 
@@ -55,9 +54,9 @@ export async function extract_single_sprite(spriteSheet, x, y, spriteSize = 16) 
 
 
 export async function extract_sized_single_texture(image, posX = 0, posY = 0, sizeX = 16, sizeY = 16) {
-
+    // note: takes in x and y as INDEX positions 
     const sx = posX * sizeX;
-    const sy = posX * sizeY;
+    const sy = posY * sizeY;
 
     // Create an offscreen canvas for each sprite
     const spriteCanvas = document.createElement('canvas');

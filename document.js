@@ -12,7 +12,7 @@ export const NUM_GRID = new Vector2(24, 28); // total number of map X & Y cells
 // game declarations
 export const doodads = [];
 export const entities = {}
-export const FLOOR_CELL_PIXELS = 16;
+export const FLOOR_CELL_PIXELS = 32;
 export const CAMERA_CELLS = new Vector2(11, 9);
 // export const HtmlControls = getHtmlControls();
 
@@ -23,6 +23,8 @@ const PADDING = 24;
 const MAX_SIZE = new Vector2(1650, 1350);
 
 export const canvas = document.getElementById('game_canv');
+canvas.width = CAMERA_CELLS.x * FLOOR_CELL_PIXELS; 
+canvas.height= CAMERA_CELLS.y * FLOOR_CELL_PIXELS;
 export const ctx = canvas.getContext("2d");
 export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');
