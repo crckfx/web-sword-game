@@ -30,25 +30,49 @@ export async function extractSprites(spriteSheet) {
 }
 
 
-export async function extract_single_sprite(spriteSheet, x, y, spriteSize=16) {
+export async function extract_single_sprite(spriteSheet, x, y, spriteSize = 16) {
 
-        const sx = x *  spriteSize;
-        const sy = y * spriteSize;
+    const sx = x * spriteSize;
+    const sy = y * spriteSize;
 
-        // Create an offscreen canvas for each sprite
-        const spriteCanvas = document.createElement('canvas');
-        spriteCanvas.width = spriteSize;
-        spriteCanvas.height = spriteSize;
+    // Create an offscreen canvas for each sprite
+    const spriteCanvas = document.createElement('canvas');
+    spriteCanvas.width = spriteSize;
+    spriteCanvas.height = spriteSize;
 
-        const spriteCtx = spriteCanvas.getContext('2d');
-        // Draw the sprite onto the offscreen canvas
-        spriteCtx.drawImage(
-            spriteSheet,
-            sx, sy, SPRITE_SIZE, SPRITE_SIZE,  // Source rectangle from sprite sheet
-            0, 0, SPRITE_SIZE, SPRITE_SIZE    // Draw full size to the offscreen canvas
-        );
+    const spriteCtx = spriteCanvas.getContext('2d');
+    // Draw the sprite onto the offscreen canvas
+    spriteCtx.drawImage(
+        spriteSheet,
+        sx, sy, SPRITE_SIZE, SPRITE_SIZE,  // Source rectangle from sprite sheet
+        0, 0, SPRITE_SIZE, SPRITE_SIZE    // Draw full size to the offscreen canvas
+    );
 
-        // spriteTextures.push(spriteCanvas);
-    
+    // spriteTextures.push(spriteCanvas);
+
+    return spriteCanvas;
+}
+
+
+export async function extract_sized_single_texture(image, posX = 0, posY = 0, sizeX = 16, sizeY = 16) {
+
+    const sx = posX * sizeX;
+    const sy = posX * sizeY;
+
+    // Create an offscreen canvas for each sprite
+    const spriteCanvas = document.createElement('canvas');
+    spriteCanvas.width = sizeX;
+    spriteCanvas.height = sizeY;
+
+    const spriteCtx = spriteCanvas.getContext('2d');
+    // Draw the sprite onto the offscreen canvas
+    spriteCtx.drawImage(
+        image,
+        sx, sy, sizeX, sizeY,  // Source rectangle from sprite sheet
+        0, 0, sizeX, sizeY    // Draw full size to the offscreen canvas
+    );
+
+    // spriteTextures.push(spriteCanvas);
+
     return spriteCanvas;
 }

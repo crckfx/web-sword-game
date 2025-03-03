@@ -1,4 +1,4 @@
-import { extract_single_sprite, extractSprites } from "../sprite.js";
+import { extract_single_sprite, extract_sized_single_texture, extractSprites } from "../sprite.js";
 
 export async function load_image_resources(images, textures) {
     try {
@@ -13,7 +13,14 @@ export async function load_image_resources(images, textures) {
         images.manyTextures = await loadImage('images/Textures-16.png');
         images.largeTree = await loadImage('images/large_tree_1.png');
         images.largeTree_test = await loadImage('images/overlay_tree_test.png');
-        
+        images.tree1_overlay = await loadImage('images/tree_1_overlay.png');
+        images.fruitSheet = await loadImage('images/FruitsSheet16x16.png');
+
+        textures.tree1_overlay = await extract_sized_single_texture(images.tree1_overlay, 0, 0, 16, 32)
+        textures.tree2_overlay = await extract_sized_single_texture(images.largeTree_test, 0, 0, 32, 48)
+        textures.apple = await extract_sized_single_texture(images.fruitSheet, 0, 0, 16, 16)
+        // console.log(textures.apple);
+
         // unpack the texture resources
         textures.spriteDefault = await extractSprites(images.spriteDefault);
         textures.spriteRed = await extractSprites(images.spriteRed);

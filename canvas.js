@@ -5,10 +5,11 @@ import { Entity } from "./classes/Entity.js";
 import { Renderer } from "./classes/Renderer.js";
 import { GameLoop } from "./classes/GameLoop.js";
 import { map_1 } from "./maps/map_1.js";
+import { map_2 } from "./maps/map_2.js";
 import { load_image_resources } from "./helper/resource-loader.js";
 import { Game } from "./classes/Game.js";
 
-export const game_class = new Game();
+export const swordGame = new Game();
 
 
 
@@ -24,7 +25,15 @@ async function load_entities(entities, textures) {
         name: 'fred',
         isFacing: 'up',
         texture: textures.spriteYellow,
-        interactMessage: "Stop right there, criminal scum!",
+        interactMessage: "Have you seen my apple?",
+        interactCondition: () => player.findInInventory('apple'),
+        interactAction: function () {
+            const index = player.findInInventory('apple');
+            const item = player.inventory[index];
+            console.log(`give ${item.name} to ${this.name}`)
+            swordGame.give_item_to(item, this);
+        },
+        message_satisfied: "Thank you I was very hungry",
     });
     entities.george = new Entity({
         name: 'george',
@@ -42,32 +51,32 @@ async function load_entities(entities, textures) {
 async function load_map(map, grid, textures, images, entities) {
     // do the map!
     const parsedOccupantLayout = parseOccupantLayout(map.occupants);
-    applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities);
+    applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures);
     const parsedFloorLayout = parseFloorLayout(map.floor);
     applyFloorToGameGrid(grid, parsedFloorLayout);
     const mapCanvas = await getMapBackground(grid, textures);
-    images.gameMap = mapCanvas;
+    textures.gameMap = mapCanvas;
 }
 
 // the entry point
 async function dummy_init() {
     // async class load
-    game_class.init_game(NUM_GRID.x, NUM_GRID.y, game_class.textures, game_class.images);    
-    await load_image_resources(game_class.images, game_class.textures);
-    await load_entities(game_class.entities, game_class.textures);
-    await load_map(map_1, game_class.grid, game_class.textures, game_class.images, game_class.entities);
-    const mapOccupantCanvases_2 = [
-        await getMapOccupants(game_class.grid, game_class.textures, game_class.images, 0,),
-        await getMapOccupants(game_class.grid, game_class.textures, game_class.images, 1,),
-        await getMapOccupants(game_class.grid, game_class.textures, game_class.images, 2,),
-        await getMapOccupants(game_class.grid, game_class.textures, game_class.images, 3,),
+    swordGame.init_game(NUM_GRID.x, NUM_GRID.y, swordGame.textures, swordGame.images);    
+    await load_image_resources(swordGame.images, swordGame.textures);
+    await load_entities(swordGame.entities, swordGame.textures);
+    await load_map(map_2, swordGame.grid, swordGame.textures, swordGame.images, swordGame.entities);
+    const mapOccupantCanvases = [
+        await getMapOccupants(swordGame.grid, swordGame.textures, swordGame.images, 0,),
+        await getMapOccupants(swordGame.grid, swordGame.textures, swordGame.images, 1,),
+        await getMapOccupants(swordGame.grid, swordGame.textures, swordGame.images, 2,),
+        await getMapOccupants(swordGame.grid, swordGame.textures, swordGame.images, 3,),
     ];
-    player.texture = game_class.textures.spriteDefault;
-    // game_class.entities.harold.hasAlert = true;
-    game_class.textures.gameOccupants = mapOccupantCanvases_2;
+    player.texture = swordGame.textures.spriteDefault;
+    // swordGame.entities.harold.hasAlert = true;
+    swordGame.textures.gameOccupants = mapOccupantCanvases;
     // assign pointer and keyboard listeners
-    game_class.controls.bind();
-    game_class.gameLoop.start();
+    swordGame.controls.bind();
+    swordGame.gameLoop.start();
 
 }
 
@@ -76,6 +85,6 @@ window.onload = () => {
 }
 
 window.onblur = () => {
-    game_class.pause();
+    swordGame.pause();
 }
 

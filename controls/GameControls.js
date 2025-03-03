@@ -2,22 +2,33 @@ import { KeyboardHandler } from "./KeyboardHandler.js";
 import { PointerHandler } from "./PointerHandler.js";
 
 export class GameControls {
-    constructor({ HtmlControls, bang_A = null, bang_B = null, bang_pause = null, }) {
+    current_dpad_dir = null;
+    buttonStates = {
+        A: false,
+        B: false,
+        X: false,
+        Y: false,
+    };
+    constructor({ 
+        HtmlControls, 
+        bang_A = null, 
+        bang_B = null, 
+        bang_Y = null, 
+        bang_X = null, 
+        bang_pause = null, 
+        bang_resume = null 
+    }) {
         //
-        this.current_dpad_dir = null;
-        this.buttonStates = {
-            A: false,
-            B: false,
-            X: false,
-            Y: false,
-        };
         this.HtmlControls = HtmlControls;
         this.pointerHandler = new PointerHandler(this);
         this.keyboardHandler = new KeyboardHandler(this);
 
         this.bang_A = bang_A;   // pass in functions
         this.bang_B = bang_B;   // pass in functions
+        this.bang_Y = bang_Y;   // pass in functions
+        this.bang_X = bang_X;   // pass in functions
         this.bang_pause = bang_pause;   // pass in functions
+        this.bang_resume = bang_resume;   // pass in functions
     }
 
     // function to translate keyboard events to the 'game'
@@ -82,6 +93,7 @@ export class GameControls {
             case 'X':
                 // clearCanvas();
                 this.buttonStates[input] = true;
+                this.bang_X();
                 break;
             case 'A':
                 this.buttonStates[input] = true;
@@ -94,6 +106,7 @@ export class GameControls {
                 break;
             case 'Y':
                 this.buttonStates[input] = true;
+                this.bang_Y();
                 break;
             default:
                 console.log(`sent <default?> to press btn`);
@@ -140,6 +153,8 @@ export class GameControls {
         // Listen for pointerup and pointermove on the document
         document.addEventListener('pointerup', this.pointerHandler.handlePointerUp);
         document.addEventListener('pointermove', this.pointerHandler.handlePointerMove);
+
+        this.HtmlControls.pauseMenu.resumeBtn.onclick = () => this.bang_resume();
 
     }
 

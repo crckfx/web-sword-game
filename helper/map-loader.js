@@ -3,6 +3,7 @@
 // it seems cool to store a map as a text file. 
 // we don't fetch a text file or anything here - just pass map strings in
 
+import { Item } from "../classes/Item.js";
 import { player, NUM_GRID, FLOOR_CELL_PIXELS } from "../document.js";
 import { gridCells } from "./grid.js";
 
@@ -26,6 +27,7 @@ const occupantMap = {
     '1': 'fred',
     '2': 'george',
     '3': 'harold',
+    'a': 'apple',
 };
 
 function removeOldOccupant(grid, x, y) {
@@ -40,28 +42,27 @@ function removeOldOccupant(grid, x, y) {
     }
 }
 
-// Decode the map into (x, y) positions
+// take a (floor) layout as string and return a list of coords and types
 export function parseFloorLayout(mapString) {
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
-
     for (let y = 0; y < rows.length; y++) {
         const row = rows[y].trim();
-
         for (let x = 0; x < row.length; x++) {
             parsedMap.push({ x, y, tile: tileMap[row[x]] || 'unknown' });
         }
     }
-
     return parsedMap;
 }
 
-// Apply parsed data to the existing grid
+// take a grid and a layout list, and write to the grid's 
 export function applyFloorToGameGrid(grid, parsedFloorLayout) {
     for (const { x, y, tile } of parsedFloorLayout) {
         if (grid[x] && grid[x][y]) {
-            grid[x][y].floor = tile;  // Apply floor type
+            // if the position exists in the grid, write the floor name to it
+            grid[x][y].floor = tile;
             if (tile === 'water') {
+                // for water, insert an occupant too
                 grid[x][y].occupant = 'water';
             }
         }
@@ -69,57 +70,59 @@ export function applyFloorToGameGrid(grid, parsedFloorLayout) {
 }
 
 
-// Decode the map into (x, y) positions
+// take a layout (occupants) string and return a list of coords and names
 export function parseOccupantLayout(mapString) {
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
-
     for (let y = 0; y < rows.length; y++) {
         const row = rows[y].trim();
-
         for (let x = 0; x < row.length; x++) {
-            parsedMap.push({ x: x, y: y, type: occupantMap[row[x]] || null });
+            parsedMap.push({ x: x, y: y, occupant: occupantMap[row[x]] || null });
         }
     }
-
     return parsedMap;
 }
 
 // note : "type" is becoming maybe a terrible name
-export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities) {
-    for (const { x, y, type } of parsedOccupantLayout) {
+export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures) {
+    for (const { x, y, occupant } of parsedOccupantLayout) {
         if (grid[x] && grid[x][y]) {
-            if (type === 'lachie') {
-                // triple check a cell exists before accessing/removing from it
-                removeOldOccupant(grid, x, y)
-                const cell = grid[x][y];
-                player.position.x = gridCells(x);
-                player.position.y = gridCells(y);
-                player.destination.x = gridCells(x);
-                player.destination.y = gridCells(y);
-                // cell.occupant = 'lachie';
-                cell.occupant = null;
-            } else
-                if (type === 'gary' || type === 'fred' || type === 'george' || type === 'harold') {
-                    // console.log('GOT an entity BACK');
-                    const e = entities[type]; // remember, we pass in the entities object as an argument
+            switch (occupant) {
+                case 'lachie':
+                    removeOldOccupant(grid, x, y)
+                    const cell = grid[x][y];
+                    player.position.x = gridCells(x);
+                    player.position.y = gridCells(y);
+                    player.destination.x = gridCells(x);
+                    player.destination.y = gridCells(y);
+                    // cell.occupant = 'lachie';
+                    cell.occupant = null;
+                    break;
+                case 'gary': case 'fred': case 'george': case 'harold':
+                    const e = entities[occupant]; // remember, we pass in the entities object as an argument
                     e.position.x = gridCells(x);
                     e.position.y = gridCells(y);
                     grid[x][y].occupant = e;
-                    // }
-                } else if (type === 'tree') {
-                    grid[x][y].occupant = type;  // Apply floor type
-                } else if (type === 'largeTree') {
-                    grid[x][y].occupant = 'largeTree';  // Apply floor type
-                } else {
-                    grid[x][y].occupant = type;  // Apply floor type
-                }
+                    break;
+                case 'tree': case 'largeTree':
+                    grid[x][y].occupant = occupant;
+                    break;
+                case 'apple':
+                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple);
+                    grid[x][y].occupant = newApple;
+                    break;
+                case null:
+                    // do nothing if the cell was made null
+                    break;
+                default:
+                    console.warn(`unknown occupant type named ${occupant}`);
+            }
         }
     }
 }
 
 
-
+// function to create a background image as a canvas
 export async function getMapBackground(grid, textures) {
     // get the pixel sizes for the map
     const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID.x;
@@ -187,43 +190,67 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
     for (let j = 0; j < NUM_GRID.y; j++) {
         for (let i = 0; i < NUM_GRID.x; i++) {
             const cell = grid[i][j];
-            if (cell.skip === true) continue;
-            switch (cell.occupant) {
-                case 'tree':
-                    mapCtx.drawImage(
-                        images.tree,
-                        FLOOR_CELL_PIXELS * (i),
-                        FLOOR_CELL_PIXELS * (j),
-                        FLOOR_CELL_PIXELS,
-                        FLOOR_CELL_PIXELS,
-                    );
-                    break;
-                case 'largeTree':
-                    if (checkCell(grid, i, j)) {
-                        console.log('heyyyyy skip the down, right, and down-right cells from this one dawg')
+            // if (cell.skip === true) continue;
+            if (cell.occupant instanceof Item) {
+                mapCtx.drawImage(
+                    cell.occupant.texture,
+                    FLOOR_CELL_PIXELS * (i),
+                    FLOOR_CELL_PIXELS * (j),
+                    FLOOR_CELL_PIXELS,
+                    FLOOR_CELL_PIXELS,
+                );
+            } else {
+
+
+                switch (cell.occupant) {
+                    case 'tree':
                         mapCtx.drawImage(
-                            images.largeTree_test,
+                            // images.tree,
+                            textures.tree1_overlay,
                             FLOOR_CELL_PIXELS * (i),
                             FLOOR_CELL_PIXELS * (j - 1),
+                            FLOOR_CELL_PIXELS,
                             FLOOR_CELL_PIXELS * 2,
-                            FLOOR_CELL_PIXELS * 3,
-                        )
-                        i++;
-                    } else {
-                        console.log('skipping tree cell that does not have down,right,down-right neighbours');
-                    }
+                        );
+                        break;
+                    // case 'apple':
+                    //     mapCtx.drawImage(
+                    //         textures.apple,
+                    //         FLOOR_CELL_PIXELS * (i),
+                    //         FLOOR_CELL_PIXELS * (j),
+                    //         FLOOR_CELL_PIXELS,
+                    //         FLOOR_CELL_PIXELS,
+                    //     );
+                    //     break;
+                    case 'largeTree':
+                        // check that this cell has Neighbours such that:
+                        // ---.N---
+                        // ---NN--- if it does, we draw a big tree and skip past the cell to the right we've just drawn on
+                        if (checkCell(grid, i, j)) {
+                            // console.log('heyyyyy skip the down, right, and down-right cells from this one dawg')
+                            mapCtx.drawImage(
+                                textures.tree2_overlay,
+                                FLOOR_CELL_PIXELS * (i),
+                                FLOOR_CELL_PIXELS * (j - 1),
+                                FLOOR_CELL_PIXELS * 2,
+                                FLOOR_CELL_PIXELS * 3,
+                            )
+                            i++;
+                        } else {
+                            console.log('skipping tree cell that does not have down,right,down-right neighbours');
+                        }
+                        break;
+                    case 'water':
+                        mapCtx.drawImage(
+                            textures.water[stateIndex],
+                            FLOOR_CELL_PIXELS * (i),
+                            FLOOR_CELL_PIXELS * (j),
+                            FLOOR_CELL_PIXELS,
+                            FLOOR_CELL_PIXELS,
 
-                    break;
-                case 'water':
-                    mapCtx.drawImage(
-                        textures.water[stateIndex],
-                        FLOOR_CELL_PIXELS * (i),
-                        FLOOR_CELL_PIXELS * (j),
-                        FLOOR_CELL_PIXELS,
-                        FLOOR_CELL_PIXELS,
-
-                    );
-                    break;
+                        );
+                        break;
+                }
             }
         }
     }

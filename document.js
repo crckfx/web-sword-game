@@ -7,7 +7,7 @@ import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WA
 
 
 // declarations. try and put them in order of precedence.
-export const NUM_GRID = new Vector2(24, 24); // total number of map X & Y cells
+export const NUM_GRID = new Vector2(24, 28); // total number of map X & Y cells
 
 // game declarations
 export const doodads = [];
@@ -34,7 +34,7 @@ export const gameSpeech = {
     message: document.getElementById('game_speech').querySelector('.message'),
 
 };
-
+// export const pauseMenu_resumeBtn = document.getElementById('pauseMenu_resumeBtn');
 
 export const cell_size = getCellSize();
 export const MIDDLE_CELL = {
@@ -99,15 +99,28 @@ function resize() {
         height = MAX_SIZE.y;
     }
     // subtract padding
-    canvas.style.width = `${width - PADDING}px`;
-    canvas.style.height = `${height - PADDING}px`;
-    pauseMenu.style.width = `${width - PADDING}px`;
-    pauseMenu.style.height = `${height - PADDING}px`;
+    const finalWidth = width - PADDING;
+    const finalHeight = height - PADDING;
+    canvas.style.width = `${finalWidth}px`;
+    canvas.style.height = `${finalHeight}px`;
+    pauseMenu.style.width = `${finalWidth}px`;
+    pauseMenu.style.height = `${finalHeight}px`;
+
+    // gameSpeech.container.style.width = `${finalWidth * 0.8}px`;
+    // gameSpeech.container.style.height = `${finalHeight * 0.4}px`;
 
     const newCellSize = getCellSize();
     cell_size.x = newCellSize.x;
     cell_size.y = newCellSize.y;
+    console.log(cell_size.x, cell_size.y, (finalWidth / 11));
 
+    const canvasBounds = canvas.getBoundingClientRect();    
+    gameSpeech.container.style.width = `${canvasBounds.width - (PADDING)}px`;
+    gameSpeech.container.style.height = `${canvasBounds.height * 0.4}px`;
+    gameSpeech.container.style.bottom = `${rect.bottom - canvasBounds.bottom + (PADDING/2)}px`;
+    // console.log(gameSpeech.container.style.width) //.style.width = canvasBounds.width;
+    // console.log(gameSpeech.container) //.style.height = canvasBounds.width;
+    
     // draw();
 }
 
@@ -124,6 +137,10 @@ export function getHtmlControls() {
             B: document.getElementById('control_B'),
             X: document.getElementById('control_X'),
             Y: document.getElementById('control_Y'),
+        },
+        pauseMenu: {
+            container: document.getElementById('pauseMenu'),
+            resumeBtn: document.getElementById('pauseMenu_resumeBtn'),
         },
     };
 

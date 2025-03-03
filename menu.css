@@ -8,7 +8,8 @@
     align-items: center;
     z-index: 10;
     background-color: #0a0a0acc;
-    font-size: 3em;
+    font-size: 1.5rem;
+    flex-direction: column;
 }
 
 
@@ -24,27 +25,31 @@
     align-items: center;
 
     color: black;
-    background-color: white;
+    background-color: #cececedd;
     /* top: 50%; */
-    left: 50%;
-    bottom: 24px;
-    transform: translate(-50%, -50%);
+    /* left: 50%; */
+    /* bottom: 24px; */
+    /* transform: translate(-50%, -50%); */
     padding: 8px;
     border-radius: 8px;
     border: 4px solid black;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 #game_speech.active {
-    display: block;
+    display: flex;
 }
 
 #game_speech .name {
     color: red;
     /* font-size: 12px; */
-    font-size: 2em;
+    font-size: 1rem;
+    flex-shrink: 1;
     
 }
 #game_speech .message {
     /* color: red; */
-    font-size: 3em;
+    font-size: 1.5rem;
     padding: 8px;
+    flex-shrink: 1;
 }

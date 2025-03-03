@@ -29,10 +29,7 @@ export class Renderer {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawFloorsAndDoodads(); // draw floors / doodads - uses an image now :)
         // this.drawPlayer(); // TRYING draw player in a floors/doodads sandwich
-        // draw entities
-        for (const key in this.game.entities) {
-            this.drawEntity(this.game.entities[key]);
-        }
+
 
     }
 
@@ -78,18 +75,22 @@ export class Renderer {
 
 
     drawFloorsAndDoodads() {
-        const sourceX = (player.position.x - gridCells(5));
-        const sourceY = (player.position.y - gridCells(4));
+        const sourceX = (player.position.x - MIDDLE_CELL.x);
+        const sourceY = (player.position.y - MIDDLE_CELL.y);
         const sourceWidth = gridCells(this.cells.x);
         const sourceHeight = gridCells(this.cells.y);
 
         // draw the floor
         this.ctx.drawImage(
-            this.images.gameMap,
+            this.textures.gameMap,
             sourceX, sourceY, sourceWidth, sourceHeight,
             0, 0, this.canvas.width, this.canvas.height);
 
         this.drawPlayer(); // draw player
+        // draw entities
+        for (const key in this.game.entities) {
+            this.drawEntity(this.game.entities[key]);
+        }
 
         this.ctx.drawImage(this.textures.gameOccupants[0],
             sourceX, sourceY, sourceWidth, sourceHeight,
