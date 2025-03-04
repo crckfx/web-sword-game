@@ -1,4 +1,5 @@
 import { FLOOR_CELL_PIXELS } from "../document.js";
+import { createDialogueTexture } from "../experimental/dialogues.js";
 import { extract_single_sprite, extract_sized_single_texture, extractSprites } from "../sprite.js";
 
 async function load_image_files(object, files) {
@@ -7,28 +8,26 @@ async function load_image_files(object, files) {
     }
 }
 
-
 export async function load_image_resources(images, textures) {
     try {
         await load_image_files(images,
             {
                 tree: 'images/tree_1.png',
                 spriteDefault: 'images/sprites_transparent.png',
-                spriteRed:'images/sprites_transparent_red.png',
-                spriteYellow:'images/sprites_transparent_yellow.png',
-                cobblestone:'images/cobblestone.png',
-                dirt:'images/dirt.png',
-                manyTextures:'images/Textures-16.png',
-                largeTree:'images/large_tree_1.png',
-                largeTree_test:'images/overlay_tree_test.png',
-                tree1_overlay:'images/tree_1_overlay.png',
-                fruitSheet:'images/FruitsSheet16x16.png',
-                shikashiTextures:'images/shikashiV2_32px.png',
-                inventory_border:'images/inventory_slot.png',
+                spriteRed: 'images/sprites_transparent_red.png',
+                spriteYellow: 'images/sprites_transparent_yellow.png',
+                cobblestone: 'images/cobblestone.png',
+                dirt: 'images/dirt.png',
+                manyTextures: 'images/Textures-16.png',
+                largeTree: 'images/large_tree_1.png',
+                largeTree_test: 'images/overlay_tree_test.png',
+                tree1_overlay: 'images/tree_1_overlay.png',
+                fruitSheet: 'images/FruitsSheet16x16.png',
+                shikashiTextures: 'images/shikashiV2_32px.png',
+                inventory_border: 'images/inventory_slot.png',
+                dialogue_background: 'images/dialogue_background_2.png',
             }
         )
-
-
 
         textures.tree1_overlay = await extract_sized_single_texture(images.tree1_overlay, 0, 0, 16, 32)
         textures.tree2_overlay = await extract_sized_single_texture(images.largeTree_test, 0, 0, 32, 48)
@@ -40,14 +39,18 @@ export async function load_image_resources(images, textures) {
         textures.egg = await extract_sized_single_texture(images.shikashiTextures, 6, 15, 32, 32);
         textures.potPlant3 = await extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
 
-
-        const invTextures = await createInventoryTextures(textures, images);
+        // the inv textures has a background layer and a borders layer; experimental
+        const invTextures = await createInventoryTextures(images.inventory_border);
         textures.inventoryBg = invTextures.background.canvas;
         textures.inventoryItems = invTextures.items.canvas;
+        // the dialogue textures
+        textures.sampleText = await createDialogueTexture(images.dialogue_background);
 
 
-            // unpack the texture resources
-            textures.spriteDefault = await extractSprites(images.spriteDefault);
+        // textures.
+
+        // unpack the texture resources
+        textures.spriteDefault = await extractSprites(images.spriteDefault);
         textures.spriteRed = await extractSprites(images.spriteRed);
         textures.spriteYellow = await extractSprites(images.spriteYellow);
         // sprite textures are now loaded
@@ -77,7 +80,7 @@ export async function loadImage(url) {
     });
 }
 
-export async function createInventoryTextures(textures, images) {
+export async function createInventoryTextures(slotBorder) {
     //
     const slotPx = FLOOR_CELL_PIXELS + 8;
 
@@ -108,36 +111,14 @@ export async function createInventoryTextures(textures, images) {
         for (let i = 0; i < 6; i++) {
             let startX = i * slotPx;
             let startY = j * slotPx;
-
-            // let colour1 = "#000";
-            // let colour2 = "#222";
             bgCtx.fillStyle = "#222";
-            bgCtx.fillRect(startX, startY, slotPx, slotPx);                    
+            bgCtx.fillRect(startX, startY, slotPx, slotPx);
             bgCtx.drawImage(
-                images.inventory_border,
+                slotBorder,
                 startX, startY, slotPx, slotPx
             )
-            
-            // bgCtx.fillStyle = "#555";
-            // bgCtx.fillRect(startX, startY, slotPx, slotPx);
-            // bgCtx.fillStyle = "#666";
-            // bgCtx.fillRect(startX + 1, startY + 1, slotPx - 2, slotPx - 2);
-            // bgCtx.fillStyle = "#777";
-            // bgCtx.fillRect(startX + 2, startY + 2, slotPx - 4, slotPx - 4);
-            // bgCtx.fillStyle = "#888";
-            // bgCtx.fillRect(startX + 3, startY + 3, slotPx - 6, slotPx - 6);
-            // bgCtx.fillStyle = "#222";
-            // bgCtx.fillRect(startX + 4, startY + 4, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
-
-            // if (i * (j + 1) === 6) {
-            //     c.drawImage(
-            //         textures.sword2,
-            //         startX + 4, startY + 4
-            //     )
-            // }
         }
     }
-
 
     return {
         background: {

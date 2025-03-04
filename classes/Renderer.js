@@ -1,15 +1,20 @@
 import { cell_size, MIDDLE_CELL, entities, player, FLOOR_CELL_PIXELS } from "../document.js";
+import { wrapText } from "../experimental/dialogues.js";
 import { facingToVector, gridCells } from "../helper/grid.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
 
 export class Renderer {
+    shouldDrawPlayerInventory = false;
+    shouldDrawSampleText = false;
+
     constructor({
         canvas,
         ctx,
         cameraCellsX,
         cameraCellsY,
         game,   // it is assumed that the game will have textures, images, and grid already
+
     }) {
         this.game = game;
         this.ctx = ctx;
@@ -20,7 +25,7 @@ export class Renderer {
         this.images = game.images ?? null;
 
         this.ctx.imageSmoothingEnabled = false;
-        
+
     }
 
     // A.K.A. "render_entire_grid"
@@ -30,8 +35,12 @@ export class Renderer {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawFloorsAndDoodads(); // draw floors / doodads - uses an image now :)
         // this.drawPlayer(); // TRYING draw player in a floors/doodads sandwich
-        if (this.game.controls.buttonStates['Y']) {this.drawInventory();}
-        
+        // if (this.game.controls.buttonStates['Y']) {this.drawInventory();}
+
+        if (this.shouldDrawPlayerInventory) this.drawInventory();
+        if (this.shouldDrawSampleText) this.drawSampleText();
+
+
     }
 
 
@@ -115,45 +124,45 @@ export class Renderer {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.font = "12px serif";
         this.ctx.fillStyle = 'red';
-        this.ctx.fillText("paused",0,40)
+        this.ctx.fillText("paused", 0, 40)
 
     }
 
     drawInventory() {
 
-        
-            this.ctx.drawImage(
-                this.textures.inventoryBg,
-                FLOOR_CELL_PIXELS*1.75,
-                FLOOR_CELL_PIXELS * 5.75,
-            )
-            this.ctx.drawImage(
-                this.textures.inventoryItems,
-                FLOOR_CELL_PIXELS*1.75,
-                FLOOR_CELL_PIXELS * 5.75,
-            )
 
-            // this.ctx.fillStyle = '#ff0a';
-            // this.ctx.fillRect(
-            //     FLOOR_CELL_PIXELS * 1.5,
-            //     FLOOR_CELL_PIXELS * 5.5,
-            //     FLOOR_CELL_PIXELS * 8.5,
-            //     FLOOR_CELL_PIXELS * 3
-            // )
-            this.ctx.drawImage(this.textures.sword2, 0, 0, cell_size.x, cell_size.y)
-            // console.log(this.textures.sword)
+        this.ctx.drawImage(
+            this.textures.inventoryBg,
+            FLOOR_CELL_PIXELS * 1.75,
+            FLOOR_CELL_PIXELS * 5.75,
+        )
+        this.ctx.drawImage(
+            this.textures.inventoryItems,
+            FLOOR_CELL_PIXELS * 1.75,
+            FLOOR_CELL_PIXELS * 5.75,
+        )
+
+        // this.ctx.fillStyle = '#ff0a';
+        // this.ctx.fillRect(
+        //     FLOOR_CELL_PIXELS * 1.5,
+        //     FLOOR_CELL_PIXELS * 5.5,
+        //     FLOOR_CELL_PIXELS * 8.5,
+        //     FLOOR_CELL_PIXELS * 3
+        // )
+        this.ctx.drawImage(this.textures.sword2, 0, 0, cell_size.x, cell_size.y)
+        // console.log(this.textures.sword)
     }
 
     modifyInventoryTexture() {
-        this.inventoryCtx.clearRect(0,0, this.textures.inventoryItems.width, this.textures.inventoryItems.height)
-        for (let i=0; i<player.inventory.length; i++) {
+        this.inventoryCtx.clearRect(0, 0, this.textures.inventoryItems.width, this.textures.inventoryItems.height)
+        for (let i = 0; i < player.inventory.length; i++) {
             const slot = player.inventory[i];
             if (slot !== null) {
                 const invTexture = slot.invTexture ?? this.textures.sword2;
                 const x = i % 6;
                 const y = i < 6 ? 0 : 1;
                 console.log(`should update an inventory texture at slot ${i}, '${x}','${y}'`);
-                
+
 
                 this.inventoryCtx.drawImage(
                     invTexture,
@@ -165,4 +174,41 @@ export class Renderer {
 
         }
     }
+
+
+    drawSampleText() {
+        this.ctx.drawImage(
+            this.textures.sampleText.canvas,
+            FLOOR_CELL_PIXELS * 0.5,
+            FLOOR_CELL_PIXELS * 5.5,
+        )
+    }
+
+    modifySampleText(heading="", text="") {
+        const texture = this.textures.sampleText; // this is a special type of texture though
+        const ctx = texture.ctx;
+        ctx.clearRect(0,0, texture.widthPx, texture.heightPx)
+        ctx.fillStyle = '#ccc';
+        ctx.fillRect(
+            0, 0, texture.widthPx, texture.heightPx
+        )
+        ctx.drawImage(texture.image,
+            0, 0, texture.widthPx, texture.heightPx
+        )
+        ctx.fillStyle = '#f00';
+        ctx.font = "600 16px Courier";
+        ctx.fillText(heading, 8, 20);
+        
+        // ctx.font = "600 24px Courier";
+        ctx.fillStyle = '#000';
+        ctx.font = "600 20px Courier";
+        // ctx.fillText("sample text with some more words", 8, 32)
+        const texts = wrapText(text);
+
+        ctx.fillText(texts[0], 8, 48);
+        ctx.fillText(texts[1], 8, 80);
+    }
+
+
+
 }

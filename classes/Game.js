@@ -20,16 +20,16 @@ export class Game {
     isPaused = false;
     pauseTimestamp = null;
     isInDialogue = false;
-    shouldDrawPlayerInventory = false;
 
     constructor() {
         this.controls = new GameControls({
             HtmlControls: getHtmlControls(),
             bang_A: this.interact.bind(this),
             bang_B: this.back.bind(this),
-            bang_Y: this.log_entity_position.bind(this),
+            // bang_Y: this.log_entity_position.bind(this),
+            bang_Y: this.toggleShowSampleText.bind(this),
 
-            bang_X: this.showInventory.bind(this),
+            bang_X: this.toggleShowPlayerInventory.bind(this),
             bang_pause: this.press_pause_menu.bind(this),
             bang_resume: this.press_pause_menu.bind(this),
         });
@@ -177,18 +177,21 @@ export class Game {
         // }
         player.interactTarget.isFacing = this.compare_two_vec2(player.position, interactPos);
 
-        gameSpeech.name.textContent = t.name;
-        gameSpeech.message.textContent = `\"${t.getDialogue()}\"`;
-        gameSpeech.container.classList.add('active');
+        // gameSpeech.name.textContent = t.name;
+        // gameSpeech.message.textContent = `\"${t.getDialogue()}\"`;
+        // gameSpeech.container.classList.add('active');
+        this.renderer.modifySampleText(t.name, t.getDialogue());
+        this.toggleShowSampleText(true);
 
         // console.log("pause game");
         // this.renderer.drawPauseMenu();
     }
     exitDialogue() {
-        gameSpeech.container.classList.remove('active');
+        // gameSpeech.container.classList.remove('active');
         this.isInDialogue = false;
         gameSpeech.name.innerHTML = "";
         gameSpeech.message.innerHTML = "";
+        this.toggleShowSampleText(false);
     }
     // ---------
 
@@ -202,12 +205,6 @@ export class Game {
             gameSpeech.message.textContent = message;
         }
         gameSpeech.container.classList.add('active');        
-    }
-    showInventory() {
-        // assume it's the player inventory we want for now
-        const message = this.log_relevant_inventory();
-        console.log(message);
-        this.showDialogue(null, message);
     }
 
 
@@ -344,10 +341,15 @@ export class Game {
 
     }
 
-    // toggleShowPlayerInventory() {
-    //     this.shouldDrawPlayerInventory = !this.shouldDrawPlayerInventory;
+    toggleShowPlayerInventory() {
         
-    // }
+        this.renderer.shouldDrawPlayerInventory = !this.renderer.shouldDrawPlayerInventory;
+        
+    }
+
+    toggleShowSampleText(state) {
+        this.renderer.shouldDrawSampleText = state;
+    }
 
 
 }

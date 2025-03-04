@@ -106,7 +106,7 @@ export class GameControls {
                 break;
             case 'Y':
                 this.buttonStates[input] = true;
-                this.bang_Y();
+                this.bang_Y(true);
                 break;
             default:
                 console.log(`sent <default?> to press btn`);
@@ -118,6 +118,8 @@ export class GameControls {
         this.buttonStates[input] = false;
         this.HtmlControls.buttons[input].classList.remove('active');
         // console.log(`released ${input}.`);
+        if (input === 'Y') this.bang_Y(false);
+
     }
     // --------------------------------------------
 
