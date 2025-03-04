@@ -130,34 +130,25 @@ export class Renderer {
     }
 
     drawInventory() {
-
-
+        // draw the inventory background
         this.ctx.drawImage(
             this.textures.inventoryBg,
             FLOOR_CELL_PIXELS * 1.75,
             FLOOR_CELL_PIXELS * 5.75,
         )
+        // draw the 
         this.ctx.drawImage(
             this.textures.inventoryItems,
             FLOOR_CELL_PIXELS * 1.75,
             FLOOR_CELL_PIXELS * 5.75,
         )
-
-        // this.ctx.fillStyle = '#ff0a';
-        // this.ctx.fillRect(
-        //     FLOOR_CELL_PIXELS * 1.5,
-        //     FLOOR_CELL_PIXELS * 5.5,
-        //     FLOOR_CELL_PIXELS * 8.5,
-        //     FLOOR_CELL_PIXELS * 3
-        // )
         this.ctx.drawImage(this.textures.sword2, 0, 0, cell_size.x, cell_size.y)
-        // console.log(this.textures.sword)
     }
 
     modifyInventoryTexture() {
         this.inventoryCtx.clearRect(0, 0, this.textures.inventoryItems.width, this.textures.inventoryItems.height)
-        for (let i = 0; i < player.inventory.length; i++) {
-            const slot = player.inventory[i];
+        for (let i = 0; i < player.bag.slots.length; i++) {
+            const slot = player.bag.slots[i];
             if (slot !== null) {
                 const invTexture = slot.invTexture ?? this.textures.sword2;
                 const x = i % 6;

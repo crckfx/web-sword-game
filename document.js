@@ -44,24 +44,24 @@ export const MIDDLE_CELL = {
     y: cell_size.y * ((CAMERA_CELLS.y - 1) / 2),
 };
 
-export const player = new Player({
-    name: 'lachie',
-    position: new Vector2(gridCells(1), gridCells(1)),
-    isFacing: 'up',
-    animations: new Animations({
-        walkUp: new FrameIndexPattern(WALK_UP),
-        walkLeft: new FrameIndexPattern(WALK_LEFT),
-        walkDown: new FrameIndexPattern(WALK_DOWN),
-        walkRight: new FrameIndexPattern(WALK_RIGHT),
+// export const player = new Player({
+//     name: 'lachie',
+//     position: new Vector2(gridCells(1), gridCells(1)),
+//     isFacing: 'up',
+//     animations: new Animations({
+//         walkUp: new FrameIndexPattern(WALK_UP),
+//         walkLeft: new FrameIndexPattern(WALK_LEFT),
+//         walkDown: new FrameIndexPattern(WALK_DOWN),
+//         walkRight: new FrameIndexPattern(WALK_RIGHT),
 
-        standUp: new FrameIndexPattern(STAND_UP),
-        standLeft: new FrameIndexPattern(STAND_LEFT),
-        standDown: new FrameIndexPattern(STAND_DOWN),
-        standRight: new FrameIndexPattern(STAND_RIGHT),
-    }),
-    speed: 2,
+//         standUp: new FrameIndexPattern(STAND_UP),
+//         standLeft: new FrameIndexPattern(STAND_LEFT),
+//         standDown: new FrameIndexPattern(STAND_DOWN),
+//         standRight: new FrameIndexPattern(STAND_RIGHT),
+//     }),
+//     speed: 2,
     
-});
+// });
 
 // ------------------------------------------------------
 

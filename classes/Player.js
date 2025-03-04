@@ -5,8 +5,7 @@ import { Inventory } from "../experimental/Inventory.js";
 
 export class Player {
     interactTarget = null;
-    inventory = new Array(12).fill(null);
-    dummyInventory = new Inventory(12, this, 'best inventory');
+    bag = new Inventory(12, this, 'best inventory');
     constructor({name, position, isFacing, animations, texture, speed}) {
         this.name = name ?? 'unnamed player';
         this.position = position ?? new Vector2(0, 0);
@@ -24,7 +23,6 @@ export class Player {
         }
         this.animations.step(delta);
         this.frame = this.animations.frame;
-        // console.log(this.frame)
     }
 
     getSpriteIndex() {
@@ -42,42 +40,8 @@ export class Player {
     
     receiveItem(item) {
         if (!(item instanceof Item)) return false;
-        const invSlot = this.findFirstInventorySlot();
-        if (invSlot < 0) return false;
-        this.inventory[invSlot] = item;
-        this.dummyInventory.putItem(item);
-        console.log(this.dummyInventory)
-        // console.log(item)
-        // console.log(this.inventory[invSlot]);
-        return true;
+        return this.bag.putItem(item);
     }
 
-    findFirstInventorySlot() {
-        for (let i=0; i<this.inventory.length; i++) {
-            if (this.inventory[i] === null) return i;
-        }
-        return -1;
-    }
-
-    // function to find an item by a name in the inventory
-    findInInventory(name) {
-        for (let i=0; i<this.inventory.length; i++) {
-            if (this.inventory[i] === null) continue;
-            if (this.inventory[i].name === name) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    findInInventoryByItem(item) {
-        for (let i=0; i<this.inventory.length; i++) {
-            if (this.inventory[i] === null) continue;
-            if (this.inventory[i] === item) {
-                return i;
-            }
-        }
-        return -1;
-    }    
 }
 

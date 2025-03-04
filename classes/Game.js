@@ -78,9 +78,6 @@ export class Game {
     }
 
     interact() {
-        // console.log('oh wowza did ya press "A"?');
-        // const interactTarget = player.interactTarget;
-        // console.log(`typeof: ${typeof(interactTarget)}, value: ${interactTarget}`);
         const t = player.interactTarget;
         if (t !== null) {
             if (t instanceof Entity) {
@@ -101,9 +98,8 @@ export class Game {
             }
 
         }
-        // const target = this.grid[interactTarget.x][interactTarget.y].occupant;
-        // console.log(`Interacted with ${player.interactTarget.name}`);
     }
+
     back() {
         // console.log('oh wowza did ya press "B"?');
         if (this.isPaused) {
@@ -112,6 +108,7 @@ export class Game {
             this.exitDialogue();
         }
     }
+
     // ---------
     press_pause_menu() {
         if (this.isPaused) {
@@ -150,16 +147,16 @@ export class Game {
 
         if (!t.isSatisfied && t.interactCondition !== null) {
 
-                const conditionIsMet = t.interactCondition() > -1;
-                console.log(`interact condition: ${conditionIsMet}`)
-                
-                if (conditionIsMet) {
-                    console.log(`this is the case where we should play out the interactAction`);
-                    // console.log(t.interactAction())
-                    t.interactAction();
-                    t.isSatisfied = true;
-                }
-                
+            const conditionIsMet = t.interactCondition() > -1;
+            console.log(`interact condition: ${conditionIsMet}`)
+
+            if (conditionIsMet) {
+                console.log(`this is the case where we should play out the interactAction`);
+                // console.log(t.interactAction())
+                t.interactAction();
+                t.isSatisfied = true;
+            }
+
         }
 
 
@@ -167,15 +164,6 @@ export class Game {
         this.isInDialogue = true;
         const interactPos = t.position;
 
-        // if (interactPos.x > player.position.x) {
-        //     console.log('player to left')
-        // } else if (interactPos.x < player.position.x) {
-        //     console.log('player to right')
-        // } else if (interactPos.y > player.position.y) {
-        //     console.log('player to up')
-        // } else if (interactPos.y < player.position.y) {
-        //     console.log('player to down')
-        // }
         player.interactTarget.isFacing = this.compare_two_vec2(player.position, interactPos);
 
         // gameSpeech.name.textContent = t.name;
@@ -205,7 +193,7 @@ export class Game {
             gameSpeech.name.textContent = "";
             gameSpeech.message.textContent = message;
         }
-        gameSpeech.container.classList.add('active');        
+        gameSpeech.container.classList.add('active');
     }
 
 
@@ -280,15 +268,13 @@ export class Game {
     give_item_to(item, entity) {
         if (item.isHeldBy !== null) {       // if somebody is holding item
             const oldEntity = item.isHeldBy;
-            console.log(`removing item '${item.name}' from old owner '${oldEntity.name}'`)
-            const oldIndex = oldEntity.findInInventoryByItem(item);
+            // console.log(`removing item '${item.name}' from old owner '${oldEntity.name}'`)
+            const oldIndex = oldEntity.bag.findSlotByItem(item);
             console.log(`remove ${item.name} from ${oldEntity.name} slot ${oldIndex}`)
             if (oldIndex > -1) {
-                oldEntity.inventory[oldIndex] = null;
-                oldEntity.dummyInventory.removeItem(oldIndex);
+                oldEntity.bag.removeItem(oldIndex);
 
             }
-            // console.log(`${item.name} is now held by ${item.isHeldBy.name ?? "null"}`)
             console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
 
 
@@ -313,7 +299,7 @@ export class Game {
         entity.receiveItem(item);
         console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
 
-        
+
         this.renderer.modifyInventoryTexture(); // 
 
         return true;
@@ -336,21 +322,13 @@ export class Game {
         } else {
             t = player;
         }
-        let str = `INVENTORY (${t.name}): `;
-        for (let i = 0; i < t.inventory.length; i++) {
-            if (t.inventory[i] !== null) {
-                str += `${i}:'${t.inventory[i].name}', `;
-            }
-        }
-        // console.log(str);
-        return str;
-
+        return t.bag.getContentsAsString();
     }
 
     toggleShowPlayerInventory() {
-        
+
         this.renderer.shouldDrawPlayerInventory = !this.renderer.shouldDrawPlayerInventory;
-        
+
     }
 
     toggleShowSampleText(state) {

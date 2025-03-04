@@ -49,10 +49,11 @@ export async function load_entities(entities, textures) {
         isFacing: 'up',
         texture: textures.spriteYellow,
         interactMessage: "Have you seen my apple?",
-        interactCondition: () => player.findInInventory('apple'),
+        interactCondition: () => player.bag.findSlotByName('apple'),
         interactAction: function () {
-            const index = player.findInInventory('apple');
-            const item = player.inventory[index];
+            const index = player.bag.findSlotByName('apple');
+            console.log(`index is ${index}`)
+            const item = player.bag.slots[index];
             // console.log(`give ${item.name} to ${this.name}`);
             swordGame.give_item_to(item, this); // parent method which handles removal from old entity
         },

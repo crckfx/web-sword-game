@@ -55,12 +55,22 @@ export class Inventory {
     }
 
     removeItem(index) {
-        if (!this.slots[index] instanceof Item) return false;
+        if (!(this.slots[index] instanceof Item)) return false;
         const item = this.slots[index];
         item.isHeldBy = null;
         this.slots[index] = null;
+        
 
     }
 
+    getContentsAsString() {
+        let str = `${this.name}: `;
+        for (let i = 0; i < this.slots.length; i++) {
+            if (this.slots[i] !== null) {
+                str += `${i}: ${this.slots[i].name}, `;
+            }
+        }
+        return str;
+    }
 
 }
