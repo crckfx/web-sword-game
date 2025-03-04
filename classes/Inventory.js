@@ -59,8 +59,7 @@ export class Inventory {
         const item = this.slots[index];
         item.isHeldBy = null;
         this.slots[index] = null;
-        
-
+        return true;
     }
 
     getContentsAsString() {

@@ -53,6 +53,7 @@ export class Renderer {
             player.texture[player.frame],
             MIDDLE_CELL.x,
             MIDDLE_CELL.y,
+            // MIDDLE_CELL.y - 5,
             cell_size.x, cell_size.y
         );
 

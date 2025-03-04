@@ -4,6 +4,7 @@ import { Vector2 } from "./Vector2.js";
 import { Inventory } from "./Inventory.js";
 
 export class Player {
+    bagCursorIndex = 0;
     interactTarget = null;
     bag = new Inventory(12, this, 'best inventory');
     constructor({name, position, isFacing, animations, texture, speed}) {
@@ -41,6 +42,12 @@ export class Player {
     receiveItem(item) {
         if (!(item instanceof Item)) return false;
         return this.bag.putItem(item);
+    }
+    releaseItem(item) {
+        if (!(item instanceof Item)) return false;
+        const index = this.bag.findSlotByItem(item);
+        if (index < 0) return false;
+        return this.bag.removeItem(index);
     }
 
 }

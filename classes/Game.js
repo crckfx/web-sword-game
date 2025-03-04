@@ -21,15 +21,16 @@ export class Game {
     isPaused = false;
     pauseTimestamp = null;
     isInDialogue = false;
+    isInInventory = false;
 
     constructor() {
         this.controls = new GameControls({
             HtmlControls: getHtmlControls(),
+            // 
             bang_A: this.interact.bind(this),
             bang_B: this.back.bind(this),
             // bang_Y: this.log_entity_position.bind(this),
             bang_Y: this.toggleShowSampleText.bind(this),
-
             bang_X: this.toggleShowPlayerInventory.bind(this),
             bang_pause: this.press_pause_menu.bind(this),
             bang_resume: this.press_pause_menu.bind(this),
@@ -51,7 +52,17 @@ export class Game {
     update(delta) {
         const distance = moveTowards(player, player.destination, player.speed);
         const hasArrived = distance < 1;
+
+
         if (hasArrived) {
+            if (this.isInInventory) {
+                // console.log('no movemenet')
+                this.tryInventoryMove();
+                return;
+
+            }
+
+
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
             // (but only if we don't have one set already)
@@ -77,7 +88,19 @@ export class Game {
         this.renderer.draw();
     }
 
+    // aka "player presses 'A'"
     interact() {
+        if (this.isInDialogue) {
+            return;
+        } else if (this.isInInventory) {
+            console.log(player.bag.slots[player.bagCursorIndex]);
+            return;
+        } else {
+            this.handleWorldInteract();
+        }
+    }
+
+    handleWorldInteract() {
         const t = player.interactTarget;
         if (t !== null) {
             if (t instanceof Entity) {
@@ -100,12 +123,15 @@ export class Game {
         }
     }
 
+
     back() {
         // console.log('oh wowza did ya press "B"?');
         if (this.isPaused) {
             this.resume();
         } else if (this.isInDialogue) {
             this.exitDialogue();
+        } else if (this.isInInventory) {
+            this.exitInventory();
         }
     }
 
@@ -196,9 +222,8 @@ export class Game {
         gameSpeech.container.classList.add('active');
     }
 
-
     tryMove() {
-        if (!this.controls.current_dpad_dir || this.isInDialogue) {
+        if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
             switch (player.isFacing) {
                 case 'left':
                     player.animations.play('standLeft');
@@ -326,14 +351,51 @@ export class Game {
     }
 
     toggleShowPlayerInventory() {
+        this.renderer.shouldDrawPlayerInventory = true;
+        this.isInInventory = true;
+    }
 
-        this.renderer.shouldDrawPlayerInventory = !this.renderer.shouldDrawPlayerInventory;
-
+    exitInventory() {
+        this.renderer.shouldDrawPlayerInventory = false;
+        this.isInInventory = false;
     }
 
     toggleShowSampleText(state) {
         this.renderer.shouldDrawSampleText = state;
     }
+
+
+
+    tryInventoryMove() {
+        let target = 0;
+        switch (this.controls.current_dpad_dir) {
+            case 'left':
+                target = -1;
+                break;
+            case 'right':
+
+                target = 1;
+                break;
+            case 'up':
+                target = -6
+                break;
+            case 'down':
+                target = 6;
+                break;
+            default:
+                return;
+        }
+        if (this.checkInventoryMoveBounds(target)) player.bagCursorIndex += target;
+        console.log(player.bagCursorIndex);
+    }
+
+    checkInventoryMoveBounds(target) {
+        const result = player.bagCursorIndex + target;
+        if (result < 0) return false;
+        if (result > player.bag.slots.length - 1) return false;
+        return true;
+    }
+
 
 
 }
