@@ -1,7 +1,7 @@
 import { gridCells } from "../helper/grid.js";
 import { Item } from "./Item.js";
 import { Vector2 } from "./Vector2.js";
-import { Inventory } from "../experimental/Inventory.js";
+import { Inventory } from "./Inventory.js";
 
 export class Player {
     interactTarget = null;

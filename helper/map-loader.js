@@ -4,7 +4,7 @@
 // we don't fetch a text file or anything here - just pass map strings in
 
 import { Item } from "../classes/Item.js";
-import {  NUM_GRID, FLOOR_CELL_PIXELS } from "../document.js";
+import { NUM_GRID, FLOOR_CELL_PIXELS } from "../document.js";
 import { gridCells } from "./grid.js";
 import { player } from "./world-loader.js";
 
@@ -29,6 +29,7 @@ const occupantMap = {
     '2': 'george',
     '3': 'harold',
     'a': 'apple',
+    'i': 'miscItem'
 };
 
 function removeOldOccupant(grid, x, y) {
@@ -85,7 +86,7 @@ export function parseOccupantLayout(mapString) {
 }
 
 // note : "type" is becoming maybe a terrible name
-export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures) {
+export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images) {
     for (const { x, y, occupant } of parsedOccupantLayout) {
         if (grid[x] && grid[x][y]) {
             switch (occupant) {
@@ -111,6 +112,10 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, t
                 case 'apple':
                     const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple, textures.apple2);
                     grid[x][y].occupant = newApple;
+                    break;
+                case 'miscItem':
+                    const newItem = new Item('miscItem', { x: gridCells(x), y: gridCells(y) }, null, images.questionMark);
+                    grid[x][y].occupant = newItem;
                     break;
                 case null:
                     // do nothing if the cell was made null
@@ -195,13 +200,25 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
             // if (cell.skip === true) continue;
             if (cell.occupant instanceof Item) {
                 if (cell.occupant.name === 'apple') {
-
                     mapCtx.drawImage(
                         cell.occupant.texture,
                         FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (i)),
                         FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (j)),
                         (FLOOR_CELL_PIXELS * 0.5),
                         (FLOOR_CELL_PIXELS * 0.5),
+                    );
+                } else {
+                    // mapCtx.drawImage(
+                    //     images.crate,
+                    //     FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (i)),
+                    //     FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (j)),
+                    //     16,
+                    //     18,
+                    // );
+                    mapCtx.drawImage(
+                        images.crateShadow,
+                        (FLOOR_CELL_PIXELS * (i)),
+                        (FLOOR_CELL_PIXELS * (j)),
                     );
                 }
             } else {

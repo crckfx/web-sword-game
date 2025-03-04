@@ -1,4 +1,4 @@
-import { Item } from "../classes/Item.js";
+import { Item } from "./Item.js";
 
 export class Inventory {
     name = 'unnamed inventory';

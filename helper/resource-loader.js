@@ -26,6 +26,9 @@ export async function load_image_resources(images, textures) {
                 shikashiTextures: 'images/shikashiV2_32px.png',
                 inventory_border: 'images/inventory_slot.png',
                 dialogue_background: 'images/dialogue_background_2.png',
+                crate: "images/Crates by Mikiz/Brown crates/Brown Crates 1.png",
+                crateShadow: "images/crate_experiments_4.png",
+                questionMark: "images/questionMark.png",
             }
         )
 
@@ -38,6 +41,8 @@ export async function load_image_resources(images, textures) {
         textures.apple2 = await extract_sized_single_texture(images.shikashiTextures, 0, 14, 32, 32);
         textures.egg = await extract_sized_single_texture(images.shikashiTextures, 6, 15, 32, 32);
         textures.potPlant3 = await extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
+
+
 
         // the inv textures has a background layer and a borders layer; experimental
         const invTextures = await createInventoryTextures(images.inventory_border);

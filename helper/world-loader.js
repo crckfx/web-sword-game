@@ -79,7 +79,7 @@ export async function load_entities(entities, textures) {
 export async function load_map(map, grid, textures, images, entities) {
     // do the map!
     const parsedOccupantLayout = parseOccupantLayout(map.occupants);
-    applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures);
+    applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
     const parsedFloorLayout = parseFloorLayout(map.floor);
     applyFloorToGameGrid(grid, parsedFloorLayout);
     textures.mapFloor = await getMapBackground(grid, textures);
