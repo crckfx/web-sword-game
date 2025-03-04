@@ -4,8 +4,9 @@
 // we don't fetch a text file or anything here - just pass map strings in
 
 import { Item } from "../classes/Item.js";
-import { player, NUM_GRID, FLOOR_CELL_PIXELS } from "../document.js";
+import {  NUM_GRID, FLOOR_CELL_PIXELS } from "../document.js";
 import { gridCells } from "./grid.js";
+import { player } from "./world-loader.js";
 
 // define floor signifiers
 export const tileMap = {

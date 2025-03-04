@@ -1,3 +1,4 @@
+import { Inventory } from "../experimental/Inventory.js";
 import { gridCells } from "../helper/grid.js";
 import { Item } from "./Item.js";
 import { Vector2 } from "./Vector2.js";
@@ -5,8 +6,10 @@ import { Vector2 } from "./Vector2.js";
 export class Entity {
     inventory = new Array(6).fill(null);
     isSatisfied = false;
-    constructor({name, position, isFacing, animations, texture, interactMessage = "Hello World!", interactCondition, interactAction, message_satisfied}) {
+    constructor({name, position, isFacing, animations, texture, interactMessage = "Hello World!", interactCondition, interactAction, message_satisfied, dialogues}) {
         this.name = name ?? 'unnamed entity';
+        this.dummyInventory = new Inventory(6, this);
+
         this.position = position ?? new Vector2(gridCells(0), gridCells(0));
         this.destination = this.position.duplicate();
         this.isFacing = isFacing ?? 'down';
@@ -18,6 +21,7 @@ export class Entity {
         this.interactAction = interactAction ?? null;
         this.message_satisfied = message_satisfied ?? null;
         
+        this.dialogues = dialogues ?? null;
     }
 
     step(delta) {
@@ -49,8 +53,9 @@ export class Entity {
         const invSlot = this.findFirstInventorySlot();
         if (invSlot < 0) return false;
         this.inventory[invSlot] = item;
-        console.log(item)
-        console.log(this.inventory[invSlot]);
+        this.dummyInventory.putItem(item);
+        // console.log(item)
+        // console.log(this.inventory[invSlot]);
         return true;
     }
 

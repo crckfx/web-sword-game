@@ -1,23 +1,21 @@
 import { gridCells } from "../helper/grid.js";
 import { Item } from "./Item.js";
 import { Vector2 } from "./Vector2.js";
+import { Inventory } from "../experimental/Inventory.js";
 
 export class Player {
     interactTarget = null;
     inventory = new Array(12).fill(null);
-    constructor({name, position, isFacing, animations, texture}) {
+    dummyInventory = new Inventory(12, this, 'best inventory');
+    constructor({name, position, isFacing, animations, texture, speed}) {
         this.name = name ?? 'unnamed player';
         this.position = position ?? new Vector2(0, 0);
         this.destination = position.duplicate();
         this.isFacing = isFacing ?? 'down';
         this.animations = animations ?? null;
         this.texture = texture;
-        this.speed = 2;
-        // this.inventoryTexture = 
-        // for (let i=0; i<this.inventory.length; i++) {
-        //     this.inventory[i] = null;
-        // }
-        
+        this.speed = speed ?? 1;
+       
     }
 
     step(delta) {
@@ -47,8 +45,10 @@ export class Player {
         const invSlot = this.findFirstInventorySlot();
         if (invSlot < 0) return false;
         this.inventory[invSlot] = item;
-        console.log(item)
-        console.log(this.inventory[invSlot]);
+        this.dummyInventory.putItem(item);
+        console.log(this.dummyInventory)
+        // console.log(item)
+        // console.log(this.inventory[invSlot]);
         return true;
     }
 

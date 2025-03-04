@@ -1,6 +1,6 @@
-import { load_entities, load_map, swordGame } from "./canvas.js";
+import { load_entities, load_map, player, swordGame } from "./helper/world-loader.js";
 import { Item } from "./classes/Item.js";
-import { NUM_GRID, player } from "./document.js";
+import { NUM_GRID } from "./document.js";
 import { load_image_resources } from "./helper/resource-loader.js";
 import { map_1 } from "./maps/map_1.js";
 import { map_2 } from "./maps/map_2.js";

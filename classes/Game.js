@@ -1,11 +1,12 @@
 import { GameControls } from "../controls/GameControls.js";
 import { Renderer } from "./Renderer.js";
 import { Item } from "./Item.js";
-import { getHtmlControls, CAMERA_CELLS, FLOOR_CELL_PIXELS, player, pauseMenu, gameSpeech } from "../document.js";
+import { getHtmlControls, CAMERA_CELLS, FLOOR_CELL_PIXELS, pauseMenu, gameSpeech } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
 import { createGrid, facingToVector, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./Entity.js";
+import { player } from "../helper/world-loader.js";
 
 export class Game {
     renderer = null;
@@ -277,17 +278,21 @@ export class Game {
     }
 
     give_item_to(item, entity) {
-        if (item.isHeldBy !== null) {
+        if (item.isHeldBy !== null) {       // if somebody is holding item
             const oldEntity = item.isHeldBy;
             console.log(`removing item '${item.name}' from old owner '${oldEntity.name}'`)
             const oldIndex = oldEntity.findInInventoryByItem(item);
             console.log(`remove ${item.name} from ${oldEntity.name} slot ${oldIndex}`)
             if (oldIndex > -1) {
                 oldEntity.inventory[oldIndex] = null;
+                oldEntity.dummyInventory.removeItem(oldIndex);
 
             }
-            item.isHeldBy = null;
-        } else if (item.position !== null) {
+            // console.log(`${item.name} is now held by ${item.isHeldBy.name ?? "null"}`)
+            console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
+
+
+        } else if (item.position !== null) { // if the item has a world position
             const posX = item.position.x;
             const posY = item.position.y;
             const gridX = posX / FLOOR_CELL_PIXELS;
@@ -303,12 +308,13 @@ export class Game {
                 console.warn(`oh no, item doesn't exist at '${x},${y}'`)
             }
         }
-        console.log(`giving item '${item.name}' to '${entity.name}'`)
-        item.isHeldBy = entity;
+        // console.log(`giving item '${item.name}' to '${entity.name}'`)
+
         entity.receiveItem(item);
+        console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
 
         
-        this.renderer.modifyInventoryTexture();
+        this.renderer.modifyInventoryTexture(); // 
 
         return true;
     }

@@ -58,7 +58,9 @@ export const player = new Player({
         standLeft: new FrameIndexPattern(STAND_LEFT),
         standDown: new FrameIndexPattern(STAND_DOWN),
         standRight: new FrameIndexPattern(STAND_RIGHT),
-    })
+    }),
+    speed: 2,
+    
 });
 
 // ------------------------------------------------------

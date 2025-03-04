@@ -1,6 +1,7 @@
-import { cell_size, MIDDLE_CELL, entities, player, FLOOR_CELL_PIXELS } from "../document.js";
+import { cell_size, MIDDLE_CELL, entities,  FLOOR_CELL_PIXELS } from "../document.js";
 import { wrapText } from "../experimental/dialogues.js";
 import { facingToVector, gridCells } from "../helper/grid.js";
+import { player } from "../helper/world-loader.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
 
