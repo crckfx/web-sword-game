@@ -1,4 +1,4 @@
-import { cell_size, MIDDLE_CELL, entities,  FLOOR_CELL_PIXELS } from "../document.js";
+import { cell_size, MIDDLE_CELL, entities, FLOOR_CELL_PIXELS } from "../document.js";
 import { wrapText } from "../experimental/dialogues.js";
 import { facingToVector, gridCells } from "../helper/grid.js";
 import { player } from "../helper/world-loader.js";
@@ -8,6 +8,8 @@ import { Vector2 } from "./Vector2.js";
 export class Renderer {
     shouldDrawPlayerInventory = false;
     shouldDrawSampleText = false;
+
+    player_offset = 5;
 
     constructor({
         canvas,
@@ -34,16 +36,10 @@ export class Renderer {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawFloorsAndDoodads(); // draw floors / doodads - uses an image now :)
-        // this.drawPlayer(); // TRYING draw player in a floors/doodads sandwich
-        // if (this.game.controls.buttonStates['Y']) {this.drawInventory();}
-
+        this.drawFloorsAndDoodads(); // a.k.a. do everything
         if (this.shouldDrawPlayerInventory) this.drawInventory();
         if (this.shouldDrawSampleText) this.drawSampleText();
-
-
     }
-
 
     drawPlayer() {
         // do not shift the player; shift the floor? 
@@ -53,21 +49,11 @@ export class Renderer {
             player.texture[player.frame],
             MIDDLE_CELL.x,
             MIDDLE_CELL.y,
-            // MIDDLE_CELL.y - 5,
             cell_size.x, cell_size.y
         );
-
-
-        // // draw a border around the interactTarget if it exists
-        // if (player.interactTarget !== null) {
-        //     this.drawBorder(
-        //         player.interactTarget.position.x - (player.position.x - MIDDLE_CELL.x),
-        //         player.interactTarget.position.y - (player.position.y - MIDDLE_CELL.y),
-        //         "yellow"
-        //     );            
-        // }
     }
 
+    // draw an entity specifically
     drawEntity(entity) {
         this.ctx.drawImage(
             entity.getEntitySprite(),
@@ -86,63 +72,63 @@ export class Renderer {
         }
     }
 
-
+    // a.k.a. draw everything
     drawFloorsAndDoodads() {
         const sourceX = (player.position.x - MIDDLE_CELL.x);
         const sourceY = (player.position.y - MIDDLE_CELL.y);
         const sourceWidth = gridCells(this.cells.x);
         const sourceHeight = gridCells(this.cells.y);
-
         // draw the floor
         this.ctx.drawImage(
             this.textures.mapFloor,
             sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, this.canvas.width, this.canvas.height);
-
+            0, 0, this.canvas.width, this.canvas.height
+        );
         this.drawPlayer(); // draw player
         // draw entities
         for (const key in this.game.entities) {
             this.drawEntity(this.game.entities[key]);
         }
-
+        // draw 'occupants' (doodads?)
         this.ctx.drawImage(this.textures.mapOccupants[0],
             sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, this.canvas.width, this.canvas.height);
-
+            0, 0, this.canvas.width, this.canvas.height
+        );
     }
 
+    // helper to draw a border on the main canvas
     drawBorder(x, y, colour = 'green') {
-        // console.log(`draw border at ${x}, ${y}`);
         this.ctx.strokeStyle = colour;
         this.ctx.lineWidth = 1;
-
-        // ctx.strokeWidth = 0.1;
         this.ctx.strokeRect(x, y, cell_size.x, cell_size.y);
     }
 
-
+    // draw the pause menu (currently still HTML {unlike inventory/bag} )
     drawPauseMenu() {
         this.ctx.fillStyle = '#000000aa';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.font = "12px serif";
         this.ctx.fillStyle = 'red';
         this.ctx.fillText("paused", 0, 40)
-
     }
 
     drawInventory() {
         // draw the inventory background
-        this.ctx.drawImage(
-            this.textures.inventoryBg,
-            FLOOR_CELL_PIXELS * 1.75,
-            FLOOR_CELL_PIXELS * 5.75,
+        const posX = FLOOR_CELL_PIXELS * 1.75;
+        const posY = FLOOR_CELL_PIXELS * 0.75;
+        this.ctx.drawImage(this.textures.inventoryBg, posX, posY);
+        // draw the items layer
+        this.ctx.drawImage(this.textures.inventoryItems, posX, posY);
+        // draw the select layer
+        this.ctx.strokeStyle = "red";
+        this.ctx.lineWidth = 4;
+
+        let y = player.bagCursorIndex < 6 ? 0 : 1; // calculate the y for the display
+        this.ctx.strokeRect(
+            posX + (player.bagCursorIndex % 6) * 40, posY + y * 40,
+            40, 40
         )
-        // draw the 
-        this.ctx.drawImage(
-            this.textures.inventoryItems,
-            FLOOR_CELL_PIXELS * 1.75,
-            FLOOR_CELL_PIXELS * 5.75,
-        )
+
         this.ctx.drawImage(this.textures.sword2, 0, 0, cell_size.x, cell_size.y)
     }
 
@@ -154,15 +140,13 @@ export class Renderer {
                 const invTexture = slot.invTexture ?? this.textures.sword2;
                 const x = i % 6;
                 const y = i < 6 ? 0 : 1;
-                console.log(`should update an inventory texture at slot ${i}, '${x}','${y}'`);
-
-
+                console.log(`should update an inventory texture at slot i:${i}, pos:'${x}','${y}'`);
+                // draw the background texture
                 this.inventoryCtx.drawImage(
                     invTexture,
                     x * (FLOOR_CELL_PIXELS + 8) + 4,
                     y * (FLOOR_CELL_PIXELS + 8) + 4,
-                )
-
+                );
             }
 
         }
@@ -177,10 +161,10 @@ export class Renderer {
         )
     }
 
-    modifySampleText(heading="", text="") {
+    modifySampleText(heading = "", text = "") {
         const texture = this.textures.sampleText; // this is a special type of texture though
         const ctx = texture.ctx;
-        ctx.clearRect(0,0, texture.widthPx, texture.heightPx)
+        ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
         ctx.fillStyle = '#ccc';
         ctx.fillRect(
             0, 0, texture.widthPx, texture.heightPx
@@ -191,7 +175,7 @@ export class Renderer {
         ctx.fillStyle = '#f00';
         ctx.font = "600 16px Courier";
         ctx.fillText(heading, 8, 20);
-        
+
         // ctx.font = "600 24px Courier";
         ctx.fillStyle = '#000';
         ctx.font = "600 20px Courier";

@@ -22,28 +22,21 @@ export function wrapText(input) {
 }    
 
 
+// function to create the base dialogue layout
 export async function createDialogueTexture(backgroundImage) {
-    //
-    // const slotPx = FLOOR_CELL_PIXELS + 8;
 
-    // get the pixel sizes for the map
-    const widthPx = FLOOR_CELL_PIXELS * 10;
-    const heightPx = FLOOR_CELL_PIXELS * 3;
-    // Create an offscreen bgCanvas for each sprite
-    //
+    const padding = 8;
+
+    // get the pixel sizes for the texture (relative to the main pixel base) 
+    const widthPx = FLOOR_CELL_PIXELS * 10;     // 10 game cells wide
+    const heightPx = FLOOR_CELL_PIXELS * 3;     // 3 game cells tall
+    // create a canvas, set its size, get a context
     const canvas = document.createElement('canvas');
     canvas.width = widthPx;
     canvas.height = heightPx;
     const ctx = canvas.getContext('2d', { alpha: false });
-    // const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
-    //
-
-
-    ctx.fillStyle = '#ccc';
-    // ctx.fillRect(
-    //     0, 0, widthPx, heightPx
-    // )
+    // draw the background
     ctx.drawImage(backgroundImage, 0, 0, widthPx, heightPx)
     ctx.fillStyle = '#f00';
     ctx.font = "600 16px Courier";
@@ -52,8 +45,8 @@ export async function createDialogueTexture(backgroundImage) {
     ctx.fillStyle = '#000';
     ctx.font = "600 20px Courier";
     // ctx.fillText("sample text with some more words", 8, 32)
-    ctx.fillText("abcdefghijklmnopqrstuvwxy", 8, 48)
-    ctx.fillText("012345678901234567891", 8, 80)
+    ctx.fillText("abcdefghijklmnopqrstuvwxy", padding, 48)
+    ctx.fillText("0123456789012345678901234", padding, 80)
     const metrics = ctx.measureText("0");
     console.log(metrics.width); // Should be around 252-300px
 

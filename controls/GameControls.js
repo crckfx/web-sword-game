@@ -3,20 +3,23 @@ import { PointerHandler } from "./PointerHandler.js";
 
 export class GameControls {
     current_dpad_dir = null;
+    game = null;
     buttonStates = {
         A: false,
         B: false,
         X: false,
         Y: false,
     };
-    constructor({ 
-        HtmlControls, 
-        bang_A = null, 
-        bang_B = null, 
-        bang_Y = null, 
-        bang_X = null, 
-        bang_pause = null, 
-        bang_resume = null 
+    constructor({
+        HtmlControls,
+        bang_A = null,
+        bang_B = null,
+        bang_Y = null,
+        bang_X = null,
+        bang_pause = null,
+        bang_resume = null,
+        game = null,
+        bang_dpad = null,
     }) {
         //
         this.HtmlControls = HtmlControls;
@@ -29,6 +32,8 @@ export class GameControls {
         this.bang_X = bang_X;   // pass in functions
         this.bang_pause = bang_pause;   // pass in functions
         this.bang_resume = bang_resume;   // pass in functions
+        this.game = game;
+        this.bang_dpad = bang_dpad;
     }
 
     // function to translate keyboard events to the 'game'
@@ -66,18 +71,19 @@ export class GameControls {
     // --------------------------------------------
     // the dpad
     press_dpad(direction) {
-        if (this.current_dpad_dir !== null) {
+        // remove any old if exists
+        if (this.current_dpad_dir !== null)
             this.HtmlControls.dpad[this.current_dpad_dir].classList.remove('active');
-        }
+        // update various methods
         this.current_dpad_dir = direction;
         this.HtmlControls.dpad[this.current_dpad_dir].classList.add('active');
+        this.bang_dpad();
     }
 
     release_dpad() {
         if (this.current_dpad_dir !== null) {
             this.HtmlControls.dpad[this.current_dpad_dir].classList.remove('active');
             this.current_dpad_dir = null;
-            // console.log(`released ${current_dpad_dir}.`);
         }
     }
     // --------------------------------------------
@@ -91,7 +97,6 @@ export class GameControls {
         this.HtmlControls.buttons[input].classList.add('active');
         switch (input) {
             case 'X':
-                // clearCanvas();
                 this.buttonStates[input] = true;
                 this.bang_X();
                 break;
@@ -102,7 +107,6 @@ export class GameControls {
             case 'B':
                 this.buttonStates[input] = true;
                 this.bang_B();
-                // clearCanvas();
                 break;
             case 'Y':
                 this.buttonStates[input] = true;

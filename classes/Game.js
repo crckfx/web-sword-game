@@ -34,6 +34,8 @@ export class Game {
             bang_X: this.toggleShowPlayerInventory.bind(this),
             bang_pause: this.press_pause_menu.bind(this),
             bang_resume: this.press_pause_menu.bind(this),
+            game: this,
+            bang_dpad: this.bang_dpad.bind(this),
         });
         this.gameLoop = new GameLoop(this.update.bind(this), this.render.bind(this));
     }
@@ -55,13 +57,8 @@ export class Game {
 
 
         if (hasArrived) {
-            if (this.isInInventory) {
-                // console.log('no movemenet')
-                this.tryInventoryMove();
-                return;
 
-            }
-
+            this.tryMove();
 
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
@@ -79,7 +76,6 @@ export class Game {
                     }
                 };
             }
-            this.tryMove();
         }
         player.step(delta);
     }
@@ -88,18 +84,25 @@ export class Game {
         this.renderer.draw();
     }
 
-    // aka "player presses 'A'"
+    // aka "player presses 'A' with a valid target"
     interact() {
-        if (this.isInDialogue) {
-            return;
-        } else if (this.isInInventory) {
-            console.log(player.bag.slots[player.bagCursorIndex]);
+        if (this.isPaused) return;
+        else if (this.isInDialogue) return;
+        else if (this.isInInventory) {
+            this.handleInventoryInteract();
             return;
         } else {
             this.handleWorldInteract();
+            return;
         }
     }
 
+    // handler specifically for 'A' on 'PLAYER INVENTORY'
+    handleInventoryInteract() {
+        console.log(player.bag.slots[player.bagCursorIndex], player.bagCursorIndex + 1);
+    }
+
+    // handler specifically for 'A' on 'WORLD' 
     handleWorldInteract() {
         const t = player.interactTarget;
         if (t !== null) {
@@ -119,11 +122,20 @@ export class Game {
             } else {
                 console.log("not sure what you're interacting with", t);
             }
-
         }
     }
 
+    // function to try a mov whenever dpad gets pressed (in case dpad);
+    bang_dpad() {
+        // check and trigger inventory move if game is in inventory?
+        if (this.isInInventory) {
+            // console.log('yes ! in inventory and pressing a dpad on');
+            this.tryInventoryMove();
+            return;
+        }
+    }
 
+    // function to handle press on the BACK button
     back() {
         // console.log('oh wowza did ya press "B"?');
         if (this.isPaused) {
@@ -164,29 +176,20 @@ export class Game {
     }
 
     dialogue() {
+        // set a dialogue target
         const t = player.interactTarget;
-        // if (t.interactCondition !== undefined) {
-        //     if (t.interactCondition !== true) {
-        //         return;
-        //     }
-        // }
-
-        if (!t.isSatisfied && t.interactCondition !== null) {
-
-            const conditionIsMet = t.interactCondition() > -1;
-            console.log(`interact condition: ${conditionIsMet}`)
-
+        // check 1. a condition exists and 2. it is not already satisfied
+        if (t.interactCondition !== null && t.isSatisfied === false) {
+            // check the (currently unsatisfied) condition
+            const conditionIsMet = t.interactCondition() > -1; // assume an interact condition uses a number???
+            // console.log(`interact condition: ${conditionIsMet}`)
             if (conditionIsMet) {
-                console.log(`this is the case where we should play out the interactAction`);
-                // console.log(t.interactAction())
+                // this is the case where we should play out the interactAction
                 t.interactAction();
                 t.isSatisfied = true;
             }
-
         }
 
-
-        // this.gameLoop.stop();
         this.isInDialogue = true;
         const interactPos = t.position;
 
@@ -204,23 +207,12 @@ export class Game {
     exitDialogue() {
         // gameSpeech.container.classList.remove('active');
         this.isInDialogue = false;
-        gameSpeech.name.innerHTML = "";
-        gameSpeech.message.innerHTML = "";
+        // gameSpeech.name.innerHTML = "";
+        // gameSpeech.message.innerHTML = "";
         this.toggleShowSampleText(false);
     }
     // ---------
 
-    showDialogue(t = null, message = "this is placeholder dialogue") {
-        this.isInDialogue = true;
-        if (t !== null) {
-            gameSpeech.name.textContent = t.name;
-            gameSpeech.message.textContent = `\"${t.getDialogue()}\"`;
-        } else {
-            gameSpeech.name.textContent = "";
-            gameSpeech.message.textContent = message;
-        }
-        gameSpeech.container.classList.add('active');
-    }
 
     tryMove() {
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
@@ -240,8 +232,6 @@ export class Game {
             }
             return;
         }
-
-
 
         let nextX = player.destination.x;
         let nextY = player.destination.y;
@@ -268,15 +258,12 @@ export class Game {
 
         const x = nextX / FLOOR_CELL_PIXELS;
         const y = nextY / FLOOR_CELL_PIXELS;
-        // console.log(`nextX:${nextX / FLOOR_CELL_PIXELS}, nextY:${nextY / FLOOR_CELL_PIXELS}`);
 
         if (this.grid[x] && this.grid[x][y]) {
             if (this.grid[x][y].occupant === null) {
-                // game.gameLoop.increment_draw_count();
                 player.destination.x = nextX;
                 player.destination.y = nextY;
             }
-
         }
     }
 
@@ -293,16 +280,12 @@ export class Game {
     give_item_to(item, entity) {
         if (item.isHeldBy !== null) {       // if somebody is holding item
             const oldEntity = item.isHeldBy;
-            // console.log(`removing item '${item.name}' from old owner '${oldEntity.name}'`)
             const oldIndex = oldEntity.bag.findSlotByItem(item);
             console.log(`remove ${item.name} from ${oldEntity.name} slot ${oldIndex}`)
             if (oldIndex > -1) {
                 oldEntity.bag.removeItem(oldIndex);
-
             }
             console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
-
-
         } else if (item.position !== null) { // if the item has a world position
             const posX = item.position.x;
             const posY = item.position.y;
@@ -323,10 +306,7 @@ export class Game {
 
         entity.receiveItem(item);
         console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
-
-
         this.renderer.modifyInventoryTexture(); // 
-
         return true;
     }
 
@@ -351,13 +331,16 @@ export class Game {
     }
 
     toggleShowPlayerInventory() {
-        this.renderer.shouldDrawPlayerInventory = true;
-        this.isInInventory = true;
+        if (!this.isPaused && !this.isInDialogue) {
+            this.renderer.shouldDrawPlayerInventory = true;
+            this.isInInventory = true;
+        }
     }
 
     exitInventory() {
         this.renderer.shouldDrawPlayerInventory = false;
         this.isInInventory = false;
+        player.bagCursorIndex = 0;
     }
 
     toggleShowSampleText(state) {
@@ -365,16 +348,17 @@ export class Game {
     }
 
 
-
+    // translate move messages into inventory messages
     tryInventoryMove() {
         let target = 0;
         switch (this.controls.current_dpad_dir) {
             case 'left':
-                target = -1;
+                if (player.bagCursorIndex !== 6)
+                    target = -1;
                 break;
             case 'right':
-
-                target = 1;
+                if (player.bagCursorIndex !== 5)
+                    target = 1;
                 break;
             case 'up':
                 target = -6
@@ -386,7 +370,7 @@ export class Game {
                 return;
         }
         if (this.checkInventoryMoveBounds(target)) player.bagCursorIndex += target;
-        console.log(player.bagCursorIndex);
+        // console.log(player.bagCursorIndex);
     }
 
     checkInventoryMoveBounds(target) {
@@ -395,7 +379,5 @@ export class Game {
         if (result > player.bag.slots.length - 1) return false;
         return true;
     }
-
-
 
 }
