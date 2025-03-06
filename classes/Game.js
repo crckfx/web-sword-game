@@ -1,47 +1,37 @@
 import { GameControls } from "../controls/GameControls.js";
 import { Renderer } from "./Renderer.js";
 import { Item } from "./Item.js";
-import { getHtmlControls, CAMERA_CELLS, FLOOR_CELL_PIXELS, pauseMenu, gameSpeech } from "../document.js";
+import { getHtmlControls, CAMERA_CELLS, FLOOR_CELL_PIXELS, pauseMenu, gameSpeech, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
-import { createGrid, facingToVector, moveTowards } from "../helper/grid.js";
+import { cellCoords, compare_two_vec2, createGrid, facingToVector, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./Entity.js";
 import { player } from "../helper/world-loader.js";
+import { wrapText } from "../experimental/dialogues.js";
+import { give_item_to } from "../helper/interactions.js";
 
 export class Game {
-    renderer = null;
-    gameLoop = null;
+    // renderer = null;
+    // gameLoop = null;
     grid = null;
     textures = {};
     images = {};
     entities = {};
     controls = null;
-
     // pause stuff
     isPaused = false;
     pauseTimestamp = null;
     isInDialogue = false;
     isInInventory = false;
 
-    constructor() {
-        this.controls = new GameControls({
-            HtmlControls: getHtmlControls(),
-            // 
-            bang_A: this.interact.bind(this),
-            bang_B: this.back.bind(this),
-            // bang_Y: this.log_entity_position.bind(this),
-            bang_Y: this.toggleShowSampleText.bind(this),
-            bang_X: this.toggleShowPlayerInventory.bind(this),
-            bang_pause: this.press_pause_menu.bind(this),
-            bang_resume: this.press_pause_menu.bind(this),
-            game: this,
-            bang_dpad: this.bang_dpad.bind(this),
-        });
-        this.gameLoop = new GameLoop(this.update.bind(this), this.render.bind(this));
-    }
+    currentPromptOptions = null;
+    promptIndex = null;
 
-    init_game(cellsX, cellsY) {
-        this.grid = createGrid(cellsX, cellsY);
+
+    constructor() {
+        // create the game grid
+        this.grid = createGrid(NUM_GRID.x, NUM_GRID.y);
+        // create the renderer
         this.renderer = new Renderer({
             canvas: document.getElementById('game_canv'),
             ctx: document.getElementById('game_canv').getContext("2d"),
@@ -49,12 +39,43 @@ export class Game {
             cameraCellsY: CAMERA_CELLS.y,
             game: this,
         });
+        // create the loop
+        this.gameLoop = new GameLoop(this.update.bind(this), this.render.bind(this));
+        // create the controls
+        this.controls = new GameControls({
+            HtmlControls: getHtmlControls(), // the onscreen controls (dpad, buttons)
+            game: this, // reference to the game
+            // bind controls to game functions
+            bang_dpad: this.command_dpad.bind(this),
+            bang_A: this.command_interact.bind(this),
+            bang_B: this.command_back.bind(this),
+            bang_Y: this.toggleShowSampleText.bind(this),
+            bang_X: this.toggleShowPlayerInventory.bind(this),
+
+            bang_pause: this.command_togglePause.bind(this),
+            bang_resume: this.command_togglePause.bind(this),
+        });
+        // 
+        this.defaultPromptOptions = [
+            {
+                text: "Back",
+                action: this.exitDialogue.bind(this),
+            },
+            {
+                text: "Exit",
+                action: () => {
+                    this.exitDialogue();
+                    this.exitInventory();
+                },
+            }
+        ];
     }
 
+    // MAIN UPDATE & RENDER
+    // -------------------------------------------------------------------
     update(delta) {
         const distance = moveTowards(player, player.destination, player.speed);
         const hasArrived = distance < 1;
-
 
         if (hasArrived) {
 
@@ -83,78 +104,9 @@ export class Game {
     render() {
         this.renderer.draw();
     }
+    // -------------------------------------------------------------------
 
-    // aka "player presses 'A' with a valid target"
-    interact() {
-        if (this.isPaused) return;
-        else if (this.isInDialogue) return;
-        else if (this.isInInventory) {
-            this.handleInventoryInteract();
-            return;
-        } else {
-            this.handleWorldInteract();
-            return;
-        }
-    }
-
-    // handler specifically for 'A' on 'PLAYER INVENTORY'
-    handleInventoryInteract() {
-        console.log(player.bag.slots[player.bagCursorIndex], player.bagCursorIndex + 1);
-    }
-
-    // handler specifically for 'A' on 'WORLD' 
-    handleWorldInteract() {
-        const t = player.interactTarget;
-        if (t !== null) {
-            if (t instanceof Entity) {
-                console.log(`Interacted with entity ${t.name}`);
-                this.dialogue();
-            } else if (t instanceof Item) {
-                console.log(`Interacted with item ${t.name}`);
-                const x = t.position.x / FLOOR_CELL_PIXELS;
-                const y = t.position.y / FLOOR_CELL_PIXELS;
-                if (this.grid[x] && this.grid[x][y]) {
-                    console.log(`take item from ${x}, ${y}`);
-                    if (this.give_item_to(t, player)) {
-                        player.interactTarget = null;
-                    };
-                }
-            } else {
-                console.log("not sure what you're interacting with", t);
-            }
-        }
-    }
-
-    // function to try a mov whenever dpad gets pressed (in case dpad);
-    bang_dpad() {
-        // check and trigger inventory move if game is in inventory?
-        if (this.isInInventory) {
-            // console.log('yes ! in inventory and pressing a dpad on');
-            this.tryInventoryMove();
-            return;
-        }
-    }
-
-    // function to handle press on the BACK button
-    back() {
-        // console.log('oh wowza did ya press "B"?');
-        if (this.isPaused) {
-            this.resume();
-        } else if (this.isInDialogue) {
-            this.exitDialogue();
-        } else if (this.isInInventory) {
-            this.exitInventory();
-        }
-    }
-
-    // ---------
-    press_pause_menu() {
-        if (this.isPaused) {
-            this.resume();
-        } else {
-            this.pause();
-        }
-    }
+    // pause and resume game functions
     pause() {
         this.isPaused = true;
         this.gameLoop.stop();
@@ -175,40 +127,110 @@ export class Game {
         this.isPaused = false;
     }
 
-    dialogue() {
-        // set a dialogue target
-        const t = player.interactTarget;
+    // commands
+    // -------------------------------------------------------------------
+    // aka "player presses 'A' with a valid target"
+    command_interact() {
+        if (this.isPaused) {
+            return;
+        } else if (this.isInDialogue) {
+            if (this.promptIndex !== null)
+                this.handleDialogueInteract();
+        } else if (this.isInInventory) {
+            this.handleInventoryInteract();
+            return;
+        } else {
+            this.handleWorldInteract();
+            return;
+        }
+    }
+
+
+    // function to try a mov whenever dpad gets pressed (in case dpad);
+    command_dpad() {
+        // check and trigger inventory move if game is in inventory?
+        if (this.isInInventory) {
+            // console.log('yes ! in inventory and pressing a dpad on');
+            if (this.isInDialogue) {
+                // console.log("implement prompt in inventory")
+                this.tryPromptMove();
+            } else {
+                this.tryInventoryMove();
+                return;
+            }
+        }
+    }
+
+    // function to handle press on the BACK button
+    command_back() {
+        // console.log('oh wowza did ya press "B"?');
+        if (this.isPaused) {
+            this.resume();
+        } else if (this.isInDialogue) {
+            if (this.promptIndex === null)
+                this.exitDialogue();
+        } else if (this.isInInventory) {
+            this.exitInventory();
+        }
+    }
+
+    command_togglePause() { 
+        this.isPaused ? this.resume() : this.pause(); 
+    }
+
+    // ---------
+    prompt(name, message, options, startPosition = 0) {
+        this.currentPromptOptions = options;
+        this.promptIndex = startPosition;
+        // piggybacking dialogue for now
+        this.isInDialogue = true;
+        // this.renderer.modifySampleText("system", message);
+        this.renderer.modifyDialogueWithOptions(name, message, this.currentPromptOptions);
+        this.toggleShowSampleText(true);
+    }
+
+    worldInteract_Item(t) {
+        const grid = this.grid;
+        const x = t.position.x / FLOOR_CELL_PIXELS;
+        const y = t.position.y / FLOOR_CELL_PIXELS;
+        if (grid[x] && grid[x][y]) {
+            console.log(`take item from ${x}, ${y}`);
+            if (give_item_to(grid, t, player, this.textures.mapOccupants[0])) {
+                this.renderer.modifyInventoryTexture();
+                player.interactTarget = null;
+                this.isInDialogue = true;
+                this.doSimplePrompt(t.name, `Picked up ${t.name}.`);
+                //
+            };
+        }
+    }
+
+    worldInteract_Entity(t) {
+        // ** handle conditions ** (a basic prototype)
         // check 1. a condition exists and 2. it is not already satisfied
         if (t.interactCondition !== null && t.isSatisfied === false) {
             // check the (currently unsatisfied) condition
-            const conditionIsMet = t.interactCondition() > -1; // assume an interact condition uses a number???
+            const conditionIsMet = t.interactCondition() > -1; // assume an interact condition uses a number??? todo: smooth out
             // console.log(`interact condition: ${conditionIsMet}`)
             if (conditionIsMet) {
-                // this is the case where we should play out the interactAction
                 t.interactAction();
                 t.isSatisfied = true;
             }
-        }
-
+        } // ** END handle conditions **
+        // put the game in dialogue mode
         this.isInDialogue = true;
-        const interactPos = t.position;
-
-        player.interactTarget.isFacing = this.compare_two_vec2(player.position, interactPos);
-
-        // gameSpeech.name.textContent = t.name;
-        // gameSpeech.message.textContent = `\"${t.getDialogue()}\"`;
-        // gameSpeech.container.classList.add('active');
+        // set the target to face toward the player
+        player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
+        // update the text in the dialogue layer
         this.renderer.modifySampleText(t.name, t.getDialogue());
+        // display the dialogue box
         this.toggleShowSampleText(true);
-
-        // console.log("pause game");
-        // this.renderer.drawPauseMenu();
     }
+
     exitDialogue() {
-        // gameSpeech.container.classList.remove('active');
         this.isInDialogue = false;
-        // gameSpeech.name.innerHTML = "";
-        // gameSpeech.message.innerHTML = "";
+        this.promptIndex = null;
+        this.currentPromptOptions = null;
         this.toggleShowSampleText(false);
     }
     // ---------
@@ -267,55 +289,16 @@ export class Game {
         }
     }
 
-    compare_two_vec2(vecA, vecB) {
-        // "on what side of vecB is vecA situated?"
-        if (vecA.x > vecB.x) return 'right';
-        if (vecA.x < vecB.x) return 'left';
-        if (vecA.y < vecB.y) return 'up';
-        if (vecA.y > vecB.y) return 'down';
-        console.error('uhh the 2 vectors seem to have the same position?')
-        return;
-    }
 
-    give_item_to(item, entity) {
-        if (item.isHeldBy !== null) {       // if somebody is holding item
-            const oldEntity = item.isHeldBy;
-            const oldIndex = oldEntity.bag.findSlotByItem(item);
-            console.log(`remove ${item.name} from ${oldEntity.name} slot ${oldIndex}`)
-            if (oldIndex > -1) {
-                oldEntity.bag.removeItem(oldIndex);
-            }
-            console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
-        } else if (item.position !== null) { // if the item has a world position
-            const posX = item.position.x;
-            const posY = item.position.y;
-            const gridX = posX / FLOOR_CELL_PIXELS;
-            const gridY = posY / FLOOR_CELL_PIXELS;
-            if (this.grid[gridX] && this.grid[gridX][gridY]) {
-                console.log(`should probably remove item from map at '${gridX},${gridY}'`)
-                const replaceCtx = this.textures.mapOccupants[0].getContext('2d');
-                console.log(replaceCtx)
-                replaceCtx.clearRect(posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
-                item.position = null;
-                this.grid[gridX][gridY].occupant = null;
-            } else {
-                console.warn(`oh no, item doesn't exist at '${x},${y}'`)
-            }
-        }
-        // console.log(`giving item '${item.name}' to '${entity.name}'`)
 
-        entity.receiveItem(item);
-        console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
-        this.renderer.modifyInventoryTexture(); // 
-        return true;
-    }
+
 
     log_entity_position(e) {
         if (e === undefined) e = player;
         console.log(
             e.name,
-            Math.round(e.position.x / FLOOR_CELL_PIXELS),
-            Math.round(e.position.y / FLOOR_CELL_PIXELS),
+            cellCoords(e.position.x),
+            cellCoords(e.position.y),
         );
     }
 
@@ -347,6 +330,14 @@ export class Game {
         this.renderer.shouldDrawSampleText = state;
     }
 
+    toggleShowOptionPrompt(state) {
+        if (state === true) {
+            this.renderer.shouldDrawOptionPrompt = true;
+        } else {
+            this.renderer.shouldDrawOptionPrompt = false;
+        }
+    }
+
 
     // translate move messages into inventory messages
     tryInventoryMove() {
@@ -370,7 +361,6 @@ export class Game {
                 return;
         }
         if (this.checkInventoryMoveBounds(target)) player.bagCursorIndex += target;
-        // console.log(player.bagCursorIndex);
     }
 
     checkInventoryMoveBounds(target) {
@@ -380,4 +370,71 @@ export class Game {
         return true;
     }
 
+    tryPromptMove() {
+        let target = 0;
+        const length = this.currentPromptOptions.length;
+        if (this.promptIndex !== null) target = this.promptIndex;
+        switch (this.controls.current_dpad_dir) {
+            case 'up': case 'left':
+                target -= 1;
+                break;
+            case 'down': case 'right':
+                target += 1;
+                break;
+            default:
+                return;
+        }
+
+        if (target > -1 && target < length) {
+            this.promptIndex = target;
+            console.log(`promptIndex is now ${this.promptIndex}`);
+        }
+
+    }
+
+
+
+    // press 'A' on a PROMPT OPTION
+    handleDialogueInteract() {
+        // implement me once we add interacts to dialogue
+        console.log(`interact with option ${this.promptIndex}`);
+        this.currentPromptOptions[this.promptIndex].action();
+    }
+
+    // press 'A' on 'PLAYER INVENTORY'
+    handleInventoryInteract() {
+        if (player.bag.slots[player.bagCursorIndex] === null) return;
+        const index = player.bagCursorIndex;
+        const item = player.bag.slots[index];
+        // console.log(player.bag.slots[player.bagCursorIndex], player.bagCursorIndex + 1);
+
+        let message = `big woop, you interacted with ${item.name}.`;
+        if (item.description !== null) message = item.description;
+        // this.currentPromptOptions = this.defaultPromptOptions;
+        this.prompt(item.name, message, item.promptOptions || this.defaultPromptOptions, 0);
+    }
+
+    // press 'A' on 'WORLD' 
+    handleWorldInteract() {
+        const t = player.interactTarget;
+        if (t !== null) {
+            if (t instanceof Entity) {
+                console.log(`Interacted with entity ${t.name}`);
+                this.worldInteract_Entity(t);
+            } else if (t instanceof Item) {
+                // interact with an item in the world (NOT inventory)
+                console.log(`Interacted with item ${t.name}`);
+                this.worldInteract_Item(t);
+
+            } else {
+                console.log("not sure what you're interacting with", t);
+            }
+        }
+    }
+
+
+    doSimplePrompt(name, message) {
+        this.renderer.modifySampleText(name, message);
+        this.toggleShowSampleText(true);
+    }
 }

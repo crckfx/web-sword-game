@@ -1,7 +1,6 @@
 import { FLOOR_CELL_PIXELS } from "../document.js";
 
-export function wrapText(input) {
-    const maxLen = 25;
+export function wrapText(input, charLimit = 25) {
     const words = input.split(' ');
     let lines = ['', ''];
 
@@ -9,7 +8,7 @@ export function wrapText(input) {
     let lineIndex = 0;
     words.forEach(word => {
         // If the word fits, add it to the current line
-        if (lines[lineIndex].length + word.length + (lines[lineIndex] ? 1 : 0) <= maxLen) {
+        if (lines[lineIndex].length + word.length + (lines[lineIndex] ? 1 : 0) <= charLimit) {
             lines[lineIndex] += (lines[lineIndex] ? ' ' : '') + word;
         } else {
             // Move to the next line when the word exceeds the max length

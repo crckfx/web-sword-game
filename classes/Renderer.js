@@ -8,8 +8,11 @@ import { Vector2 } from "./Vector2.js";
 export class Renderer {
     shouldDrawPlayerInventory = false;
     shouldDrawSampleText = false;
+    shouldDrawOptionPrompt = false;
 
     player_offset = 5;
+    invCellSize = 40;
+    optionsCoords = null;
 
     constructor({
         canvas,
@@ -113,6 +116,8 @@ export class Renderer {
     }
 
     drawInventory() {
+        this.ctx.fillstyle = "#000000aa";
+        // this.ctx.fillRect(0,0,this.canvas.width, this.canvas.height)
         // draw the inventory background
         const posX = FLOOR_CELL_PIXELS * 1.75;
         const posY = FLOOR_CELL_PIXELS * 0.75;
@@ -121,13 +126,14 @@ export class Renderer {
         this.ctx.drawImage(this.textures.inventoryItems, posX, posY);
         // draw the select layer
         this.ctx.strokeStyle = "red";
-        this.ctx.lineWidth = 4;
+        this.ctx.lineWidth = 2;
 
         let y = player.bagCursorIndex < 6 ? 0 : 1; // calculate the y for the display
         this.ctx.strokeRect(
-            posX + (player.bagCursorIndex % 6) * 40, posY + y * 40,
-            40, 40
-        )
+            posX + (player.bagCursorIndex % 6) * this.invCellSize,
+            posY + y * this.invCellSize,
+            this.invCellSize, this.invCellSize
+        );
 
         this.ctx.drawImage(this.textures.sword2, 0, 0, cell_size.x, cell_size.y)
     }
@@ -159,10 +165,23 @@ export class Renderer {
             FLOOR_CELL_PIXELS * 0.5,
             FLOOR_CELL_PIXELS * 5.5,
         )
+        if (this.game.promptIndex !== null) {
+
+            this.ctx.strokeStyle = "red";
+            this.ctx.lineWidth = 2;
+            const optionCoords = this.optionsCoords[this.game.promptIndex];
+
+            this.ctx.strokeRect(
+                optionCoords.x,
+                optionCoords.y,
+                optionCoords.width,
+                optionCoords.height
+            );
+        }
     }
 
     modifySampleText(heading = "", text = "") {
-        const texture = this.textures.sampleText; // this is a special type of texture though
+        const texture = this.textures.sampleText; // this is a special type of texture though; it has a ctx included
         const ctx = texture.ctx;
         ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
         ctx.fillStyle = '#ccc';
@@ -184,6 +203,58 @@ export class Renderer {
 
         ctx.fillText(texts[0], 8, 48);
         ctx.fillText(texts[1], 8, 80);
+    }
+
+
+    modifyDialogueWithOptions(heading = "", text = "", options) {
+        const texture = this.textures.sampleText; // this is a special type of texture though; it has a ctx included
+        const ctx = texture.ctx;
+        ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
+        ctx.fillStyle = '#ccc';
+        ctx.fillRect(
+            0, 0, texture.widthPx, texture.heightPx
+        )
+        ctx.drawImage(texture.image,
+            0, 0, texture.widthPx, texture.heightPx
+        )
+        ctx.fillStyle = '#f00';
+        ctx.font = "600 12px Courier";
+        ctx.fillText(heading, 8, 20);
+
+        ctx.fillStyle = '#000';
+        ctx.font = "600 16px Courier";
+        const texts = wrapText(text, 30);
+
+        // Options rendering (aligned right, stacked leftward)
+        const optionsCoords = [];
+        let y = 84; // Fixed Y position for all options
+        let x = texture.widthPx - 8; // Start from the far right
+        for (let i = options.length - 1; i >= 0; i--) { // Loop right-to-left
+            const optionText = options[i].text;
+            const textWidth = ctx.measureText(optionText).width;
+
+            x -= textWidth; // Move left
+
+            // save the coordinates
+            optionsCoords[i] = { 
+                x: x-4+FLOOR_CELL_PIXELS*0.5, 
+                y: y-14+ FLOOR_CELL_PIXELS*5.5, 
+                width: textWidth+8, 
+                height: 20
+            };
+
+            ctx.fillText(optionText, x, y);
+
+            x -= 12; // Add spacing between options
+        }
+
+
+        ctx.fillText(texts[0], 8, 40);
+        ctx.fillText(texts[1], 8, 60);
+        // ctx.fillText(optionsText, 8, 84);
+
+        // return optionsCoords;
+        this.optionsCoords = optionsCoords;
     }
 
 

@@ -11,13 +11,13 @@ import { map_2 } from "./maps/map_2.js";
 // the entry point
 async function dummy_init() {
     // async class load
-    swordGame.init_game(NUM_GRID.x, NUM_GRID.y, swordGame.textures, swordGame.images);    
+    // swordGame.init_game(NUM_GRID.x, NUM_GRID.y);    
     await load_image_resources(swordGame.images, swordGame.textures);
     await load_entities(swordGame.entities, swordGame.textures);
     await load_map(map_2, swordGame.grid, swordGame.textures, swordGame.images, swordGame.entities);
 
     player.texture = swordGame.textures.spriteDefault;
-    player.receiveItem(new Item('sneed', null, null, swordGame.textures.egg));
+    player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
     // .modifyInventoryTexture();
 
     swordGame.renderer.inventoryCtx = swordGame.textures.inventoryItems.getContext('2d');

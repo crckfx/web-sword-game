@@ -12,6 +12,7 @@ import { Vector2 } from "../classes/Vector2.js";
 import { gridCells } from "./grid.js";
 import { Animations } from "../classes/Animations.js";
 import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
+import { give_item_to } from "./interactions.js";
 
 export const player = new Player({
     name: 'lachie',
@@ -55,7 +56,10 @@ export async function load_entities(entities, textures) {
             console.log(`index is ${index}`)
             const item = player.bag.slots[index];
             // console.log(`give ${item.name} to ${this.name}`);
-            swordGame.give_item_to(item, this); // parent method which handles removal from old entity
+            if (give_item_to(swordGame.grid, item, this, swordGame.textures.mapOccupants)) swordGame.renderer.modifyInventoryTexture();
+            // swordGame.give_item_to(swordGame.grid, item, this); // parent method which handles removal from old entity
+            // this.renderer.modifyInventoryTexture(); // 
+
         },
         message_satisfied: "Thank you I was very hungry",
         dialogues: {

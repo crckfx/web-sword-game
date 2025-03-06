@@ -1,8 +1,14 @@
 import { Vector2 } from "../classes/Vector2.js";
 import { FLOOR_CELL_PIXELS } from "../document.js";
 
+// cell => pixel
 export function gridCells(n) {
     return FLOOR_CELL_PIXELS * n;
+}
+
+// pixel => cell
+export function cellCoords(pos) {
+    return Math.round(pos / FLOOR_CELL_PIXELS);
 }
 
 export function moveTowards(person, destinationPosition, speed) {
@@ -54,4 +60,14 @@ export function facingToVector(facing) {
     if (facing === 'up') return new Vector2(0, -1);
     if (facing === 'right') return new Vector2(1, 0);
     if (facing === 'down') return new Vector2(0, 1);
+}
+
+export function compare_two_vec2(vecA, vecB) {
+    // "on what side of vecB is vecA situated?"
+    if (vecA.x > vecB.x) return 'right';
+    if (vecA.x < vecB.x) return 'left';
+    if (vecA.y < vecB.y) return 'up';
+    if (vecA.y > vecB.y) return 'down';
+    console.error('uhh the 2 vectors seem to have the same position?')
+    return;
 }
