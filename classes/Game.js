@@ -40,7 +40,7 @@ export class Game {
             game: this,
         });
         // create the loop
-        this.gameLoop = new GameLoop(this.update.bind(this), this.render.bind(this));
+        this.gameLoop = new GameLoop(this.update.bind(this), this.renderer.draw.bind(this.renderer));
         // create the controls
         this.controls = new GameControls({
             HtmlControls: getHtmlControls(), // the onscreen controls (dpad, buttons)
@@ -49,7 +49,8 @@ export class Game {
             bang_dpad: this.command_dpad.bind(this),
             bang_A: this.command_interact.bind(this),
             bang_B: this.command_back.bind(this),
-            bang_Y: this.toggleShowSampleText.bind(this),
+            // bang_Y: this.toggleShowSampleText.bind(this),
+            bang_Y: () => console.log('bang Y not implemented'),
             bang_X: this.toggleShowPlayerInventory.bind(this),
 
             bang_pause: this.command_togglePause.bind(this),
@@ -71,7 +72,7 @@ export class Game {
         ];
     }
 
-    // MAIN UPDATE & RENDER
+    // MAIN UPDATE
     // -------------------------------------------------------------------
     update(delta) {
         const distance = moveTowards(player, player.destination, player.speed);
@@ -101,9 +102,6 @@ export class Game {
         player.step(delta);
     }
 
-    render() {
-        this.renderer.draw();
-    }
     // -------------------------------------------------------------------
 
     // pause and resume game functions

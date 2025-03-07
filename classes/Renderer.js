@@ -121,9 +121,9 @@ export class Renderer {
         // draw the inventory background
         const posX = FLOOR_CELL_PIXELS * 1.75;
         const posY = FLOOR_CELL_PIXELS * 0.75;
-        this.ctx.drawImage(this.textures.inventoryBg, posX, posY);
+        this.ctx.drawImage(this.textures.inventoryBg.canvas, posX, posY);
         // draw the items layer
-        this.ctx.drawImage(this.textures.inventoryItems, posX, posY);
+        this.ctx.drawImage(this.textures.inventoryItems.canvas, posX, posY);
         // draw the select layer
         this.ctx.strokeStyle = "red";
         this.ctx.lineWidth = 2;
@@ -139,7 +139,8 @@ export class Renderer {
     }
 
     modifyInventoryTexture() {
-        this.inventoryCtx.clearRect(0, 0, this.textures.inventoryItems.width, this.textures.inventoryItems.height)
+        const texture = this.textures.inventoryItems;
+        texture.ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
         for (let i = 0; i < player.bag.slots.length; i++) {
             const slot = player.bag.slots[i];
             if (slot !== null) {
@@ -148,13 +149,12 @@ export class Renderer {
                 const y = i < 6 ? 0 : 1;
                 console.log(`should update an inventory texture at slot i:${i}, pos:'${x}','${y}'`);
                 // draw the background texture
-                this.inventoryCtx.drawImage(
+                texture.ctx.drawImage(
                     invTexture,
                     x * (FLOOR_CELL_PIXELS + 8) + 4,
                     y * (FLOOR_CELL_PIXELS + 8) + 4,
                 );
             }
-
         }
     }
 

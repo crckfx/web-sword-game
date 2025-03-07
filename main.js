@@ -20,7 +20,7 @@ async function dummy_init() {
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
     // .modifyInventoryTexture();
 
-    swordGame.renderer.inventoryCtx = swordGame.textures.inventoryItems.getContext('2d');
+    // swordGame.renderer.inventoryCtx = swordGame.textures.inventoryItems.getContext('2d');
     swordGame.renderer.modifyInventoryTexture();
     // swordGame.entities.harold.hasAlert = true;
     // assign pointer and keyboard listeners

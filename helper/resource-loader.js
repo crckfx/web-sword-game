@@ -1,5 +1,5 @@
 import { FLOOR_CELL_PIXELS } from "../document.js";
-import { createDialogueTexture } from "../experimental/dialogues.js";
+import { createDialogueTexture, createInventoryItemsTexture, createInventoryBackground } from "../experimental/dialogues.js";
 import { extract_single_sprite, extract_sized_single_texture, extractSprites } from "../sprite.js";
 
 async function load_image_files(object, files) {
@@ -43,16 +43,12 @@ export async function load_image_resources(images, textures) {
         textures.potPlant3 = await extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
 
 
+        // the dialogue and inventory textures
+        textures.sampleText = await createDialogueTexture(images.dialogue_background);        
+        textures.inventoryBg = await createInventoryBackground(images.inventory_border);
+        textures.inventoryItems = await createInventoryItemsTexture();
+        // ^^^^ these are all SPECIAL textures (contain a canvas and a ctx for redraws)
 
-        // the inv textures has a background layer and a borders layer; experimental
-        const invTextures = await createInventoryTextures(images.inventory_border);
-        textures.inventoryBg = invTextures.background.canvas;
-        textures.inventoryItems = invTextures.items.canvas;
-        // the dialogue textures
-        textures.sampleText = await createDialogueTexture(images.dialogue_background);
-
-
-        // textures.
 
         // unpack the texture resources
         textures.spriteDefault = await extractSprites(images.spriteDefault);
@@ -84,57 +80,3 @@ export async function loadImage(url) {
         img.src = url;
     });
 }
-
-export async function createInventoryTextures(slotBorder) {
-    //
-    const slotPx = FLOOR_CELL_PIXELS + 8;
-
-    // get the pixel sizes for the map
-    const widthPx = slotPx * 6;
-    const heightPx = slotPx * 2;
-    // Create an offscreen bgCanvas for each sprite
-    //
-    const bgCanvas = document.createElement('canvas');
-    bgCanvas.width = widthPx;
-    bgCanvas.height = heightPx;
-    const bgCtx = bgCanvas.getContext('2d');
-    bgCtx.imageSmoothingEnabled = false;
-    //
-    const itemsCanvas = document.createElement('canvas');
-    itemsCanvas.width = widthPx;
-    itemsCanvas.height = heightPx;
-    const itemsCtx = itemsCanvas.getContext('2d');
-    itemsCtx.imageSmoothingEnabled = false;
-
-    bgCtx.fillStyle = '#ff0a';
-    bgCtx.fillRect(
-        0, 0, widthPx, heightPx
-    )
-
-    for (let j = 0; j < 2; j++) {
-
-        for (let i = 0; i < 6; i++) {
-            let startX = i * slotPx;
-            let startY = j * slotPx;
-            bgCtx.fillStyle = "#222";
-            bgCtx.fillRect(startX, startY, slotPx, slotPx);
-            bgCtx.drawImage(
-                slotBorder,
-                startX, startY, slotPx, slotPx
-            )
-        }
-    }
-
-    return {
-        background: {
-            canvas: bgCanvas,
-            ctx: bgCtx
-        },
-        items: {
-            canvas: itemsCanvas,
-            ctx: itemsCtx
-        }
-    }
-
-}
-
