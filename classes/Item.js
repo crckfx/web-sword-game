@@ -11,8 +11,5 @@ export class Item {
         this.invTexture = invTexture ?? null;
         this.description = description ?? null;
     }
-
-
-
 }
 

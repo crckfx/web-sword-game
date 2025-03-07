@@ -1,4 +1,4 @@
-import { wrapText } from "./dialogues.js";
+import { wrapText } from "../helper/promptMenu.js";
 
 export class Dialogue {
     // condition = false;
@@ -27,3 +27,4 @@ export class Dialogue {
 //         action: this.exitDialogue.bind(this),
 //     }
 // ]; 
+

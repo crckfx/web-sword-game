@@ -10,14 +10,8 @@ import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WA
 export const NUM_GRID = new Vector2(24, 28); // total number of map X & Y cells
 
 // game declarations
-export const doodads = [];
-export const entities = {}
 export const FLOOR_CELL_PIXELS = 32;
 export const CAMERA_CELLS = new Vector2(11, 9);
-// export const HtmlControls = getHtmlControls();
-
-
-// const ASPECT_RATIO = 11 / 9;
 const ASPECT_RATIO = CAMERA_CELLS.x / CAMERA_CELLS.y;
 const PADDING = 24;
 const MAX_SIZE = new Vector2(1650, 1350);
@@ -30,13 +24,6 @@ export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');
 const panelRight = document.getElementById('panel_right');
 export const pauseMenu = document.getElementById('pauseMenu');
-export const gameSpeech = {
-    container: document.getElementById('game_speech'),
-    name: document.getElementById('game_speech').querySelector('.name'),
-    message: document.getElementById('game_speech').querySelector('.message'),
-
-};
-
 
 export const cell_size = getCellSize();
 export const MIDDLE_CELL = {
@@ -128,13 +115,6 @@ function applyPreventsToPanel(panel) {
     panel.addEventListener("contextmenu", (event) => { event.preventDefault(); });
     const controlBlock = panel.querySelector('.ctrlblock');
     if (controlBlock) {
-        // const paths = controlBlock.querySelectorAll('.control');
-        // paths.forEach((path) => {
-        //     console.log(path);
-        //     path.addEventListener("contextmenu", (event) => {
-        //         event.preventDefault();
-        //     });
-        // });
         controlBlock.addEventListener("contextmenu", (event) => {
             event.preventDefault();
         });

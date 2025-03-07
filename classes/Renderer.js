@@ -1,14 +1,13 @@
-import { cell_size, MIDDLE_CELL, entities, FLOOR_CELL_PIXELS } from "../document.js";
-import { wrapText } from "../experimental/dialogues.js";
-import { facingToVector, gridCells } from "../helper/grid.js";
+import { cell_size, MIDDLE_CELL, FLOOR_CELL_PIXELS } from "../document.js";
+import { wrapText } from "../helper/promptMenu.js";
+import { gridCells } from "../helper/grid.js";
 import { player } from "../helper/world-loader.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
 
 export class Renderer {
     shouldDrawPlayerInventory = false;
-    shouldDrawSampleText = false;
-    shouldDrawOptionPrompt = false;
+    shouldDrawDialogueBox = false;
 
     player_offset = 5;
     invCellSize = 40;
@@ -36,12 +35,34 @@ export class Renderer {
 
     // A.K.A. "render_entire_grid"
     draw() {
+        // clear it
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // draw black first
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawFloorsAndDoodads(); // a.k.a. do everything
+        // draw it up
+        const sourceX = (player.position.x - MIDDLE_CELL.x);
+        const sourceY = (player.position.y - MIDDLE_CELL.y);
+        const sourceWidth = gridCells(this.cells.x);
+        const sourceHeight = gridCells(this.cells.y);
+        // draw the floor
+        this.ctx.drawImage(
+            this.textures.mapFloor,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, this.canvas.width, this.canvas.height
+        );
+        this.drawPlayer(); // draw player
+        // draw entities
+        for (const key in this.game.entities) {
+            this.drawEntity(this.game.entities[key]);
+        }
+        // draw 'occupants' (doodads?)
+        this.ctx.drawImage(this.textures.mapOccupants[0],
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, this.canvas.width, this.canvas.height
+        );
         if (this.shouldDrawPlayerInventory) this.drawInventory();
-        if (this.shouldDrawSampleText) this.drawSampleText();
+        if (this.shouldDrawDialogueBox) this.drawDialogueBox();
     }
 
     drawPlayer() {
@@ -73,30 +94,6 @@ export class Renderer {
                 "red"
             );
         }
-    }
-
-    // a.k.a. draw everything
-    drawFloorsAndDoodads() {
-        const sourceX = (player.position.x - MIDDLE_CELL.x);
-        const sourceY = (player.position.y - MIDDLE_CELL.y);
-        const sourceWidth = gridCells(this.cells.x);
-        const sourceHeight = gridCells(this.cells.y);
-        // draw the floor
-        this.ctx.drawImage(
-            this.textures.mapFloor,
-            sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, this.canvas.width, this.canvas.height
-        );
-        this.drawPlayer(); // draw player
-        // draw entities
-        for (const key in this.game.entities) {
-            this.drawEntity(this.game.entities[key]);
-        }
-        // draw 'occupants' (doodads?)
-        this.ctx.drawImage(this.textures.mapOccupants[0],
-            sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, this.canvas.width, this.canvas.height
-        );
     }
 
     // helper to draw a border on the main canvas
@@ -138,49 +135,27 @@ export class Renderer {
         this.ctx.drawImage(this.textures.sword2, 0, 0, cell_size.x, cell_size.y)
     }
 
-    modifyInventoryTexture() {
-        const texture = this.textures.inventoryItems;
-        texture.ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
-        for (let i = 0; i < player.bag.slots.length; i++) {
-            const slot = player.bag.slots[i];
-            if (slot !== null) {
-                const invTexture = slot.invTexture ?? this.textures.sword2;
-                const x = i % 6;
-                const y = i < 6 ? 0 : 1;
-                console.log(`should update an inventory texture at slot i:${i}, pos:'${x}','${y}'`);
-                // draw the background texture
-                texture.ctx.drawImage(
-                    invTexture,
-                    x * (FLOOR_CELL_PIXELS + 8) + 4,
-                    y * (FLOOR_CELL_PIXELS + 8) + 4,
-                );
-            }
-        }
-    }
 
 
-    drawSampleText() {
+    drawDialogueBox() {
         this.ctx.drawImage(
             this.textures.sampleText.canvas,
             FLOOR_CELL_PIXELS * 0.5,
             FLOOR_CELL_PIXELS * 5.5,
         )
         if (this.game.promptIndex !== null) {
-
             this.ctx.strokeStyle = "red";
             this.ctx.lineWidth = 2;
             const optionCoords = this.optionsCoords[this.game.promptIndex];
 
             this.ctx.strokeRect(
-                optionCoords.x,
-                optionCoords.y,
-                optionCoords.width,
-                optionCoords.height
+                optionCoords.x, optionCoords.y,
+                optionCoords.width, optionCoords.height
             );
         }
     }
 
-    modifySampleText(heading = "", text = "") {
+    modifyDialogueText_basic(heading = "", text = "") {
         const texture = this.textures.sampleText; // this is a special type of texture though; it has a ctx included
         const ctx = texture.ctx;
         ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
@@ -236,10 +211,10 @@ export class Renderer {
             x -= textWidth; // Move left
 
             // save the coordinates
-            optionsCoords[i] = { 
-                x: x-4+FLOOR_CELL_PIXELS*0.5, 
-                y: y-14+ FLOOR_CELL_PIXELS*5.5, 
-                width: textWidth+8, 
+            optionsCoords[i] = {
+                x: x - 4 + FLOOR_CELL_PIXELS * 0.5,
+                y: y - 14 + FLOOR_CELL_PIXELS * 5.5,
+                width: textWidth + 8,
                 height: 20
             };
 

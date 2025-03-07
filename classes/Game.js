@@ -1,14 +1,17 @@
 import { GameControls } from "../controls/GameControls.js";
 import { Renderer } from "./Renderer.js";
 import { Item } from "./Item.js";
-import { getHtmlControls, CAMERA_CELLS, FLOOR_CELL_PIXELS, pauseMenu, gameSpeech, NUM_GRID } from "../document.js";
+import { getHtmlControls, CAMERA_CELLS, FLOOR_CELL_PIXELS, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
-import { cellCoords, compare_two_vec2, createGrid, facingToVector, moveTowards } from "../helper/grid.js";
+import { cellCoords, compare_two_vec2, createGrid, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./Entity.js";
 import { player } from "../helper/world-loader.js";
-import { wrapText } from "../experimental/dialogues.js";
+import { wrapText, tryPromptMove} from "../helper/promptMenu.js";
 import { give_item_to } from "../helper/interactions.js";
+import { modifyInventoryTexture, tryInventoryMove } from "../helper/invMenu.js";
+// import { tryPromptMove } from "../experimental/promptMenu.js";
+import { direction_to_2D } from "../helper/directions.js";
 
 export class Game {
     // renderer = null;
@@ -49,9 +52,8 @@ export class Game {
             bang_dpad: this.command_dpad.bind(this),
             bang_A: this.command_interact.bind(this),
             bang_B: this.command_back.bind(this),
-            // bang_Y: this.toggleShowSampleText.bind(this),
             bang_Y: () => console.log('bang Y not implemented'),
-            bang_X: this.toggleShowPlayerInventory.bind(this),
+            bang_X: this.enterPlayerInventory.bind(this),
 
             bang_pause: this.command_togglePause.bind(this),
             bang_resume: this.command_togglePause.bind(this),
@@ -66,7 +68,7 @@ export class Game {
                 text: "Exit",
                 action: () => {
                     this.exitDialogue();
-                    this.exitInventory();
+                    this.exitPlayerInventory();
                 },
             }
         ];
@@ -86,8 +88,8 @@ export class Game {
             // "can the player interact with the cell they are facing?"
             // (but only if we don't have one set already)
             if (player.interactTarget === null) {
-                const currentCell = new Vector2(player.position.x / FLOOR_CELL_PIXELS, player.position.y / FLOOR_CELL_PIXELS);
-                const interactOffset = facingToVector(player.isFacing);
+                const interactOffset = direction_to_2D(player.isFacing);
+                const currentCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
                 const interactCell = new Vector2(currentCell.x + interactOffset.x, currentCell.y + interactOffset.y);
                 if (this.grid[interactCell.x] && this.grid[interactCell.x][interactCell.y]) {
                     const occupant = this.grid[interactCell.x][interactCell.y].occupant;
@@ -151,9 +153,13 @@ export class Game {
             // console.log('yes ! in inventory and pressing a dpad on');
             if (this.isInDialogue) {
                 // console.log("implement prompt in inventory")
-                this.tryPromptMove();
+                this.promptIndex = tryPromptMove(
+                    this.controls.current_dpad_dir,
+                    this.currentPromptOptions.length,
+                    this.promptIndex
+                );
             } else {
-                this.tryInventoryMove();
+                tryInventoryMove(this.controls.current_dpad_dir);
                 return;
             }
         }
@@ -168,7 +174,7 @@ export class Game {
             if (this.promptIndex === null)
                 this.exitDialogue();
         } else if (this.isInInventory) {
-            this.exitInventory();
+            this.exitPlayerInventory();
         }
     }
 
@@ -182,54 +188,17 @@ export class Game {
         this.promptIndex = startPosition;
         // piggybacking dialogue for now
         this.isInDialogue = true;
-        // this.renderer.modifySampleText("system", message);
         this.renderer.modifyDialogueWithOptions(name, message, this.currentPromptOptions);
-        this.toggleShowSampleText(true);
+        this.renderer.shouldDrawDialogueBox = true;
     }
 
-    worldInteract_Item(t) {
-        const grid = this.grid;
-        const x = t.position.x / FLOOR_CELL_PIXELS;
-        const y = t.position.y / FLOOR_CELL_PIXELS;
-        if (grid[x] && grid[x][y]) {
-            console.log(`take item from ${x}, ${y}`);
-            if (give_item_to(grid, t, player, this.textures.mapOccupants[0])) {
-                this.renderer.modifyInventoryTexture();
-                player.interactTarget = null;
-                this.isInDialogue = true;
-                this.doSimplePrompt(t.name, `Picked up ${t.name}.`);
-                //
-            };
-        }
-    }
-
-    worldInteract_Entity(t) {
-        // ** handle conditions ** (a basic prototype)
-        // check 1. a condition exists and 2. it is not already satisfied
-        if (t.interactCondition !== null && t.isSatisfied === false) {
-            // check the (currently unsatisfied) condition
-            const conditionIsMet = t.interactCondition() > -1; // assume an interact condition uses a number??? todo: smooth out
-            // console.log(`interact condition: ${conditionIsMet}`)
-            if (conditionIsMet) {
-                t.interactAction();
-                t.isSatisfied = true;
-            }
-        } // ** END handle conditions **
-        // put the game in dialogue mode
-        this.isInDialogue = true;
-        // set the target to face toward the player
-        player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
-        // update the text in the dialogue layer
-        this.renderer.modifySampleText(t.name, t.getDialogue());
-        // display the dialogue box
-        this.toggleShowSampleText(true);
-    }
 
     exitDialogue() {
+        this.currentPromptOptions = null;
         this.isInDialogue = false;
         this.promptIndex = null;
-        this.currentPromptOptions = null;
-        this.toggleShowSampleText(false);
+        this.renderer.shouldDrawDialogueBox = false;
+
     }
     // ---------
 
@@ -289,108 +258,18 @@ export class Game {
 
 
 
-
-
-    log_entity_position(e) {
-        if (e === undefined) e = player;
-        console.log(
-            e.name,
-            cellCoords(e.position.x),
-            cellCoords(e.position.y),
-        );
-    }
-
-    log_relevant_inventory() {
-        let t;
-        if (player.interactTarget !== null) {
-            console.log(`INVENTORY THING: interact target is uh ${player.interactTarget.name}`)
-            t = player.interactTarget;
-        } else {
-            t = player;
-        }
-        return t.bag.getContentsAsString();
-    }
-
-    toggleShowPlayerInventory() {
+    enterPlayerInventory() {
         if (!this.isPaused && !this.isInDialogue) {
             this.renderer.shouldDrawPlayerInventory = true;
             this.isInInventory = true;
         }
     }
 
-    exitInventory() {
+    exitPlayerInventory() {
         this.renderer.shouldDrawPlayerInventory = false;
         this.isInInventory = false;
         player.bagCursorIndex = 0;
     }
-
-    toggleShowSampleText(state) {
-        this.renderer.shouldDrawSampleText = state;
-    }
-
-    toggleShowOptionPrompt(state) {
-        if (state === true) {
-            this.renderer.shouldDrawOptionPrompt = true;
-        } else {
-            this.renderer.shouldDrawOptionPrompt = false;
-        }
-    }
-
-
-    // translate move messages into inventory messages
-    tryInventoryMove() {
-        let target = 0;
-        switch (this.controls.current_dpad_dir) {
-            case 'left':
-                if (player.bagCursorIndex !== 6)
-                    target = -1;
-                break;
-            case 'right':
-                if (player.bagCursorIndex !== 5)
-                    target = 1;
-                break;
-            case 'up':
-                target = -6
-                break;
-            case 'down':
-                target = 6;
-                break;
-            default:
-                return;
-        }
-        if (this.checkInventoryMoveBounds(target)) player.bagCursorIndex += target;
-    }
-
-    checkInventoryMoveBounds(target) {
-        const result = player.bagCursorIndex + target;
-        if (result < 0) return false;
-        if (result > player.bag.slots.length - 1) return false;
-        return true;
-    }
-
-    tryPromptMove() {
-        let target = 0;
-        const length = this.currentPromptOptions.length;
-        if (this.promptIndex !== null) target = this.promptIndex;
-        switch (this.controls.current_dpad_dir) {
-            case 'up': case 'left':
-                target -= 1;
-                break;
-            case 'down': case 'right':
-                target += 1;
-                break;
-            default:
-                return;
-        }
-
-        if (target > -1 && target < length) {
-            this.promptIndex = target;
-            console.log(`promptIndex is now ${this.promptIndex}`);
-        }
-
-    }
-
-
 
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
@@ -406,9 +285,8 @@ export class Game {
         const item = player.bag.slots[index];
         // console.log(player.bag.slots[player.bagCursorIndex], player.bagCursorIndex + 1);
 
-        let message = `big woop, you interacted with ${item.name}.`;
-        if (item.description !== null) message = item.description;
-        // this.currentPromptOptions = this.defaultPromptOptions;
+        let message = item.description ?? `big woop, you interacted with ${item.name}.`;
+
         this.prompt(item.name, message, item.promptOptions || this.defaultPromptOptions, 0);
     }
 
@@ -430,9 +308,49 @@ export class Game {
         }
     }
 
+    worldInteract_Item(t) {
+        const grid = this.grid;
+        const x = t.position.x / FLOOR_CELL_PIXELS;
+        const y = t.position.y / FLOOR_CELL_PIXELS;
+        if (grid[x] && grid[x][y]) {
+            console.log(`take item from ${x}, ${y}`);
+            if (give_item_to(grid, t, player, this.textures.mapOccupants[0])) {
+                modifyInventoryTexture(this.textures.inventoryItems);
+                player.interactTarget = null;
+                this.doSimplePrompt(t.name, `Picked up ${t.name}.`);
+                //
+            };
+        }
+    }
+
+    worldInteract_Entity(t) {
+        // ** handle conditions ** (a basic prototype)
+        // check 1. a condition exists and 2. it is not already satisfied
+        if (t.interactCondition !== null && t.isSatisfied === false) {
+            // check the (currently unsatisfied) condition
+            const conditionIsMet = t.interactCondition() > -1; // assume an interact condition uses a number??? todo: smooth out
+            // console.log(`interact condition: ${conditionIsMet}`)
+            if (conditionIsMet) {
+                t.interactAction();
+                t.isSatisfied = true;
+            }
+        } // ** END handle conditions **
+        // put the game in dialogue mode
+        this.isInDialogue = true;
+        // set the target to face toward the player
+        player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
+        // update the text in the dialogue layer
+        this.renderer.modifyDialogueText_basic(t.name, t.getDialogue());
+        // display the dialogue box
+        this.renderer.shouldDrawDialogueBox = true;
+
+    }
+
 
     doSimplePrompt(name, message) {
-        this.renderer.modifySampleText(name, message);
-        this.toggleShowSampleText(true);
+        this.isInDialogue = true;
+        this.renderer.modifyDialogueText_basic(name, message);
+        this.renderer.shouldDrawDialogueBox = true;
+
     }
 }

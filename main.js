@@ -4,6 +4,7 @@ import { NUM_GRID } from "./document.js";
 import { load_image_resources } from "./helper/resource-loader.js";
 import { map_1 } from "./maps/map_1.js";
 import { map_2 } from "./maps/map_2.js";
+import { modifyInventoryTexture } from "./helper/invMenu.js";
 
 
 
@@ -18,10 +19,8 @@ async function dummy_init() {
 
     player.texture = swordGame.textures.spriteDefault;
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
-    // .modifyInventoryTexture();
 
-    // swordGame.renderer.inventoryCtx = swordGame.textures.inventoryItems.getContext('2d');
-    swordGame.renderer.modifyInventoryTexture();
+    modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;
     // assign pointer and keyboard listeners
     swordGame.controls.bind();

@@ -3,7 +3,7 @@ import { Entity } from "../classes/Entity.js";
 
 import { Game } from "../classes/Game.js";
 import { Item } from "../classes/Item.js";
-import { wrapText } from "../experimental/dialogues.js";
+import { wrapText } from "./promptMenu.js";
 
 
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./walk.js";
@@ -13,6 +13,7 @@ import { gridCells } from "./grid.js";
 import { Animations } from "../classes/Animations.js";
 import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
 import { give_item_to } from "./interactions.js";
+import { modifyInventoryTexture } from "./invMenu.js";
 
 export const player = new Player({
     name: 'lachie',
@@ -56,7 +57,7 @@ export async function load_entities(entities, textures) {
             console.log(`index is ${index}`)
             const item = player.bag.slots[index];
             // console.log(`give ${item.name} to ${this.name}`);
-            if (give_item_to(swordGame.grid, item, this, swordGame.textures.mapOccupants)) swordGame.renderer.modifyInventoryTexture();
+            if (give_item_to(swordGame.grid, item, this, swordGame.textures.mapOccupants)) modifyInventoryTexture(swordGame.textures.inventoryItems);
             // swordGame.give_item_to(swordGame.grid, item, this); // parent method which handles removal from old entity
             // this.renderer.modifyInventoryTexture(); // 
 

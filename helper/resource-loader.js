@@ -1,5 +1,6 @@
 import { FLOOR_CELL_PIXELS } from "../document.js";
-import { createDialogueTexture, createInventoryItemsTexture, createInventoryBackground } from "../experimental/dialogues.js";
+import { createDialogueTexture } from "./promptMenu.js";
+import { createInventoryBackground, createInventoryItemsTexture } from "./invMenu.js";
 import { extract_single_sprite, extract_sized_single_texture, extractSprites } from "../sprite.js";
 
 async function load_image_files(object, files) {

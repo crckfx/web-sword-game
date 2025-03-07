@@ -1,45 +1,6 @@
 import { FLOOR_CELL_PIXELS } from "../document.js";
+import { player } from "./world-loader.js";
 
-// function to split text (prepare for dialogue)
-export function wrapText(input, charLimit = 25) {
-    const words = input.split(' ');
-    let lines = ['', ''];
-    // Build the lines
-    let lineIndex = 0;
-    words.forEach(word => {
-        // If the word fits, add it to the current line
-        if (lines[lineIndex].length + word.length + (lines[lineIndex] ? 1 : 0) <= charLimit) {
-            lines[lineIndex] += (lines[lineIndex] ? ' ' : '') + word;
-        } else {
-            // Move to the next line when the word exceeds the max length
-            lineIndex++;
-            lines[lineIndex] = word;
-        }
-    });
-    return lines;
-}    
-
-
-// function to create the base dialogue layout
-export async function createDialogueTexture(backgroundImage) {
-   // get the pixel sizes for the texture (relative to the main pixel base) 
-    const widthPx = FLOOR_CELL_PIXELS * 10;     // 10 game cells wide
-    const heightPx = FLOOR_CELL_PIXELS * 3;     // 3 game cells tall
-    // create a canvas, set its size, get a context
-    const canvas = document.createElement('canvas');
-    canvas.width = widthPx;
-    canvas.height = heightPx;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    ctx.imageSmoothingEnabled = false;
-    // return a special 'texture' (including context)
-    return {
-        image: backgroundImage, // for use later as a static background
-        canvas: canvas,
-        ctx: ctx,
-        widthPx: widthPx,
-        heightPx: heightPx,
-    }
-}
 
 // function to create the inventory items layout
 export async function createInventoryItemsTexture() {
@@ -58,7 +19,7 @@ export async function createInventoryItemsTexture() {
         ctx: itemsCtx,
         widthPx: widthPx,
         heightPx: heightPx,
-    }    
+    }
 }
 
 // function to create the inventory background layout
@@ -100,4 +61,60 @@ export async function createInventoryBackground(slotBorder) {
         heightPx: heightPx,
     }
 
+}
+
+
+// translate move messages into inventory messages
+export function tryInventoryMove(direction) {
+    let target = 0;
+    switch (direction) {
+        case 'left':
+            if (player.bagCursorIndex !== 6)
+                target = -1;
+            break;
+        case 'right':
+            if (player.bagCursorIndex !== 5)
+                target = 1;
+            break;
+        case 'up':
+            target = -6
+            break;
+        case 'down':
+            target = 6;
+            break;
+        default:
+            return;
+    }
+    if (checkInventoryMoveBounds(target)) player.bagCursorIndex += target;
+}
+
+function checkInventoryMoveBounds(target) {
+    const result = player.bagCursorIndex + target;
+    if (result < 0) return false;
+    if (result > player.bag.slots.length - 1) return false;
+    return true;
+}
+
+
+
+
+
+export function modifyInventoryTexture(texture) {
+
+    texture.ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
+    for (let i = 0; i < player.bag.slots.length; i++) {
+        const slot = player.bag.slots[i];
+        if (slot !== null) {
+            const invTexture = slot.invTexture ?? this.textures.sword2;
+            const x = i % 6;
+            const y = i < 6 ? 0 : 1;
+            console.log(`should update an inventory texture at slot i:${i}, pos:'${x}','${y}'`);
+            // draw the background texture
+            texture.ctx.drawImage(
+                invTexture,
+                x * (FLOOR_CELL_PIXELS + 8) + 4,
+                y * (FLOOR_CELL_PIXELS + 8) + 4,
+            );
+        }
+    }
 }
