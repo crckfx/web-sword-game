@@ -7,7 +7,7 @@ import { cellCoords, compare_two_vec2, createGrid, moveTowards } from "../helper
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./Entity.js";
 import { player } from "../helper/world-loader.js";
-import { wrapText, tryPromptMove} from "../helper/promptMenu.js";
+import { wrapText, tryPromptMove } from "../helper/promptMenu.js";
 import { give_item_to } from "../helper/interactions.js";
 import { modifyInventoryTexture, tryInventoryMove } from "../helper/invMenu.js";
 // import { tryPromptMove } from "../experimental/promptMenu.js";
@@ -84,13 +84,14 @@ export class Game {
 
             this.tryMove();
 
+            const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
+
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
             // (but only if we don't have one set already)
             if (player.interactTarget === null) {
                 const interactOffset = direction_to_2D(player.isFacing);
-                const currentCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
-                const interactCell = new Vector2(currentCell.x + interactOffset.x, currentCell.y + interactOffset.y);
+                const interactCell = new Vector2(playerCell.x + interactOffset.x, playerCell.y + interactOffset.y);
                 if (this.grid[interactCell.x] && this.grid[interactCell.x][interactCell.y]) {
                     const occupant = this.grid[interactCell.x][interactCell.y].occupant;
                     // if (typeof(cell.occupant) === "object") {
@@ -100,6 +101,15 @@ export class Game {
                     }
                 };
             }
+
+            // const fredCell = this.entities.fred.getFacingCell();
+            // if (fredCell.x === playerCell.x && fredCell.y === playerCell.y) {
+            //     this.entities.fred.hasAlert = true;
+            // } else {
+            //     this.entities.fred.hasAlert = false;
+            // }
+            // console.log(fredCell.x, fredCell.y);
+            // this.entities.fred.step(delta);
         }
         player.step(delta);
     }
@@ -178,12 +188,12 @@ export class Game {
         }
     }
 
-    command_togglePause() { 
-        this.isPaused ? this.resume() : this.pause(); 
+    command_togglePause() {
+        this.isPaused ? this.resume() : this.pause();
     }
 
     // ---------
-    prompt(name, message, options, startPosition = 0) {
+    enterDialogue(name, message, options, startPosition = 0) {
         this.currentPromptOptions = options;
         this.promptIndex = startPosition;
         // piggybacking dialogue for now
@@ -192,6 +202,12 @@ export class Game {
         this.renderer.shouldDrawDialogueBox = true;
     }
 
+
+    doSimplePrompt(name, message) {
+        this.renderer.modifyDialogueText_basic(name, message);
+        this.renderer.shouldDrawDialogueBox = true;
+        this.isInDialogue = true;
+    }
 
     exitDialogue() {
         this.currentPromptOptions = null;
@@ -204,6 +220,9 @@ export class Game {
 
 
     tryMove() {
+
+        
+
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
             switch (player.isFacing) {
                 case 'left':
@@ -254,6 +273,8 @@ export class Game {
                 player.destination.y = nextY;
             }
         }
+        
+
     }
 
 
@@ -283,11 +304,8 @@ export class Game {
         if (player.bag.slots[player.bagCursorIndex] === null) return;
         const index = player.bagCursorIndex;
         const item = player.bag.slots[index];
-        // console.log(player.bag.slots[player.bagCursorIndex], player.bagCursorIndex + 1);
-
         let message = item.description ?? `big woop, you interacted with ${item.name}.`;
-
-        this.prompt(item.name, message, item.promptOptions || this.defaultPromptOptions, 0);
+        this.enterDialogue(item.name, message, item.promptOptions || this.defaultPromptOptions, 0);
     }
 
     // press 'A' on 'WORLD' 
@@ -310,10 +328,10 @@ export class Game {
 
     worldInteract_Item(t) {
         const grid = this.grid;
-        const x = t.position.x / FLOOR_CELL_PIXELS;
-        const y = t.position.y / FLOOR_CELL_PIXELS;
+        const x = cellCoords(t.position.x);
+        const y = cellCoords(t.position.y);
         if (grid[x] && grid[x][y]) {
-            console.log(`take item from ${x}, ${y}`);
+            // console.log(`take item from ${x}, ${y}`);
             if (give_item_to(grid, t, player, this.textures.mapOccupants[0])) {
                 modifyInventoryTexture(this.textures.inventoryItems);
                 player.interactTarget = null;
@@ -346,11 +364,4 @@ export class Game {
 
     }
 
-
-    doSimplePrompt(name, message) {
-        this.isInDialogue = true;
-        this.renderer.modifyDialogueText_basic(name, message);
-        this.renderer.shouldDrawDialogueBox = true;
-
-    }
 }

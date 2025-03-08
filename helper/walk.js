@@ -1,3 +1,6 @@
+import { Animations } from "../classes/Animations.js";
+import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
+
 const NUM_FRAMES_WALK = 4;
 const NUM_FRAMES_STAND = 1;
 const DURATION_WALK = 600;
@@ -32,3 +35,19 @@ export const STAND_DOWN = createFrames(DURATION_STAND, NUM_FRAMES_STAND, 0, 0);
 export const STAND_LEFT = createFrames(DURATION_STAND, NUM_FRAMES_STAND, 8, 0);
 export const STAND_UP   = createFrames(DURATION_STAND, NUM_FRAMES_STAND, 16, 0);
 export const STAND_RIGHT = createFrames(DURATION_STAND, NUM_FRAMES_STAND, 24, 0);
+
+
+
+export function get_standard_entity_animations() {
+    return new Animations({
+        walkUp: new FrameIndexPattern(WALK_UP),
+        walkLeft: new FrameIndexPattern(WALK_LEFT),
+        walkDown: new FrameIndexPattern(WALK_DOWN),
+        walkRight: new FrameIndexPattern(WALK_RIGHT),
+
+        standUp: new FrameIndexPattern(STAND_UP),
+        standLeft: new FrameIndexPattern(STAND_LEFT),
+        standDown: new FrameIndexPattern(STAND_DOWN),
+        standRight: new FrameIndexPattern(STAND_RIGHT),
+    });
+}

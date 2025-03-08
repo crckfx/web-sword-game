@@ -41,24 +41,24 @@ export class Renderer {
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         // draw it up
-        const sourceX = (player.position.x - MIDDLE_CELL.x);
-        const sourceY = (player.position.y - MIDDLE_CELL.y);
-        const sourceWidth = gridCells(this.cells.x);
-        const sourceHeight = gridCells(this.cells.y);
+        const cameraX = (player.position.x - MIDDLE_CELL.x);
+        const cameraY = (player.position.y - MIDDLE_CELL.y);
+        const cameraWidth = gridCells(this.cells.x);
+        const cameraHeight = gridCells(this.cells.y);
         // draw the floor
         this.ctx.drawImage(
             this.textures.mapFloor,
-            sourceX, sourceY, sourceWidth, sourceHeight,
+            cameraX, cameraY, cameraWidth, cameraHeight,
             0, 0, this.canvas.width, this.canvas.height
         );
         this.drawPlayer(); // draw player
         // draw entities
         for (const key in this.game.entities) {
-            this.drawEntity(this.game.entities[key]);
+            this.drawEntity(this.game.entities[key], cameraX, cameraY);
         }
         // draw 'occupants' (doodads?)
         this.ctx.drawImage(this.textures.mapOccupants[0],
-            sourceX, sourceY, sourceWidth, sourceHeight,
+            cameraX, cameraY, cameraWidth, cameraHeight,
             0, 0, this.canvas.width, this.canvas.height
         );
         if (this.shouldDrawPlayerInventory) this.drawInventory();
@@ -78,26 +78,27 @@ export class Renderer {
     }
 
     // draw an entity specifically
-    drawEntity(entity) {
+    drawEntity(entity, cameraX, cameraY) {
         this.ctx.drawImage(
             entity.getEntitySprite(),
+            // entity.texture[entity.frame],
             // this.textures.sword,
-            entity.position.x - (player.position.x - MIDDLE_CELL.x),
-            entity.position.y - (player.position.y - MIDDLE_CELL.y),
+            entity.position.x - cameraX,
+            entity.position.y - cameraY,
             cell_size.x,
             cell_size.y
         );
         if (entity.hasAlert) {
-            this.drawBorder(
-                entity.position.x - (player.position.x - MIDDLE_CELL.x),
-                entity.position.y - (player.position.y - MIDDLE_CELL.y),
+            this.drawCellBorder(
+                entity.position.x - cameraX,
+                entity.position.y - cameraY,
                 "red"
             );
         }
     }
 
     // helper to draw a border on the main canvas
-    drawBorder(x, y, colour = 'green') {
+    drawCellBorder(x, y, colour = 'green') {
         this.ctx.strokeStyle = colour;
         this.ctx.lineWidth = 1;
         this.ctx.strokeRect(x, y, cell_size.x, cell_size.y);

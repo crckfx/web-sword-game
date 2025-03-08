@@ -18,6 +18,7 @@ async function dummy_init() {
     await load_map(map_2, swordGame.grid, swordGame.textures, swordGame.images, swordGame.entities);
 
     player.texture = swordGame.textures.spriteDefault;
+    
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);

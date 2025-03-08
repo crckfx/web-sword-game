@@ -7,6 +7,7 @@ export class Player {
     bagCursorIndex = 0;
     interactTarget = null;
     bag = new Inventory(12, this, 'best inventory');
+    
     constructor({name, position, isFacing, animations, texture, speed}) {
         this.name = name ?? 'unnamed player';
         this.position = position ?? new Vector2(0, 0);

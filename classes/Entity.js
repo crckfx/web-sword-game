@@ -1,10 +1,12 @@
 import { Inventory } from "./Inventory.js";
-import { gridCells } from "../helper/grid.js";
+import { cellCoords, gridCells } from "../helper/grid.js";
 import { Item } from "./Item.js";
 import { Vector2 } from "./Vector2.js";
+import { direction_to_2D } from "../helper/directions.js";
 
 export class Entity {
     isSatisfied = false;
+    frame = 0;
     constructor({name, position, isFacing, animations, texture, interactMessage = "Hello World!", interactCondition, interactAction, message_satisfied, dialogues}) {
         this.name = name ?? 'unnamed entity';
         this.bag = new Inventory(6, this);
@@ -58,6 +60,16 @@ export class Entity {
         } else {
             return this.interactMessage;
         }
+    }
+
+
+    getFacingCell() {
+        const facingVector = direction_to_2D(this.isFacing);
+        const sightVector = new Vector2(
+            facingVector.x + cellCoords(this.position.x), 
+            facingVector.y + cellCoords(this.position.y)
+        );
+        return sightVector;
     }
 }
 

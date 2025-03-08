@@ -6,7 +6,7 @@ import { Item } from "../classes/Item.js";
 import { wrapText } from "./promptMenu.js";
 
 
-import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./walk.js";
+import { get_standard_entity_animations, STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./walk.js";
 import { Player } from "../classes/Player.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { gridCells } from "./grid.js";
@@ -15,21 +15,13 @@ import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
 import { give_item_to } from "./interactions.js";
 import { modifyInventoryTexture } from "./invMenu.js";
 
+
+
 export const player = new Player({
     name: 'lachie',
     position: new Vector2(gridCells(1), gridCells(1)),
     isFacing: 'up',
-    animations: new Animations({
-        walkUp: new FrameIndexPattern(WALK_UP),
-        walkLeft: new FrameIndexPattern(WALK_LEFT),
-        walkDown: new FrameIndexPattern(WALK_DOWN),
-        walkRight: new FrameIndexPattern(WALK_RIGHT),
-
-        standUp: new FrameIndexPattern(STAND_UP),
-        standLeft: new FrameIndexPattern(STAND_LEFT),
-        standDown: new FrameIndexPattern(STAND_DOWN),
-        standRight: new FrameIndexPattern(STAND_RIGHT),
-    }),
+    animations: get_standard_entity_animations(),
     speed: 2,
     
 });
@@ -66,7 +58,18 @@ export async function load_entities(entities, textures) {
         dialogues: {
             default: wrapText("Have you seen my apple?"),
             complete: wrapText("Thank you I was very hungry"),
-        }
+        },
+        // animations: new Animations({
+        //     walkUp: new FrameIndexPattern(WALK_UP),
+        //     walkLeft: new FrameIndexPattern(WALK_LEFT),
+        //     walkDown: new FrameIndexPattern(WALK_DOWN),
+        //     walkRight: new FrameIndexPattern(WALK_RIGHT),
+    
+        //     standUp: new FrameIndexPattern(WALK_UP),
+        //     standLeft: new FrameIndexPattern(WALK_LEFT),
+        //     standDown: new FrameIndexPattern(WALK_DOWN),
+        //     standRight: new FrameIndexPattern(WALK_RIGHT),
+        // }),        
     });
     entities.george = new Entity({
         name: 'george',
