@@ -106,7 +106,7 @@ export function modifyInventoryTexture(texture) {
     for (let i = 0; i < player.bag.slots.length; i++) {
         const slot = player.bag.slots[i];
         if (slot !== null) {
-            const invTexture = slot.invTexture ?? swordGame.textures.sword2;
+            const invTexture = slot.invTexture ?? swordGame.images.questionMark;
             const x = i % 6;
             const y = i < 6 ? 0 : 1;
             console.log(`should update an inventory texture at slot i:${i}, pos:'${x}','${y}'`);
