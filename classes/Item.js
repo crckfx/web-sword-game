@@ -9,7 +9,7 @@ export class Item {
         // console.log(this.texture);
         this.isHeldBy = null;
         this.invTexture = invTexture ?? null;
-        this.description = description ?? null;
+        this.description = description ?? "some item";
     }
 }
 

@@ -12,7 +12,9 @@ import { give_item_to } from "../helper/interactions.js";
 import { modifyInventoryTexture, tryInventoryMove } from "../helper/invMenu.js";
 // import { tryPromptMove } from "../experimental/promptMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
-import { GameObject } from "../experimental/GameObject.js";
+import { GameObject } from "./GameObject.js";
+import { Dialogue } from "../experimental/Dialogue.js";
+import { DialogueOption } from "../experimental/DialogueOption.js";
 
 export class Game {
     // renderer = null;
@@ -35,7 +37,8 @@ export class Game {
     mainScene = new GameObject({
         position: new Vector2(0, 0),
     });
-    
+
+    currentDialogue = null // new experimental
 
 
     constructor() {
@@ -80,11 +83,28 @@ export class Game {
             }
         ];
 
+        this.dialogue_1 = new Dialogue({
+            heading: "Dialogue Class",
+            message: "Some body text",
+            options: [
+                new DialogueOption("Go Back", this.exitDialogue.bind(this)),
+                new DialogueOption("Exit to Game", () => {
+                    this.exitDialogue();
+                    this.exitPlayerInventory();
+                },),
+            ]
+        });
+        this.dialogue_2 = new Dialogue({
+            heading: "Dialogue Class #2",
+            message: "Some body more text",
+            options: null,
+        });
+
         this.mainScene.addChild(player);
     }
 
 
-    
+
 
     // const draw = () => {
     //     main
@@ -133,7 +153,7 @@ export class Game {
     // -------------------------------------------------------------------
 
     draw() {
-        this.mainScene.draw(this.ctx, 0,0)
+        this.mainScene.draw(this.ctx, 0, 0)
     }
 
     // pause and resume game functions
@@ -185,7 +205,8 @@ export class Game {
                 // console.log("implement prompt in inventory")
                 this.promptIndex = tryPromptMove(
                     this.controls.current_dpad_dir,
-                    this.currentPromptOptions.length,
+                    // this.currentPromptOptions.length,
+                    this.currentDialogue.options.length,
                     this.promptIndex
                 );
             } else {
@@ -212,22 +233,20 @@ export class Game {
         this.isPaused ? this.resume() : this.pause();
     }
 
-    // ---------
-    enterDialogue(name, message, options, startPosition = 0) {
-        this.currentPromptOptions = options;
-        this.promptIndex = startPosition;
-        // piggybacking dialogue for now
+
+    launch_a_dialogue(dialogue, object) {
+        // this.
+        // this.currentPromptOptions = dialogue.
+        if (dialogue.options) {
+            this.promptIndex = 0;
+        }
+        this.currentDialogue = dialogue;
         this.isInDialogue = true;
-        this.renderer.modifyDialogueWithOptions(name, message, this.currentPromptOptions);
+        this.renderer.modifyDialogueWithDialogueClass(dialogue, object ?? null, this.textures.sampleText);
         this.renderer.shouldDrawDialogueBox = true;
     }
 
 
-    doSimplePrompt(name, message) {
-        this.renderer.modifyDialogueText_basic(name, message);
-        this.renderer.shouldDrawDialogueBox = true;
-        this.isInDialogue = true;
-    }
 
     exitDialogue() {
         this.currentPromptOptions = null;
@@ -316,7 +335,10 @@ export class Game {
     handleDialogueInteract() {
         // implement me once we add interacts to dialogue
         console.log(`interact with option ${this.promptIndex}`);
-        this.currentPromptOptions[this.promptIndex].action();
+        // this.currentPromptOptions[this.promptIndex].action();
+        if (this.currentDialogue.options[this.promptIndex]) {
+            this.currentDialogue.options[this.promptIndex].action();
+        }
     }
 
     // press 'A' on 'PLAYER INVENTORY'
@@ -324,8 +346,7 @@ export class Game {
         if (player.bag.slots[player.bagCursorIndex] === null) return;
         const index = player.bagCursorIndex;
         const item = player.bag.slots[index];
-        let message = item.description ?? `big woop, you interacted with ${item.name}.`;
-        this.enterDialogue(item.name, message, item.promptOptions || this.defaultPromptOptions, 0);
+        this.launch_a_dialogue(this.get_dialogue_inventory(item));
     }
 
     // press 'A' on 'WORLD' 
@@ -355,8 +376,9 @@ export class Game {
             if (give_item_to(grid, t, player, this.textures.mapOccupants[0])) {
                 modifyInventoryTexture(this.textures.inventoryItems);
                 player.interactTarget = null;
-                this.doSimplePrompt(t.name, `Picked up ${t.name}.`);
-                //
+
+                this.launch_a_dialogue(this.get_dialogue_pickup(t), t);
+
             };
         }
     }
@@ -373,15 +395,39 @@ export class Game {
                 t.isSatisfied = true;
             }
         } // ** END handle conditions **
-        // put the game in dialogue mode
-        this.isInDialogue = true;
-        // set the target to face toward the player
         player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
-        // update the text in the dialogue layer
-        this.renderer.modifyDialogueText_basic(t.name, t.getDialogue());
+        this.launch_a_dialogue(this.get_dialogue_entity(t), t)
         // display the dialogue box
         this.renderer.shouldDrawDialogueBox = true;
 
+    }
+
+    get_dialogue_entity(e) {
+        return new Dialogue({
+            heading: e.name,
+            message: e.getDialogue(),
+        })
+    }
+    get_dialogue_pickup(item) {
+        return new Dialogue({
+            heading: item.name,
+            message: `Picked up ${item.name}.`,
+        })
+    }
+
+    get_dialogue_inventory(item) {
+        //
+        return new Dialogue({
+            heading: item.name,
+            message: item.description,
+            options: [
+                new DialogueOption("Go Back", this.exitDialogue.bind(this)),
+                new DialogueOption("Exit to Game", () => {
+                    this.exitDialogue();
+                    this.exitPlayerInventory();
+                }),
+            ],
+        })
     }
 
 }

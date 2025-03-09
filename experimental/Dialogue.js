@@ -1,30 +1,15 @@
-import { wrapText } from "../helper/promptMenu.js";
-
 export class Dialogue {
     // condition = false;
     constructor({
+        heading,
         message,
-        condition,
-        isUnlocked,
-        promptOptions,
-        // default
+        options,
     }) {
-        this.message = wrapText(message);
-        this.condition = condition,
-        this.promptOptions = promptOptions
+        this.heading = heading ?? "???";
+        this.message = message;
+        this.options = options ?? null
+        // this.condition = condition,
+        // this.promptOptions = promptOptions
     }
 
-    
 }
-
-// this.defaultPromptOptions = [
-//     {
-//         text: "No",
-//         action: this.exitDialogue.bind(this),
-//     },
-//     {
-//         text: "Yes",
-//         action: this.exitDialogue.bind(this),
-//     }
-// ]; 
-

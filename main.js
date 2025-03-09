@@ -20,10 +20,14 @@ async function dummy_init() {
 
     player.texture = swordGame.textures.spriteDefault;
     // player.sprite = new Sprite({
-        
+    //     resource: swordGame.images.spriteDefault,
+    //     position: player.position,
+    //     vFrames: 8,
+    //     hFrames: 4,
     // })
 
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
+    player.receiveItem(new Item('Badghetti', null, null, null, "Would have been sadghetti but cook was too sad."));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;

@@ -54,12 +54,20 @@ export class Renderer {
         this.drawPlayer(); // draw player
         // draw entities
         for (const key in this.game.entities) {
-            this.drawEntity(this.game.entities[key], cameraX, cameraY);
+            const e = this.game.entities[key];
+            if (
+                e.position.x > cameraX &&
+                e.position.x < cameraX + cameraWidth &&
+                e.position.y > cameraY &&
+                e.position.y < cameraY + cameraHeight
+            ) {
+                this.drawEntity(e, cameraX, cameraY);
+            }
         }
         // draw 'occupants' (doodads?)
         this.ctx.drawImage(this.textures.mapOccupants[0],
             cameraX, cameraY, cameraWidth, cameraHeight,
-            0, 0, this.canvas.width, this.canvas.height
+            0, 0, cameraWidth, cameraHeight
         );
         if (this.shouldDrawPlayerInventory) this.drawInventory();
         if (this.shouldDrawDialogueBox) this.drawDialogueBox();
@@ -156,34 +164,7 @@ export class Renderer {
         }
     }
 
-    modifyDialogueText_basic(heading = "", text = "") {
-        const texture = this.textures.sampleText; // this is a special type of texture though; it has a ctx included
-        const ctx = texture.ctx;
-        ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
-        ctx.fillStyle = '#ccc';
-        ctx.fillRect(
-            0, 0, texture.widthPx, texture.heightPx
-        )
-        ctx.drawImage(texture.image,
-            0, 0, texture.widthPx, texture.heightPx
-        )
-        ctx.fillStyle = '#f00';
-        ctx.font = "600 16px Courier";
-        ctx.fillText(heading, 8, 20);
-
-        // ctx.font = "600 24px Courier";
-        ctx.fillStyle = '#000';
-        ctx.font = "600 20px Courier";
-        // ctx.fillText("sample text with some more words", 8, 32)
-        const texts = wrapText(text);
-
-        ctx.fillText(texts[0], 8, 48);
-        ctx.fillText(texts[1], 8, 80);
-    }
-
-
-    modifyDialogueWithOptions(heading = "", text = "", options) {
-        const texture = this.textures.sampleText; // this is a special type of texture though; it has a ctx included
+    modifyDialogueWithDialogueClass(dialogue, object, texture) {
         const ctx = texture.ctx;
         ctx.clearRect(0, 0, texture.widthPx, texture.heightPx)
         ctx.fillStyle = '#ccc';
@@ -195,44 +176,51 @@ export class Renderer {
         )
         ctx.fillStyle = '#f00';
         ctx.font = "600 12px Courier";
-        ctx.fillText(heading, 8, 20);
+        ctx.fillText(dialogue.heading, 8, 20);
 
-        ctx.fillStyle = '#000';
-        ctx.font = "600 16px Courier";
-        const texts = wrapText(text, 30);
+        if (dialogue.options === null) {
+            // no options provided; bigger text and currently 'B' to exit
+            ctx.fillStyle = '#000';
+            ctx.font = "600 20px Courier";
+            const texts = wrapText(dialogue.message, 25); // 25 chars for 20px font
+            ctx.fillText(texts[0], 8, 48);
+            ctx.fillText(texts[1], 8, 80);
+        } else {
+            // smaller text and and "choose an option" prompt
+            ctx.fillStyle = '#000';
+            ctx.font = "600 16px Courier";
+            const texts = wrapText(dialogue.message, 30); // 30 chars for 16px font
+            // Options rendering (aligned right, stacked leftward)
+            const optionsCoords = [];
+            let y = 84; // Fixed Y position for all options
+            let x = texture.widthPx - 8; // Start from the far right
+            // draw the options
+            for (let i = dialogue.options.length - 1; i >= 0; i--) { // Loop right-to-left
+                const optionText = dialogue.options[i].label;
+                const textWidth = ctx.measureText(optionText).width;
+                x -= textWidth; // Move left
+                // save the coordinates
+                optionsCoords[i] = {
+                    x: x - 4 + FLOOR_CELL_PIXELS * 0.5,
+                    y: y - 14 + FLOOR_CELL_PIXELS * 5.5,
+                    width: textWidth + 8,
+                    height: 20
+                };
 
-        // Options rendering (aligned right, stacked leftward)
-        const optionsCoords = [];
-        let y = 84; // Fixed Y position for all options
-        let x = texture.widthPx - 8; // Start from the far right
-        for (let i = options.length - 1; i >= 0; i--) { // Loop right-to-left
-            const optionText = options[i].text;
-            const textWidth = ctx.measureText(optionText).width;
+                ctx.fillText(optionText, x, y);
 
-            x -= textWidth; // Move left
+                x -= 12; // Add spacing between options
+            }
 
-            // save the coordinates
-            optionsCoords[i] = {
-                x: x - 4 + FLOOR_CELL_PIXELS * 0.5,
-                y: y - 14 + FLOOR_CELL_PIXELS * 5.5,
-                width: textWidth + 8,
-                height: 20
-            };
 
-            ctx.fillText(optionText, x, y);
+            ctx.fillText(texts[0], 8, 40);
+            ctx.fillText(texts[1], 8, 60);
 
-            x -= 12; // Add spacing between options
+
+            // return optionsCoords;
+            this.optionsCoords = optionsCoords;
         }
-
-
-        ctx.fillText(texts[0], 8, 40);
-        ctx.fillText(texts[1], 8, 60);
-        // ctx.fillText(optionsText, 8, 84);
-
-        // return optionsCoords;
-        this.optionsCoords = optionsCoords;
     }
-
 
 
 }
