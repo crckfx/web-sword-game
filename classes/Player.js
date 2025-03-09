@@ -2,15 +2,20 @@ import { gridCells } from "../helper/grid.js";
 import { Item } from "./Item.js";
 import { Vector2 } from "./Vector2.js";
 import { Inventory } from "./Inventory.js";
+import { GameObject } from "../experimental/GameObject.js";
 
-export class Player {
+export class Player extends GameObject {
     bagCursorIndex = 0;
     interactTarget = null;
     bag = new Inventory(12, this, 'best inventory');
     
     constructor({name, position, isFacing, animations, texture, speed}) {
+        super({
+            position: position ?? new Vector2(0, 0),
+
+        });
+
         this.name = name ?? 'unnamed player';
-        this.position = position ?? new Vector2(0, 0);
         this.destination = position.duplicate();
         this.isFacing = isFacing ?? 'down';
         this.animations = animations ?? null;

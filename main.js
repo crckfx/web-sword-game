@@ -5,8 +5,9 @@ import { load_image_resources } from "./helper/resource-loader.js";
 import { map_1 } from "./maps/map_1.js";
 import { map_2 } from "./maps/map_2.js";
 import { modifyInventoryTexture } from "./helper/invMenu.js";
-
-
+import { GameObject } from "./classes/GameObject.js";
+import { Vector2 } from "./classes/Vector2.js";
+import { Sprite } from "./classes/Sprite.js";
 
 
 // the entry point
@@ -18,12 +19,18 @@ async function dummy_init() {
     await load_map(map_2, swordGame.grid, swordGame.textures, swordGame.images, swordGame.entities);
 
     player.texture = swordGame.textures.spriteDefault;
-    
+    // player.sprite = new Sprite({
+        
+    // })
+
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;
     // assign pointer and keyboard listeners
+
+
+
     swordGame.controls.bind();
     swordGame.gameLoop.start();
 

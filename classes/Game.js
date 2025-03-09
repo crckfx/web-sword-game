@@ -12,6 +12,7 @@ import { give_item_to } from "../helper/interactions.js";
 import { modifyInventoryTexture, tryInventoryMove } from "../helper/invMenu.js";
 // import { tryPromptMove } from "../experimental/promptMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
+import { GameObject } from "../experimental/GameObject.js";
 
 export class Game {
     // renderer = null;
@@ -29,6 +30,12 @@ export class Game {
 
     currentPromptOptions = null;
     promptIndex = null;
+
+
+    mainScene = new GameObject({
+        position: new Vector2(0, 0),
+    });
+    
 
 
     constructor() {
@@ -72,7 +79,16 @@ export class Game {
                 },
             }
         ];
+
+        this.mainScene.addChild(player);
     }
+
+
+    
+
+    // const draw = () => {
+    //     main
+    // }
 
     // MAIN UPDATE
     // -------------------------------------------------------------------
@@ -115,6 +131,10 @@ export class Game {
     }
 
     // -------------------------------------------------------------------
+
+    draw() {
+        this.mainScene.draw(this.ctx, 0,0)
+    }
 
     // pause and resume game functions
     pause() {
@@ -221,7 +241,7 @@ export class Game {
 
     tryMove() {
 
-        
+
 
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
             switch (player.isFacing) {
@@ -273,7 +293,7 @@ export class Game {
                 player.destination.y = nextY;
             }
         }
-        
+
 
     }
 
