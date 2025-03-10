@@ -45,23 +45,23 @@ export async function load_entities(entities, textures) {
         name: 'fred',
         isFacing: 'up',
         texture: textures.spriteYellow,
-        interactMessage: "Have you seen my apple?",
+        interactMessage: new SetOfDialogues(
+            null,
+            [
+                "Have you seen my apple?",
+                "I think I left it somewhere around here."
+            ],
+            'fred'
+        ),
+
         interactCondition: () => player.bag.findSlotByName('apple'),
         interactAction: function () {
             const index = player.bag.findSlotByName('apple');
             console.log(`index is ${index}`)
             const item = player.bag.slots[index];
-            // console.log(`give ${item.name} to ${this.name}`);
             if (give_item_to(swordGame.grid, item, this, swordGame.textures.mapOccupants)) modifyInventoryTexture(swordGame.textures.inventoryItems);
-            // swordGame.give_item_to(swordGame.grid, item, this); // parent method which handles removal from old entity
-            // this.renderer.modifyInventoryTexture(); // 
-
         },
         message_satisfied: "Thank you I was very hungry",
-        dialogues: {
-            default: wrapText("Have you seen my apple?"),
-            complete: wrapText("Thank you I was very hungry"),
-        },
         // animations: new Animations({
         //     walkUp: new FrameIndexPattern(WALK_UP),
         //     walkLeft: new FrameIndexPattern(WALK_LEFT),
@@ -79,30 +79,29 @@ export async function load_entities(entities, textures) {
         isFacing: 'right',
         texture: textures.spriteRed,
         interactMessage: new SetOfDialogues(
+            null,
             [
-                new Dialogue({
-                    heading: "george",
-                    message: "Not now",
-                }),
-                new Dialogue({
-                    heading: "george",
-                    message: "Not now! (2)",
-                }),
-                new Dialogue({
-                    heading: "george",
-                    message: "Not now!!!!!! (3)",
-                }),
-                new Dialogue({
-                    heading: "george",
-                    message: "NOT NOW. (4)",
-                }),
-            ]
+                "Not now",
+                "Not now! (2)",
+                "Not now!!!!!! (3)",
+                "NOT NOW. (4)"
+            ],
+            'george',
+            true
         )
     });
     entities.harold = new Entity({
         name: 'harold',
         texture: textures.spriteYellow,
-        interactMessage: "You there...Ogre!",
+        interactMessage: new SetOfDialogues(
+            null,
+            [
+                "You there...Ogre!",
+                "Somebody once told me the world was gonna roll me."
+            ],
+            'harold',
+            true
+        )
     });
 }
 
@@ -112,13 +111,14 @@ export async function load_map(map, grid, textures, images, entities) {
     applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
     const parsedFloorLayout = parseFloorLayout(map.floor);
     applyFloorToGameGrid(grid, parsedFloorLayout);
-    textures.mapFloor = await getMapBackground(grid, textures);
+    textures.mapFloor = await getMapBackground(grid, textures, 0);
     // textures.mapFloor = mapCanvas;
     textures.mapOccupants = [
-        await getMapOccupants(grid, textures, images, 0,),
-        await getMapOccupants(grid, textures, images, 1,),
-        await getMapOccupants(grid, textures, images, 2,),
-        await getMapOccupants(grid, textures, images, 3,),
+        await getMapOccupants(grid, textures, images),
+        // await getMapOccupants(grid, textures, images, 0,),
+        // await getMapOccupants(grid, textures, images, 1,),
+        // await getMapOccupants(grid, textures, images, 2,),
+        // await getMapOccupants(grid, textures, images, 3,),
     ];
 
 }

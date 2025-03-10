@@ -129,7 +129,7 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, t
 
 
 // function to create a background image as a canvas
-export async function getMapBackground(grid, textures) {
+export async function getMapBackground(grid, textures, stateIndex = 0) {
     // get the pixel sizes for the map
     const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID.x;
     const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID.y;
@@ -160,12 +160,13 @@ export async function getMapBackground(grid, textures) {
                     );
                     break;
                 case 'water':
-                    mapCtx.fillStyle = 'blue';
-                    mapCtx.fillRect(
+                    mapCtx.drawImage(
+                        textures.water[stateIndex],
                         FLOOR_CELL_PIXELS * (i),
                         FLOOR_CELL_PIXELS * (j),
                         FLOOR_CELL_PIXELS,
-                        FLOOR_CELL_PIXELS
+                        FLOOR_CELL_PIXELS,
+
                     );
                     break;
             }
@@ -175,7 +176,7 @@ export async function getMapBackground(grid, textures) {
 }
 
 
-export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
+export async function getMapOccupants(grid, textures, images) {
     // get the pixel sizes for the map
     const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID.x;
     const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID.y;
@@ -249,16 +250,7 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
                             console.log('skipping tree cell that does not have down,right,down-right neighbours');
                         }
                         break;
-                    case 'water':
-                        mapCtx.drawImage(
-                            textures.water[stateIndex],
-                            FLOOR_CELL_PIXELS * (i),
-                            FLOOR_CELL_PIXELS * (j),
-                            FLOOR_CELL_PIXELS,
-                            FLOOR_CELL_PIXELS,
 
-                        );
-                        break;
                 }
             }
         }

@@ -106,7 +106,10 @@ export class Game {
                         new DialogueOption("Also Yes", () => this.exitDialogue()),
                     ]
                 }),
-            ]
+            ],
+            null,
+            null,
+            true
         )
 
         this.mainScene.addChild(player);
@@ -245,8 +248,16 @@ export class Game {
         if (this.isPaused) {
             this.resume();
         } else if (this.isInDialogue) {
-            if (this.promptIndex === null)
+            // if (this.promptIndex === null)
+            //     this.exitDialogue();
+            if (this.isInInventory) {
                 this.exitDialogue();
+            } else if (this.currentDialogueSet) {
+                if (this.currentDialogueSet.canExit)
+                    this.exitDialogue();
+            } else {
+                this.exitDialogue();
+            }
         } else if (this.isInInventory) {
             this.exitPlayerInventory();
         }
@@ -274,6 +285,7 @@ export class Game {
         if (DS instanceof SetOfDialogues) {
             console.log('launching dialogue set !~!!!!!');
         }
+        DS.launch();
 
         this.currentDialogueSet = DS;
 
@@ -455,6 +467,7 @@ export class Game {
         const d = this.get_dialogue_entity(t);
         if (d instanceof Dialogue) {
             this.launch_a_dialogue(d, t)
+
         } else if (d instanceof SetOfDialogues) {
             this.launch_set_of_dialogues(d);
         }
@@ -488,7 +501,7 @@ export class Game {
             message: item.description,
             options: [
                 new DialogueOption("Okay", this.exitDialogue.bind(this)),
-                new DialogueOption("Exit Inventory", () => {
+                new DialogueOption("Exit", () => {
                     this.exitDialogue();
                     this.exitPlayerInventory();
                 }),
