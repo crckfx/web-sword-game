@@ -56,9 +56,9 @@ export class Renderer {
         for (const key in this.game.entities) {
             const e = this.game.entities[key];
             if (
-                e.position.x > cameraX &&
+                e.position.x >= cameraX - cell_size.x &&
                 e.position.x < cameraX + cameraWidth &&
-                e.position.y > cameraY &&
+                e.position.y >= cameraY - cell_size.y && 
                 e.position.y < cameraY + cameraHeight
             ) {
                 this.drawEntity(e, cameraX, cameraY);
@@ -80,7 +80,7 @@ export class Renderer {
             // player.texture[index],
             player.texture[player.frame],
             MIDDLE_CELL.x,
-            MIDDLE_CELL.y,
+            MIDDLE_CELL.y - 6,
             cell_size.x, cell_size.y
         );
     }
@@ -92,7 +92,7 @@ export class Renderer {
             // entity.texture[entity.frame],
             // this.textures.sword,
             entity.position.x - cameraX,
-            entity.position.y - cameraY,
+            entity.position.y - 6 - cameraY,
             cell_size.x,
             cell_size.y
         );

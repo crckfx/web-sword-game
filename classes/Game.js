@@ -15,6 +15,7 @@ import { direction_to_2D } from "../helper/directions.js";
 import { GameObject } from "./GameObject.js";
 import { Dialogue } from "../experimental/Dialogue.js";
 import { DialogueOption } from "../experimental/DialogueOption.js";
+import { SetOfDialogues } from "../experimental/SetOfDialogues.js";
 
 export class Game {
     // renderer = null;
@@ -39,6 +40,8 @@ export class Game {
     });
 
     currentDialogue = null // new experimental
+
+    currentDialogueSet = null // new experimental
 
 
     constructor() {
@@ -69,19 +72,7 @@ export class Game {
             bang_resume: this.command_togglePause.bind(this),
         });
         // 
-        this.defaultPromptOptions = [
-            {
-                text: "Back",
-                action: this.exitDialogue.bind(this),
-            },
-            {
-                text: "Exit",
-                action: () => {
-                    this.exitDialogue();
-                    this.exitPlayerInventory();
-                },
-            }
-        ];
+
 
         this.dialogue_1 = new Dialogue({
             heading: "Dialogue Class",
@@ -94,11 +85,29 @@ export class Game {
                 },),
             ]
         });
-        this.dialogue_2 = new Dialogue({
-            heading: "Dialogue Class #2",
-            message: "Some body more text",
-            options: null,
-        });
+
+
+        this.setOfDialogues_1 = new SetOfDialogues(
+            [
+                new Dialogue({
+                    heading: "Set of Dialogues",
+                    message: "Initial message",
+                }),
+                new Dialogue({
+                    heading: "Set of Dialogues",
+                    message: "Second message",
+                }),
+
+                new Dialogue({
+                    heading: "Set of Dialogues",
+                    message: "Third message. Exit?",
+                    options: [
+                        new DialogueOption("Yes", () => this.exitDialogue()),
+                        new DialogueOption("Also Yes", () => this.exitDialogue()),
+                    ]
+                }),
+            ]
+        )
 
         this.mainScene.addChild(player);
     }
@@ -184,7 +193,7 @@ export class Game {
         if (this.isPaused) {
             return;
         } else if (this.isInDialogue) {
-            if (this.promptIndex !== null)
+            if (this.currentDialogue !== null)
                 this.handleDialogueInteract();
         } else if (this.isInInventory) {
             this.handleInventoryInteract();
@@ -202,18 +211,32 @@ export class Game {
         if (this.isInInventory) {
             // console.log('yes ! in inventory and pressing a dpad on');
             if (this.isInDialogue) {
+                if (this.currentDialogue.options !== null) {
+                    this.promptIndex = tryPromptMove(
+                        this.controls.current_dpad_dir,
+                        // this.currentPromptOptions.length,
+                        this.currentDialogue.options.length,
+                        this.promptIndex
+                    );
+                }
                 // console.log("implement prompt in inventory")
+            } else {
+                tryInventoryMove(this.controls.current_dpad_dir);
+                return;
+            }
+        } else if (this.isInDialogue) {
+            if (this.currentDialogue.options !== null) {
                 this.promptIndex = tryPromptMove(
                     this.controls.current_dpad_dir,
                     // this.currentPromptOptions.length,
                     this.currentDialogue.options.length,
                     this.promptIndex
                 );
-            } else {
-                tryInventoryMove(this.controls.current_dpad_dir);
-                return;
             }
+            // console.log("implement prompt in inventory")
         }
+
+
     }
 
     // function to handle press on the BACK button
@@ -247,13 +270,33 @@ export class Game {
     }
 
 
+    launch_set_of_dialogues(DS) {
+        if (DS instanceof SetOfDialogues) {
+            console.log('launching dialogue set !~!!!!!');
+        }
+
+        this.currentDialogueSet = DS;
+
+        const d = this.currentDialogueSet.getDialogue();
+
+        if (d.options) {
+            this.promptIndex = 0;
+        }
+        this.currentDialogue = d;
+        this.isInDialogue = true;
+        this.renderer.modifyDialogueWithDialogueClass(d, null, this.textures.sampleText);
+        this.renderer.shouldDrawDialogueBox = true;
+    }
+
+
+
 
     exitDialogue() {
         this.currentPromptOptions = null;
         this.isInDialogue = false;
         this.promptIndex = null;
         this.renderer.shouldDrawDialogueBox = false;
-
+        this.currentDialogueSet = null;
     }
     // ---------
 
@@ -334,9 +377,22 @@ export class Game {
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
         // implement me once we add interacts to dialogue
-        console.log(`interact with option ${this.promptIndex}`);
         // this.currentPromptOptions[this.promptIndex].action();
-        if (this.currentDialogue.options[this.promptIndex]) {
+        if (this.currentDialogueSet !== null) {
+            console.log("yes you interacted with a dialogue set's dialogue!!!~1!");
+            this.currentDialogue = this.currentDialogueSet.progress();
+            if (this.currentDialogue === null) {
+                this.exitDialogue();
+            } else {
+                if (this.currentDialogue.options !== null)
+                    this.promptIndex = 0;
+                this.renderer.modifyDialogueWithDialogueClass(this.currentDialogue, null, this.textures.sampleText);
+            }
+        }
+        else if (this.currentDialogue.options === null)
+            this.exitDialogue();
+        else if (this.currentDialogue.options[this.promptIndex]) {
+            console.log(`interact with option ${this.promptIndex}`);
             this.currentDialogue.options[this.promptIndex].action();
         }
     }
@@ -396,16 +452,26 @@ export class Game {
             }
         } // ** END handle conditions **
         player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
-        this.launch_a_dialogue(this.get_dialogue_entity(t), t)
+        const d = this.get_dialogue_entity(t);
+        if (d instanceof Dialogue) {
+            this.launch_a_dialogue(d, t)
+        } else if (d instanceof SetOfDialogues) {
+            this.launch_set_of_dialogues(d);
+        }
         // display the dialogue box
-        this.renderer.shouldDrawDialogueBox = true;
 
     }
 
     get_dialogue_entity(e) {
+        const d = e.getDialogue();
+        // if 'd' is a SetOfDialogues, we should return that set
+        if (d instanceof SetOfDialogues)
+            return d;
+
+        // otherwise, we'll return a DIALOGUE
         return new Dialogue({
             heading: e.name,
-            message: e.getDialogue(),
+            message: d,
         })
     }
     get_dialogue_pickup(item) {
@@ -421,8 +487,8 @@ export class Game {
             heading: item.name,
             message: item.description,
             options: [
-                new DialogueOption("Go Back", this.exitDialogue.bind(this)),
-                new DialogueOption("Exit to Game", () => {
+                new DialogueOption("Okay", this.exitDialogue.bind(this)),
+                new DialogueOption("Exit Inventory", () => {
                     this.exitDialogue();
                     this.exitPlayerInventory();
                 }),

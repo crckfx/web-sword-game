@@ -52,13 +52,13 @@ export async function extract_single_sprite(spriteSheet, x, y, spriteSize = 16) 
     return spriteCanvas;
 }
 
-
+// here we input an index "pos", not a 
 export async function extract_sized_single_texture(image, posX = 0, posY = 0, sizeX = 16, sizeY = 16) {
     // note: takes in x and y as INDEX positions 
     const sx = posX * sizeX;
     const sy = posY * sizeY;
 
-    // Create an offscreen canvas for each sprite
+    // create a canvas for the texture
     const spriteCanvas = document.createElement('canvas');
     spriteCanvas.width = sizeX;
     spriteCanvas.height = sizeY;
@@ -72,6 +72,22 @@ export async function extract_sized_single_texture(image, posX = 0, posY = 0, si
     );
 
     // spriteTextures.push(spriteCanvas);
+
+    return spriteCanvas;
+}
+
+export async function extract_texture_modular(image, pixelX = 0, pixelY = 0, width = 32, height = 32) {
+    // create a canvas for the texture    
+    const spriteCanvas = document.createElement('canvas');
+    spriteCanvas.width = width;
+    spriteCanvas.height = height;
+    const spriteCtx = spriteCanvas.getContext('2d');
+    // Draw the sprite onto the offscreen canvas
+    spriteCtx.drawImage(
+        image,
+        pixelX, pixelY, width, height,  // Source rectangle from sprite sheet
+        0, 0, width, height    // Draw full size to the offscreen canvas
+    );
 
     return spriteCanvas;
 }

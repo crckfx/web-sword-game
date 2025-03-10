@@ -197,7 +197,7 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
     for (let j = 0; j < NUM_GRID.y; j++) {
         for (let i = 0; i < NUM_GRID.x; i++) {
             const cell = grid[i][j];
-            // if (cell.skip === true) continue;
+            if (cell.skip === true) continue;
             if (cell.occupant instanceof Item) {
                 if (cell.occupant.name === 'apple') {
                     mapCtx.drawImage(
@@ -208,13 +208,6 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
                         (FLOOR_CELL_PIXELS * 0.5),
                     );
                 } else {
-                    // mapCtx.drawImage(
-                    //     images.crate,
-                    //     FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (i)),
-                    //     FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (j)),
-                    //     16,
-                    //     18,
-                    // );
                     mapCtx.drawImage(
                         images.crateShadow,
                         (FLOOR_CELL_PIXELS * (i)),
@@ -235,15 +228,6 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
                             FLOOR_CELL_PIXELS * 2,
                         );
                         break;
-                    // case 'apple':
-                    //     mapCtx.drawImage(
-                    //         textures.apple,
-                    //         FLOOR_CELL_PIXELS * (i),
-                    //         FLOOR_CELL_PIXELS * (j),
-                    //         FLOOR_CELL_PIXELS,
-                    //         FLOOR_CELL_PIXELS,
-                    //     );
-                    //     break;
                     case 'largeTree':
                         // check that this cell has Neighbours such that:
                         // ---.N---
@@ -251,13 +235,16 @@ export async function getMapOccupants(grid, textures, images, stateIndex = 0) {
                         if (checkCell(grid, i, j)) {
                             // console.log('heyyyyy skip the down, right, and down-right cells from this one dawg')
                             mapCtx.drawImage(
-                                textures.tree2_overlay,
-                                FLOOR_CELL_PIXELS * (i),
+                                textures.tree_S_A,
+                                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2,
                                 FLOOR_CELL_PIXELS * (j - 1),
                                 FLOOR_CELL_PIXELS * 2,
                                 FLOOR_CELL_PIXELS * 3,
-                            )
-                            i++;
+                            );
+                            // if (grid[i+1][j]) grid[i+1][j].skip = true;
+                            // if (grid[i][j+1]) grid[i][j+1].skip = true;
+                            // if (grid[i+1][j+1]) grid[i+1][j+1].skip = true;
+                            // i++;
                         } else {
                             console.log('skipping tree cell that does not have down,right,down-right neighbours');
                         }
@@ -283,17 +270,18 @@ function checkCell(grid, x, y) {
     if (!grid[x] || !grid[x][y]) {
         return false;
     }
-    // let result = false;
-    if (grid[x + 1] && grid[x + 1][y]) {
-        const cell = grid[x + 1][y];
-        if (cell.occupant !== 'largeTree') return false;
-    }
+    // // let result = false;
+    // if (grid[x + 1] && grid[x + 1][y]) {
+    //     const cell = grid[x + 1][y];
+    //     if (cell.occupant !== 'largeTree') return false;
+    // }
 
-    if (grid[x + 1] && grid[x + 1][y + 1]) {
-        const cell = grid[x + 1][y + 1];
-        if (cell.occupant !== 'largeTree') return false;
-    }
+    // if (grid[x + 1] && grid[x + 1][y + 1]) {
+    //     const cell = grid[x + 1][y + 1];
+    //     if (cell.occupant !== 'largeTree') return false;
+    // }
 
+    // check cell below
     if (grid[x][y + 1]) {
         const cell = grid[x][y + 1];
         if (cell.occupant !== 'largeTree') return false;

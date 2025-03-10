@@ -1,7 +1,7 @@
 import { FLOOR_CELL_PIXELS } from "../document.js";
 import { createDialogueTexture } from "./promptMenu.js";
 import { createInventoryBackground, createInventoryItemsTexture } from "./invMenu.js";
-import { extract_single_sprite, extract_sized_single_texture, extractSprites } from "../sprite.js";
+import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../sprite.js";
 
 async function load_image_files(object, files) {
     for (const key in files) {
@@ -30,6 +30,7 @@ export async function load_image_resources(images, textures) {
                 crate: "images/Crates by Mikiz/Brown crates/Brown Crates 1.png",
                 crateShadow: "images/crate_experiments_4.png",
                 questionMark: "images/questionMark.png",
+                schwarnhildTextures: "images/basic_tileset_and_assets_standard/assets_spritesheet_v2_free.png",
             }
         )
 
@@ -42,6 +43,9 @@ export async function load_image_resources(images, textures) {
         textures.apple2 = await extract_sized_single_texture(images.shikashiTextures, 0, 14, 32, 32);
         textures.egg = await extract_sized_single_texture(images.shikashiTextures, 6, 15, 32, 32);
         textures.potPlant3 = await extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
+
+        textures.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
+        textures.tree_S_B = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 128, 96);
 
 
         // the dialogue and inventory textures

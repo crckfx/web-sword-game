@@ -14,6 +14,9 @@ import { Animations } from "../classes/Animations.js";
 import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
 import { give_item_to } from "./interactions.js";
 import { modifyInventoryTexture } from "./invMenu.js";
+import { SetOfDialogues } from "../experimental/SetOfDialogues.js";
+import { Dialogue } from "../experimental/Dialogue.js";
+import { DialogueOption } from "../experimental/DialogueOption.js";
 
 
 
@@ -23,7 +26,7 @@ export const player = new Player({
     isFacing: 'up',
     animations: get_standard_entity_animations(),
     speed: 2,
-    
+
 });
 
 
@@ -64,7 +67,7 @@ export async function load_entities(entities, textures) {
         //     walkLeft: new FrameIndexPattern(WALK_LEFT),
         //     walkDown: new FrameIndexPattern(WALK_DOWN),
         //     walkRight: new FrameIndexPattern(WALK_RIGHT),
-    
+
         //     standUp: new FrameIndexPattern(WALK_UP),
         //     standLeft: new FrameIndexPattern(WALK_LEFT),
         //     standDown: new FrameIndexPattern(WALK_DOWN),
@@ -75,7 +78,26 @@ export async function load_entities(entities, textures) {
         name: 'george',
         isFacing: 'right',
         texture: textures.spriteRed,
-        interactMessage: "Not now",
+        interactMessage: new SetOfDialogues(
+            [
+                new Dialogue({
+                    heading: "george",
+                    message: "Not now",
+                }),
+                new Dialogue({
+                    heading: "george",
+                    message: "Not now! (2)",
+                }),
+                new Dialogue({
+                    heading: "george",
+                    message: "Not now!!!!!! (3)",
+                }),
+                new Dialogue({
+                    heading: "george",
+                    message: "NOT NOW. (4)",
+                }),
+            ]
+        )
     });
     entities.harold = new Entity({
         name: 'harold',
@@ -97,7 +119,7 @@ export async function load_map(map, grid, textures, images, entities) {
         await getMapOccupants(grid, textures, images, 1,),
         await getMapOccupants(grid, textures, images, 2,),
         await getMapOccupants(grid, textures, images, 3,),
-    ];    
+    ];
 
 }
 
