@@ -141,6 +141,13 @@ export async function getMapBackground(grid, textures, stateIndex = 0) {
     // mapCtx.imageSmoothingEnabled = false;
     mapCtx.imageSmoothingEnabled = false;
 
+    const floorOnly = document.createElement('canvas');
+    floorOnly.width = mapWidthPx;
+    floorOnly.height = mapHeightPx;
+    const floorOnlyCtx = floorOnly.getContext('2d');
+    // Copy the current floor BEFORE objects are drawn
+
+
     // loop over the entire game grid
     for (let i = 0; i < NUM_GRID.x; i++) {
         for (let j = 0; j < NUM_GRID.y; j++) {
@@ -172,29 +179,32 @@ export async function getMapBackground(grid, textures, stateIndex = 0) {
             }
         }
     }
-    return mapCanvas;
+
+    // finally, save a copy of the floor before we add stuff to it
+    floorOnlyCtx.drawImage(mapCanvas, 0, 0, mapWidthPx, mapHeightPx);
+
+
+    return {
+        floorOnly: floorOnly,
+        canvas: mapCanvas,
+        ctx: mapCtx
+    }
 }
 
 
-export async function getMapOccupants(grid, textures, images) {
-    // get the pixel sizes for the map
-    const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID.x;
-    const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID.y;
-    // Create an offscreen canvas for each sprite
-    const mapCanvas = document.createElement('canvas');
-    mapCanvas.width = mapWidthPx;
-    mapCanvas.height = mapHeightPx;
-    const mapCtx = mapCanvas.getContext('2d');
-    mapCtx.imageSmoothingEnabled = false;
+export async function getMapOccupants(grid, textures, images, floorTexture) {
+
+    // const mapCanvas = floorTexture.canvas;
+    const mapCtx = floorTexture.ctx;
 
 
     const overlayCanvas = document.createElement('canvas');
-    overlayCanvas.width = mapWidthPx;
-    overlayCanvas.height = mapHeightPx;
+    overlayCanvas.width = floorTexture.canvas.width;
+    overlayCanvas.height = floorTexture.canvas.height;
     const overlayCtx = overlayCanvas.getContext('2d');
     overlayCtx.imageSmoothingEnabled = false;
 
-    // loop over the entire game grid
+    // loop over y first, then x
     for (let j = 0; j < NUM_GRID.y; j++) {
         for (let i = 0; i < NUM_GRID.x; i++) {
             const cell = grid[i][j];
@@ -230,24 +240,40 @@ export async function getMapOccupants(grid, textures, images) {
                         );
                         break;
                     case 'largeTree':
-                        // check that this cell has Neighbours such that:
-                        // ---.N---
-                        // ---NN--- if it does, we draw a big tree and skip past the cell to the right we've just drawn on
+                        // currently checks if arrangement (where cell = c & largeTree = T) = `
+                        //      ..c..
+                        //      ..T..
+                        // ` 
+                        // ie. make sure there is another largetree element under this. 
+                        // otherwise, don't draw. we need a cell underneath this one to be a tree otherwise 
                         if (checkCell(grid, i, j)) {
-                            // console.log('heyyyyy skip the down, right, and down-right cells from this one dawg')
+
+                            // base map canvas gets bottom 2 cells (skip top 1 cell)
                             mapCtx.drawImage(
                                 textures.tree_S_A,
-                                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2,
-                                FLOOR_CELL_PIXELS * (j - 1),
-                                FLOOR_CELL_PIXELS * 2,
-                                FLOOR_CELL_PIXELS * 3,
+                                0, FLOOR_CELL_PIXELS, // Crop from (x=0, y=32px) in the texture
+                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS * 2, // Crop width and height (2x wide, 2x tall)
+                                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
+                                FLOOR_CELL_PIXELS * (j), // Destination Y (move down 1 cell)
+                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS * 2 // Destination width and height
                             );
-                            // if (grid[i+1][j]) grid[i+1][j].skip = true;
-                            // if (grid[i][j+1]) grid[i][j+1].skip = true;
-                            // if (grid[i+1][j+1]) grid[i+1][j+1].skip = true;
-                            // i++;
+
+                            // overlay canvas gets top 1 cell
+                            overlayCtx.drawImage(
+                                textures.tree_S_A,
+                                0, 0, // Crop from (x=0, y=0) in the texture
+                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 1x tall)
+                                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
+                                FLOOR_CELL_PIXELS * (j - 1), // Destination Y (unchanged)
+                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS // Destination width and height
+                            );
+
+                            apply_largeTree_x_overlay(grid, textures, overlayCtx, i, j)
+
+                            // overlay canvas should also draw these "tree edges"; the parts that extend outside the containing cell.
+
                         } else {
-                            console.log('skipping tree cell that does not have down,right,down-right neighbours');
+                            // console.log('skipping tree cell that does not have down,right,down-right neighbours');
                         }
                         break;
 
@@ -255,7 +281,12 @@ export async function getMapOccupants(grid, textures, images) {
             }
         }
     }
-    return mapCanvas;
+    return {
+        // return only the overlay stuff; we passed in the floor one to modify it
+        canvas: overlayCanvas,
+        ctx: overlayCtx
+    }
+    // return mapCanvas;
 }
 
 function checkCell(grid, x, y) {
@@ -283,3 +314,56 @@ function checkCell(grid, x, y) {
 
 }
 
+function apply_largeTree_x_overlay(grid, textures, overlayCtx, i, j) {
+
+    if (grid[i + 1]) {
+        if (grid[i + 1][j] && grid[i + 1][j].occupant !== 'largeTree') {
+            overlayCtx.drawImage(
+                textures.tree_S_A,
+                FLOOR_CELL_PIXELS * 1.5, FLOOR_CELL_PIXELS - 8, // Crop from (x=0, y=32px) in the texture
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
+                FLOOR_CELL_PIXELS * (i + 1), // Destination X
+                FLOOR_CELL_PIXELS * j - 8, // Destination Y (move down 1 cell)
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+            );
+        }
+        if (grid[i + 1][j + 1] && grid[i + 1][j + 1].occupant !== 'largeTree') {
+            overlayCtx.drawImage(
+                textures.tree_S_A,
+                FLOOR_CELL_PIXELS * 1.5, FLOOR_CELL_PIXELS * 2 - 8, // Crop from (x=0, y=32px) in the texture
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
+                FLOOR_CELL_PIXELS * (i + 1), // Destination X
+                FLOOR_CELL_PIXELS * (j + 1) - 8, // Destination Y (move down 1 cell)
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+            );
+
+        }
+    }
+
+    
+    // left side may not need checks!
+    if (grid[i - 1] && grid[i - 1][j] && grid[i - 1][j + 1]) {
+        if (grid[i - 1][j].occupant !== 'largeTree') {
+            overlayCtx.drawImage(
+                textures.tree_S_A,
+                0, FLOOR_CELL_PIXELS, // Crop from (x=0, y=32px) in the texture
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
+                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
+                FLOOR_CELL_PIXELS * j, // Destination Y (move down 1 cell)
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+            );
+        }
+
+        if (grid[i - 1][j + 1].occupant !== 'largeTree') {
+            overlayCtx.drawImage(
+                textures.tree_S_A,
+                0, FLOOR_CELL_PIXELS * 2, // Crop from (x=0, y=32px) in the texture
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
+                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
+                FLOOR_CELL_PIXELS * (j + 1), // Destination Y (move down 1 cell)
+                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+            );
+        }
+    }
+
+}

@@ -59,7 +59,7 @@ export async function load_entities(entities, textures) {
             const index = player.bag.findSlotByName('apple');
             console.log(`index is ${index}`)
             const item = player.bag.slots[index];
-            if (give_item_to(swordGame.grid, item, this, swordGame.textures.mapOccupants)) modifyInventoryTexture(swordGame.textures.inventoryItems);
+            if (give_item_to(swordGame, item, this)) modifyInventoryTexture(swordGame.textures.inventoryItems);
         },
         message_satisfied: "Thank you I was very hungry",
         // animations: new Animations({
@@ -111,15 +111,19 @@ export async function load_map(map, grid, textures, images, entities) {
     applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
     const parsedFloorLayout = parseFloorLayout(map.floor);
     applyFloorToGameGrid(grid, parsedFloorLayout);
+    
+
+
     textures.mapFloor = await getMapBackground(grid, textures, 0);
-    // textures.mapFloor = mapCanvas;
-    textures.mapOccupants = [
-        await getMapOccupants(grid, textures, images),
-        // await getMapOccupants(grid, textures, images, 0,),
-        // await getMapOccupants(grid, textures, images, 1,),
-        // await getMapOccupants(grid, textures, images, 2,),
-        // await getMapOccupants(grid, textures, images, 3,),
-    ];
+
+    
+    // const occupantsAndOverlaysTexture = await getMapOccupants(grid, textures, images, textures.mapFloor);
+    // textures.mapOccupants = occupantsAndOverlaysTexture.base;
+    // textures.mapOverlays = occupantsAndOverlaysTexture.overlay;
+
+    textures.mapOverlays = await getMapOccupants(grid, textures, images, textures.mapFloor);
+
+
 
 }
 

@@ -31,6 +31,8 @@ export async function load_image_resources(images, textures) {
                 crateShadow: "images/crate_experiments_4.png",
                 questionMark: "images/questionMark.png",
                 schwarnhildTextures: "images/basic_tileset_and_assets_standard/assets_spritesheet_v2_free.png",
+                ghetti_16: "images/ghetti_16.png",
+                ghetti_32: "images/ghetti_32.png",
             }
         )
 

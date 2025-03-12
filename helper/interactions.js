@@ -1,7 +1,7 @@
 import { FLOOR_CELL_PIXELS } from "../document.js";
 import { cellCoords } from "./grid.js";
 
-export function give_item_to(grid, item, entity, texture) {
+export function give_item_to(game, item, entity) {
     if (item.isHeldBy !== null) {       // if somebody is holding item
         const oldEntity = item.isHeldBy;
         const oldIndex = oldEntity.bag.findSlotByItem(item);
@@ -11,20 +11,22 @@ export function give_item_to(grid, item, entity, texture) {
         }
         console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
     } else if (item.position !== null) { // if the item has a world position
-        const posX = item.position.x;
-        const posY = item.position.y;
-        const gridX = cellCoords(posX);
-        const gridY = cellCoords(posY);
-        if (grid[gridX] && grid[gridX][gridY]) {
-            console.log(`should probably remove item from map at '${gridX},${gridY}'`)
-            const replaceCtx = texture.getContext('2d');
-            // console.log(replaceCtx)
-            replaceCtx.clearRect(posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
-            item.position = null;
-            grid[gridX][gridY].occupant = null;
-        } else {
-            console.warn(`oh no, item doesn't exist at '${x},${y}'`)
-        };
+        // const posX = item.position.x;
+        // const posY = item.position.y;
+        // const gridX = cellCoords(posX);
+        // const gridY = cellCoords(posY);
+        // if (game.grid[gridX] && game.grid[gridX][gridY]) {
+        //     console.log(`should probably remove item from map at '${gridX},${gridY}'`)
+        //     // const replaceCtx = texture.getContext('2d');
+        //     // console.log(replaceCtx)
+        //     game.textures.mapFloor.ctx.clearRect(posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
+            
+        //     item.position = null;
+        //     game.grid[gridX][gridY].occupant = null;
+        // } else {
+        //     console.warn(`oh no, item doesn't exist at '${x},${y}'`)
+        // };
+        remove_item_from_cell(game, item)
     }
     // console.log(`giving item '${item.name}' to '${entity.name}'`)
 
@@ -32,4 +34,28 @@ export function give_item_to(grid, item, entity, texture) {
     console.log(`${item.name} is now held by ${(item.isHeldBy !== null) ? item.isHeldBy.name : "nobody"}`)
 
     return true;
+}
+
+export function remove_item_from_cell(game, item) {
+    const posX = item.position.x;
+    const posY = item.position.y;
+    const gridX = cellCoords(posX);
+    const gridY = cellCoords(posY);
+    if (game.grid[gridX] && game.grid[gridX][gridY]) {
+        console.log(`should probably remove item from map at '${gridX},${gridY}'`)
+        // const replaceCtx = texture.getContext('2d');
+        // console.log(replaceCtx)
+        const texture = game.textures.mapFloor;
+
+        texture.ctx.clearRect(posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
+        // now we need to slice out `game.textures.mapFloor.floorOnly` at this same position and draw it at this same position
+        texture.ctx.drawImage(texture.floorOnly,
+            posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS,
+            posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS
+        )
+        item.position = null;
+        game.grid[gridX][gridY].occupant = null;
+    } else {
+        console.warn(`oh no, item doesn't exist at '${x},${y}'`)
+    };    
 }

@@ -27,7 +27,7 @@ async function dummy_init() {
     // })
 
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
-    player.receiveItem(new Item('Badghetti', null, null, null, "Would have been sadghetti, but cook was too sad to make it."));
+    player.receiveItem(new Item('Badghetti', null, swordGame.images.ghetti_16, swordGame.images.ghetti_32, "Would have been sadghetti, but cook was too sad to make it."));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;

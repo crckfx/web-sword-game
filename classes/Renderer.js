@@ -4,6 +4,7 @@ import { gridCells } from "../helper/grid.js";
 import { player } from "../helper/world-loader.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
+import { Camera } from "./Camera.js";
 
 export class Renderer {
     shouldDrawPlayerInventory = false;
@@ -12,6 +13,9 @@ export class Renderer {
     player_offset = 5;
     invCellSize = 40;
     optionsCoords = null;
+
+    camera = new Camera();
+
 
     constructor({
         canvas,
@@ -35,71 +39,79 @@ export class Renderer {
 
     // A.K.A. "render_entire_grid"
     draw() {
+        this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
+        this.camera.size.overwrite(this.canvas.width, this.canvas.height);
+        // // who needs a camera class lol just compute it each frame
+        // // yo nah lookups is better lol fix this
+        // const camX =  player.position.x - MIDDLE_CELL.x;
+        // const camY =  player.position.y - MIDDLE_CELL.y;
+        // const camW =  this.canvas.width;
+        // const camH =  this.canvas.height;        
+        // // for boundary checks eg. entities
+        const minX = this.camera.pos.x - cell_size.x;
+        const maxX = this.camera.pos.x + this.camera.size.x;
+        const minY = this.camera.pos.y - cell_size.y;
+        const maxY = this.camera.pos.y + this.camera.size.y;
+
+        // ok now ready to draw
+
         // clear it
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clearRect(0, 0, this.camera.size.x, this.camera.size.y);
         // draw black first
         this.ctx.fillStyle = 'black';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, this.camera.size.x, this.camera.size.y); // ?? could do an image background here instead
+        
         // draw it up
-        const cameraX = (player.position.x - MIDDLE_CELL.x);
-        const cameraY = (player.position.y - MIDDLE_CELL.y);
-        const cameraWidth = gridCells(this.cells.x);
-        const cameraHeight = gridCells(this.cells.y);
-        // draw the floor
+
+        // draw the **floor+doodad** base texture
         this.ctx.drawImage(
-            this.textures.mapFloor,
-            cameraX, cameraY, cameraWidth, cameraHeight,
-            0, 0, this.canvas.width, this.canvas.height
+            this.textures.mapFloor.canvas,
+            this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,    // draw a section of the floor
+            0, 0, this.camera.size.x, this.camera.size.y                 // at this specified pos + size
         );
-        this.drawPlayer(); // draw player
-        // draw entities
-        for (const key in this.game.entities) {
-            const e = this.game.entities[key];
-            if (
-                e.position.x >= cameraX - cell_size.x &&
-                e.position.x < cameraX + cameraWidth &&
-                e.position.y >= cameraY - cell_size.y && 
-                e.position.y < cameraY + cameraHeight
-            ) {
-                this.drawEntity(e, cameraX, cameraY);
+
+        // draw the **player** texture
+        this.ctx.drawImage(
+            // player.texture[index],
+            player.texture[player.frame],
+            MIDDLE_CELL.x, MIDDLE_CELL.y - 8,
+            cell_size.x, cell_size.y
+        );
+
+        // draw **entities**
+        for (const e of Object.values(this.game.entities)) {
+            const pos = e.position;
+            if (e.position.x >= minX && e.position.x < maxX &&
+                e.position.y >= minY && e.position.y < maxY) {
+                this.drawEntity(e, this.camera.pos.x, this.camera.pos.y);
             }
         }
-        // draw 'occupants' (doodads?)
-        this.ctx.drawImage(this.textures.mapOccupants[0],
-            cameraX, cameraY, cameraWidth, cameraHeight,
-            0, 0, cameraWidth, cameraHeight
+
+        this.ctx.drawImage(
+            this.textures.mapOverlays.canvas,
+            this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,
+            0, 0, this.camera.size.x, this.camera.size.y
         );
         if (this.shouldDrawPlayerInventory) this.drawInventory();
         if (this.shouldDrawDialogueBox) this.drawDialogueBox();
     }
 
-    drawPlayer() {
-        // do not shift the player; shift the floor? 
-        // because both camera and player update their position instantly, we keep the player still when the camera moves
-        this.ctx.drawImage(
-            // player.texture[index],
-            player.texture[player.frame],
-            MIDDLE_CELL.x,
-            MIDDLE_CELL.y - 6,
-            cell_size.x, cell_size.y
-        );
-    }
 
     // draw an entity specifically
-    drawEntity(entity, cameraX, cameraY) {
+    drawEntity(entity, camX, camY) {
         this.ctx.drawImage(
             entity.getEntitySprite(),
             // entity.texture[entity.frame],
             // this.textures.sword,
-            entity.position.x - cameraX,
-            entity.position.y - 6 - cameraY,
+            entity.position.x - camX,
+            entity.position.y - 6 - camY,
             cell_size.x,
             cell_size.y
         );
         if (entity.hasAlert) {
             this.drawCellBorder(
-                entity.position.x - cameraX,
-                entity.position.y - cameraY,
+                entity.position.x - camX,
+                entity.position.y - camY,
                 "red"
             );
         }

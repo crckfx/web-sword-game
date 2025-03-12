@@ -164,10 +164,6 @@ export class Game {
 
     // -------------------------------------------------------------------
 
-    draw() {
-        this.mainScene.draw(this.ctx, 0, 0)
-    }
-
     // pause and resume game functions
     pause() {
         this.isPaused = true;
@@ -441,7 +437,7 @@ export class Game {
         const y = cellCoords(t.position.y);
         if (grid[x] && grid[x][y]) {
             // console.log(`take item from ${x}, ${y}`);
-            if (give_item_to(grid, t, player, this.textures.mapOccupants[0])) {
+            if (give_item_to(this, t, player)) {
                 modifyInventoryTexture(this.textures.inventoryItems);
                 player.interactTarget = null;
 
