@@ -1,4 +1,4 @@
-import { FLOOR_CELL_PIXELS } from "../document.js";
+import { CELL_PX } from "../document.js";
 import { direction_to_1D } from "./directions.js";
 
 // function to split text (prepare for dialogue)
@@ -24,8 +24,8 @@ export function wrapText(input, charLimit = 25) {
 // function to create the base dialogue layout
 export async function createDialogueTexture(backgroundImage) {
    // get the pixel sizes for the texture (relative to the main pixel base) 
-    const widthPx = FLOOR_CELL_PIXELS * 10;     // 10 game cells wide
-    const heightPx = FLOOR_CELL_PIXELS * 3;     // 3 game cells tall
+    const widthPx = CELL_PX * 10;     // 10 game cells wide
+    const heightPx = CELL_PX * 3;     // 3 game cells tall
     // create a canvas, set its size, get a context
     const canvas = document.createElement('canvas');
     canvas.width = widthPx;

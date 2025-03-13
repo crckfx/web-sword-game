@@ -1,4 +1,4 @@
-import { cell_size, MIDDLE_CELL, FLOOR_CELL_PIXELS } from "../document.js";
+import { cell_size, MIDDLE_CELL, CELL_PX } from "../document.js";
 import { wrapText } from "../helper/promptMenu.js";
 import { gridCells } from "../helper/grid.js";
 import { player } from "../helper/world-loader.js";
@@ -16,14 +16,13 @@ export class Renderer {
 
     camera = new Camera();
 
-
+    // RENDERER CONSTRUCTOR
     constructor({
         canvas,
         ctx,
         cameraCellsX,
         cameraCellsY,
         game,   // it is assumed that the game will have textures, images, and grid already
-
     }) {
         this.game = game;
         this.ctx = ctx;
@@ -41,12 +40,6 @@ export class Renderer {
     draw() {
         this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
         this.camera.size.overwrite(this.canvas.width, this.canvas.height);
-        // // who needs a camera class lol just compute it each frame
-        // // yo nah lookups is better lol fix this
-        // const camX =  player.position.x - MIDDLE_CELL.x;
-        // const camY =  player.position.y - MIDDLE_CELL.y;
-        // const camW =  this.canvas.width;
-        // const camH =  this.canvas.height;        
         // // for boundary checks eg. entities
         const minX = this.camera.pos.x - cell_size.x;
         const maxX = this.camera.pos.x + this.camera.size.x;
@@ -81,8 +74,8 @@ export class Renderer {
         // draw **entities**
         for (const e of Object.values(this.game.entities)) {
             const pos = e.position;
-            if (e.position.x >= minX && e.position.x < maxX &&
-                e.position.y >= minY && e.position.y < maxY) {
+            if (pos.x >= minX && pos.x < maxX &&
+                pos.y >= minY && pos.y < maxY) {
                 this.drawEntity(e, this.camera.pos.x, this.camera.pos.y);
             }
         }
@@ -137,8 +130,8 @@ export class Renderer {
         this.ctx.fillstyle = "#000000aa";
         // this.ctx.fillRect(0,0,this.canvas.width, this.canvas.height)
         // draw the inventory background
-        const posX = FLOOR_CELL_PIXELS * 1.75;
-        const posY = FLOOR_CELL_PIXELS * 0.75;
+        const posX = CELL_PX * 1.75;
+        const posY = CELL_PX * 0.75;
         this.ctx.drawImage(this.textures.inventoryBg.canvas, posX, posY);
         // draw the items layer
         this.ctx.drawImage(this.textures.inventoryItems.canvas, posX, posY);
@@ -161,8 +154,8 @@ export class Renderer {
     drawDialogueBox() {
         this.ctx.drawImage(
             this.textures.sampleText.canvas,
-            FLOOR_CELL_PIXELS * 0.5,
-            FLOOR_CELL_PIXELS * 5.5,
+            CELL_PX * 0.5,
+            CELL_PX * 5.5,
         )
         if (this.game.promptIndex !== null) {
             this.ctx.strokeStyle = "red";
@@ -213,8 +206,8 @@ export class Renderer {
                 x -= textWidth; // Move left
                 // save the coordinates
                 optionsCoords[i] = {
-                    x: x - 4 + FLOOR_CELL_PIXELS * 0.5,
-                    y: y - 14 + FLOOR_CELL_PIXELS * 5.5,
+                    x: x - 4 + CELL_PX * 0.5,
+                    y: y - 14 + CELL_PX * 5.5,
                     width: textWidth + 8,
                     height: 20
                 };

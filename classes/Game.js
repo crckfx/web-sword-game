@@ -1,7 +1,7 @@
-import { GameControls } from "../controls/GameControls.js";
+import { GameControls } from "./controls/GameControls.js";
 import { Renderer } from "./Renderer.js";
 import { Item } from "./Item.js";
-import { getHtmlControls, CAMERA_CELLS, FLOOR_CELL_PIXELS, pauseMenu, NUM_GRID } from "../document.js";
+import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
 import { cellCoords, compare_two_vec2, createGrid, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
@@ -13,9 +13,10 @@ import { modifyInventoryTexture, tryInventoryMove } from "../helper/invMenu.js";
 // import { tryPromptMove } from "../experimental/promptMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
 import { GameObject } from "./GameObject.js";
-import { Dialogue } from "../experimental/Dialogue.js";
-import { DialogueOption } from "../experimental/DialogueOption.js";
-import { SetOfDialogues } from "../experimental/SetOfDialogues.js";
+import { Dialogue } from "./interactions/Dialogue.js";
+import { DialogueOption } from "./interactions/DialogueOption.js";
+import { SetOfDialogues } from "./interactions/SetOfDialogues.js";
+import { add_two_vectors } from "../helper/vectorHelper.js";
 
 export class Game {
     // renderer = null;
@@ -35,12 +36,7 @@ export class Game {
     promptIndex = null;
 
 
-    mainScene = new GameObject({
-        position: new Vector2(0, 0),
-    });
-
     currentDialogue = null // new experimental
-
     currentDialogueSet = null // new experimental
 
 
@@ -109,10 +105,10 @@ export class Game {
             ],
             null,
             null,
-            true
+            false
         )
 
-        this.mainScene.addChild(player);
+        // this.mainScene.addChild(player);
     }
 
 
@@ -134,12 +130,14 @@ export class Game {
 
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
 
+
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
             // (but only if we don't have one set already)
             if (player.interactTarget === null) {
                 const interactOffset = direction_to_2D(player.isFacing);
-                const interactCell = new Vector2(playerCell.x + interactOffset.x, playerCell.y + interactOffset.y);
+                const interactCell = add_two_vectors(playerCell, interactOffset);
+                // const interactCell = new Vector2(playerCell.x + interactOffset.x, playerCell.y + interactOffset.y);
                 if (this.grid[interactCell.x] && this.grid[interactCell.x][interactCell.y]) {
                     const occupant = this.grid[interactCell.x][interactCell.y].occupant;
                     // if (typeof(cell.occupant) === "object") {
@@ -337,25 +335,25 @@ export class Game {
         player.isFacing = this.controls.current_dpad_dir;
         switch (player.isFacing) {
             case 'left':
-                nextX -= FLOOR_CELL_PIXELS;
+                nextX -= CELL_PX;
                 player.animations.play('walkLeft');
                 break;
             case 'right':
                 player.animations.play('walkRight');
-                nextX += FLOOR_CELL_PIXELS;
+                nextX += CELL_PX;
                 break;
             case 'up':
                 player.animations.play('walkUp');
-                nextY -= FLOOR_CELL_PIXELS;
+                nextY -= CELL_PX;
                 break;
             case 'down':
                 player.animations.play('walkDown');
-                nextY += FLOOR_CELL_PIXELS;
+                nextY += CELL_PX;
                 break;
         }
 
-        const x = nextX / FLOOR_CELL_PIXELS;
-        const y = nextY / FLOOR_CELL_PIXELS;
+        const x = nextX / CELL_PX;
+        const y = nextY / CELL_PX;
 
         if (this.grid[x] && this.grid[x][y]) {
             if (this.grid[x][y].occupant === null) {

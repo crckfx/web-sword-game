@@ -10,15 +10,15 @@ import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WA
 export const NUM_GRID = new Vector2(24, 28); // total number of map X & Y cells
 
 // game declarations
-export const FLOOR_CELL_PIXELS = 32;
+export const CELL_PX = 32;
 export const CAMERA_CELLS = new Vector2(11, 9);
 const ASPECT_RATIO = CAMERA_CELLS.x / CAMERA_CELLS.y;
 const PADDING = 24;
 const MAX_SIZE = new Vector2(1650, 1350);
 
 export const canvas = document.getElementById('game_canv');
-canvas.width = CAMERA_CELLS.x * FLOOR_CELL_PIXELS; 
-canvas.height= CAMERA_CELLS.y * FLOOR_CELL_PIXELS;
+canvas.width = CAMERA_CELLS.x * CELL_PX; 
+canvas.height= CAMERA_CELLS.y * CELL_PX;
 export const ctx = canvas.getContext("2d");
 export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');

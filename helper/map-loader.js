@@ -4,7 +4,7 @@
 // we don't fetch a text file or anything here - just pass map strings in
 
 import { Item } from "../classes/Item.js";
-import { NUM_GRID, FLOOR_CELL_PIXELS } from "../document.js";
+import { NUM_GRID, CELL_PX } from "../document.js";
 import { gridCells } from "./grid.js";
 import { player } from "./world-loader.js";
 
@@ -72,7 +72,7 @@ export function applyFloorToGameGrid(grid, parsedFloorLayout) {
 }
 
 
-// take a layout (occupants) string and return a list of coords and names
+// take a layout (occupants) string and return an array full of list of coord/name objects
 export function parseOccupantLayout(mapString) {
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
@@ -129,10 +129,10 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, t
 
 
 // function to create a background image as a canvas
-export async function getMapBackground(grid, textures, stateIndex = 0) {
+export async function getMapBackground(grid, textures, paths = null) {
     // get the pixel sizes for the map
-    const mapWidthPx = FLOOR_CELL_PIXELS * NUM_GRID.x;
-    const mapHeightPx = FLOOR_CELL_PIXELS * NUM_GRID.y;
+    const mapWidthPx = CELL_PX * NUM_GRID.x;
+    const mapHeightPx = CELL_PX * NUM_GRID.y;
     // Create an offscreen canvas for each sprite
     const mapCanvas = document.createElement('canvas');
     mapCanvas.width = mapWidthPx;
@@ -152,31 +152,69 @@ export async function getMapBackground(grid, textures, stateIndex = 0) {
     for (let i = 0; i < NUM_GRID.x; i++) {
         for (let j = 0; j < NUM_GRID.y; j++) {
             const cell = grid[i][j];
+            let texture = textures.questionMark
             switch (cell.floor) {
                 case 'road':
-                case 'grass':
                 case 'grass2':
-                case 'dirt':
-                case 'sand':
                     mapCtx.drawImage(
                         textures[cell.floor],
-                        FLOOR_CELL_PIXELS * (i),
-                        FLOOR_CELL_PIXELS * (j),
-                        FLOOR_CELL_PIXELS,
-                        FLOOR_CELL_PIXELS,
+                        CELL_PX * (i), CELL_PX * (j), CELL_PX, CELL_PX,
                     );
+                    break;
+                case 'sand':
+                    texture = textures.sandGrass;
+                    const sandData = choose_tile_texture(grid, i, j, 'sand');
+                    mapCtx.drawImage(
+                        texture,
+                        1 * CELL_PX, 1 * CELL_PX, CELL_PX, CELL_PX,
+                        CELL_PX * (i), CELL_PX * (j), CELL_PX, CELL_PX,
+                    );                    
                     break;
                 case 'water':
                     mapCtx.drawImage(
-                        textures.water[stateIndex],
-                        FLOOR_CELL_PIXELS * (i),
-                        FLOOR_CELL_PIXELS * (j),
-                        FLOOR_CELL_PIXELS,
-                        FLOOR_CELL_PIXELS,
-
+                        textures.water[0],
+                        CELL_PX * i, CELL_PX * j,
+                        CELL_PX, CELL_PX,
                     );
                     break;
+                case 'dirt':
+                    // const dirtData = choose_tile_texture(grid, i, j, 'dirt');
+                    // if (check_grid_neighbour(grid, i + 1, j, 'sand') || check_grid_neighbour(grid, i, j+1, 'sand')) texture = textures.dirtSand;
+
+                    mapCtx.drawImage(
+                        textures.dirt,
+                        CELL_PX * i, CELL_PX * j, CELL_PX, CELL_PX,
+                    );
+                    break;
+                case 'grass':
+                    texture = textures.grassDirt;
+                    const grassData = choose_tile_texture(grid, i, j, 'grass');
+                    if (check_grid_neighbour(grid, i + 1, j, 'sand') || check_grid_neighbour(grid, i, j+1, 'sand')) texture = textures.grassSand;
+                    mapCtx.drawImage(
+                        texture,
+                        grassData.x, grassData.y, CELL_PX, CELL_PX,
+                        CELL_PX * (i), CELL_PX * (j), CELL_PX, CELL_PX,
+                    );
+
             }
+        }
+    }
+
+    if (paths !== null) {
+        for (const key in paths) {
+            const tile = paths[key]
+            console.log(tile);
+
+            const pathCoords = choose_path_texture(paths, tile.x, tile.y)
+            mapCtx.drawImage(
+                textures.schwarnhildDirtPaths,
+                pathCoords.x, pathCoords.y, CELL_PX, CELL_PX,
+                CELL_PX * tile.x,
+                CELL_PX * tile.y,
+                CELL_PX,
+                CELL_PX,
+
+            );
         }
     }
 
@@ -213,16 +251,16 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
                 if (cell.occupant.name === 'apple') {
                     mapCtx.drawImage(
                         cell.occupant.texture,
-                        FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (i)),
-                        FLOOR_CELL_PIXELS * 0.25 + (FLOOR_CELL_PIXELS * (j)),
-                        (FLOOR_CELL_PIXELS * 0.5),
-                        (FLOOR_CELL_PIXELS * 0.5),
+                        CELL_PX * 0.25 + (CELL_PX * (i)),
+                        CELL_PX * 0.25 + (CELL_PX * (j)),
+                        (CELL_PX * 0.5),
+                        (CELL_PX * 0.5),
                     );
                 } else {
                     mapCtx.drawImage(
                         images.crateShadow,
-                        (FLOOR_CELL_PIXELS * (i)),
-                        (FLOOR_CELL_PIXELS * (j)),
+                        (CELL_PX * (i)),
+                        (CELL_PX * (j)),
                     );
                 }
             } else {
@@ -233,13 +271,14 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
                         mapCtx.drawImage(
                             // images.tree,
                             textures.tree1_overlay,
-                            FLOOR_CELL_PIXELS * (i),
-                            FLOOR_CELL_PIXELS * (j - 1),
-                            FLOOR_CELL_PIXELS,
-                            FLOOR_CELL_PIXELS * 2,
+                            CELL_PX * (i),
+                            CELL_PX * (j - 1),
+                            CELL_PX,
+                            CELL_PX * 2,
                         );
                         break;
                     case 'largeTree':
+                        const texture = textures.tree_S_A;
                         // currently checks if arrangement (where cell = c & largeTree = T) = `
                         //      ..c..
                         //      ..T..
@@ -250,25 +289,25 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
 
                             // base map canvas gets bottom 2 cells (skip top 1 cell)
                             mapCtx.drawImage(
-                                textures.tree_S_A,
-                                0, FLOOR_CELL_PIXELS, // Crop from (x=0, y=32px) in the texture
-                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS * 2, // Crop width and height (2x wide, 2x tall)
-                                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
-                                FLOOR_CELL_PIXELS * (j), // Destination Y (move down 1 cell)
-                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS * 2 // Destination width and height
+                                texture,
+                                0, CELL_PX, // Crop from (x=0, y=32px) in the texture
+                                CELL_PX * 2, CELL_PX * 2, // Crop width and height (2x wide, 2x tall)
+                                CELL_PX * (i) - CELL_PX / 2, // Destination X
+                                CELL_PX * (j), // Destination Y (move down 1 cell)
+                                CELL_PX * 2, CELL_PX * 2 // Destination width and height
                             );
 
                             // overlay canvas gets top 1 cell
                             overlayCtx.drawImage(
-                                textures.tree_S_A,
+                                texture,
                                 0, 0, // Crop from (x=0, y=0) in the texture
-                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 1x tall)
-                                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
-                                FLOOR_CELL_PIXELS * (j - 1), // Destination Y (unchanged)
-                                FLOOR_CELL_PIXELS * 2, FLOOR_CELL_PIXELS // Destination width and height
+                                CELL_PX * 2, CELL_PX, // Crop width and height (2x wide, 1x tall)
+                                CELL_PX * (i) - CELL_PX / 2, // Destination X
+                                CELL_PX * (j - 1), // Destination Y (unchanged)
+                                CELL_PX * 2, CELL_PX // Destination width and height
                             );
 
-                            apply_largeTree_x_overlay(grid, textures, overlayCtx, i, j)
+                            apply_largeTree_x_overlay(grid, texture, overlayCtx, i, j)
 
                             // overlay canvas should also draw these "tree edges"; the parts that extend outside the containing cell.
 
@@ -314,56 +353,165 @@ function checkCell(grid, x, y) {
 
 }
 
-function apply_largeTree_x_overlay(grid, textures, overlayCtx, i, j) {
+function apply_largeTree_x_overlay(grid, texture, overlayCtx, i, j) {
 
     if (grid[i + 1]) {
         if (grid[i + 1][j] && grid[i + 1][j].occupant !== 'largeTree') {
             overlayCtx.drawImage(
-                textures.tree_S_A,
-                FLOOR_CELL_PIXELS * 1.5, FLOOR_CELL_PIXELS - 8, // Crop from (x=0, y=32px) in the texture
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
-                FLOOR_CELL_PIXELS * (i + 1), // Destination X
-                FLOOR_CELL_PIXELS * j - 8, // Destination Y (move down 1 cell)
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+                texture,
+                CELL_PX * 1.5, CELL_PX - 8, // Crop from (x=0, y=32px) in the texture
+                CELL_PX / 2, CELL_PX, // Crop width and height (2x wide, 2x tall)
+                CELL_PX * (i + 1), // Destination X
+                CELL_PX * j - 8, // Destination Y (move down 1 cell)
+                CELL_PX / 2, CELL_PX // Destination width and height
             );
         }
         if (grid[i + 1][j + 1] && grid[i + 1][j + 1].occupant !== 'largeTree') {
             overlayCtx.drawImage(
-                textures.tree_S_A,
-                FLOOR_CELL_PIXELS * 1.5, FLOOR_CELL_PIXELS * 2 - 8, // Crop from (x=0, y=32px) in the texture
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
-                FLOOR_CELL_PIXELS * (i + 1), // Destination X
-                FLOOR_CELL_PIXELS * (j + 1) - 8, // Destination Y (move down 1 cell)
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+                texture,
+                CELL_PX * 1.5, CELL_PX * 2 - 8, // Crop from (x=0, y=32px) in the texture
+                CELL_PX / 2, CELL_PX, // Crop width and height (2x wide, 2x tall)
+                CELL_PX * (i + 1), // Destination X
+                CELL_PX * (j + 1) - 8, // Destination Y (move down 1 cell)
+                CELL_PX / 2, CELL_PX // Destination width and height
             );
 
         }
     }
 
-    
+
     // left side may not need checks!
     if (grid[i - 1] && grid[i - 1][j] && grid[i - 1][j + 1]) {
         if (grid[i - 1][j].occupant !== 'largeTree') {
             overlayCtx.drawImage(
-                textures.tree_S_A,
-                0, FLOOR_CELL_PIXELS, // Crop from (x=0, y=32px) in the texture
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
-                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
-                FLOOR_CELL_PIXELS * j, // Destination Y (move down 1 cell)
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+                texture,
+                0, CELL_PX, // Crop from (x=0, y=32px) in the texture
+                CELL_PX / 2, CELL_PX, // Crop width and height (2x wide, 2x tall)
+                CELL_PX * (i) - CELL_PX / 2, // Destination X
+                CELL_PX * j, // Destination Y (move down 1 cell)
+                CELL_PX / 2, CELL_PX // Destination width and height
             );
         }
 
         if (grid[i - 1][j + 1].occupant !== 'largeTree') {
             overlayCtx.drawImage(
-                textures.tree_S_A,
-                0, FLOOR_CELL_PIXELS * 2, // Crop from (x=0, y=32px) in the texture
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS, // Crop width and height (2x wide, 2x tall)
-                FLOOR_CELL_PIXELS * (i) - FLOOR_CELL_PIXELS / 2, // Destination X
-                FLOOR_CELL_PIXELS * (j + 1), // Destination Y (move down 1 cell)
-                FLOOR_CELL_PIXELS / 2, FLOOR_CELL_PIXELS // Destination width and height
+                texture,
+                0, CELL_PX * 2, // Crop from (x=0, y=32px) in the texture
+                CELL_PX / 2, CELL_PX, // Crop width and height (2x wide, 2x tall)
+                CELL_PX * (i) - CELL_PX / 2, // Destination X
+                CELL_PX * (j + 1), // Destination Y (move down 1 cell)
+                CELL_PX / 2, CELL_PX // Destination width and height
             );
         }
     }
 
+}
+
+function choose_path_texture(paths, x, y) {
+    let sx = 0;
+    let sy = 0;
+
+    // Convert array of {x, y} objects into a Set of 'x,y' strings for fast lookup
+    const pathSet = new Set(paths.map(({ x, y }) => `${x},${y}`));
+
+    let left = check_path_neighbour(pathSet, x - 1, y);
+    let right = check_path_neighbour(pathSet, x + 1, y);
+    let up = check_path_neighbour(pathSet, x, y - 1);
+    let down = check_path_neighbour(pathSet, x, y + 1);
+
+    if (up && down)
+        sy = 1;
+    else if (!up && !down)
+        sy = 3;
+    else if (!up && down)
+        sy = 0;
+    else if (up && !down)
+        sy = 2;
+
+    if (left && !right)
+        sx = 2;
+    else if (!left && right)
+        sx = 0;
+    else if (left && right)
+        sx = 1;
+    else if (!left && !right)
+        sx = 3;
+
+    return {
+        x: sx * CELL_PX,
+        y: sy * CELL_PX
+    };
+}
+
+function check_path_neighbour(pathSet, x, y) {
+    return pathSet.has(`${x},${y}`);
+}
+
+
+
+
+
+// take a (floor) layout as string and return a list of coords and types
+export function parsePathLayout(mapString = null) {
+    if (mapString === null) return null;
+    const rows = mapString.trim().split("\n");
+    const parsedMap = [];
+    for (let y = 0; y < rows.length; y++) {
+        const row = rows[y].trim();
+        for (let x = 0; x < row.length; x++) {
+            if (row[x] === 'p') {
+                parsedMap.push({ x, y });
+            }
+        }
+    }
+    return parsedMap;
+}
+
+
+
+
+
+
+function choose_tile_texture(grid, x, y, match) {
+    let sx = 0;
+    let sy = 0;
+
+
+
+    let left = check_grid_neighbour(grid, x - 1, y, match);
+    let right = check_grid_neighbour(grid, x + 1, y, match);
+    let up = check_grid_neighbour(grid, x, y - 1, match);
+    let down = check_grid_neighbour(grid, x, y + 1, match);
+
+    if (up && down)
+        sy = 1;
+    else if (!up && !down)
+        sy = 3;
+    else if (!up && down)
+        sy = 0;
+    else if (up && !down)
+        sy = 2;
+
+    if (left && !right)
+        sx = 2;
+    else if (!left && right)
+        sx = 0;
+    else if (left && right)
+        sx = 1;
+    else if (!left && !right)
+        sx = 3;
+
+    return {
+        x: sx * CELL_PX,
+        y: sy * CELL_PX
+    };
+}
+
+function check_grid_neighbour(grid, x, y, match) {
+    if (grid[x] && grid[x][y]) {
+        if (grid[x][y].floor === match) {
+            return match;
+        } 
+    }
+    return null;
 }

@@ -1,14 +1,14 @@
 import { Vector2 } from "../classes/Vector2.js";
-import { FLOOR_CELL_PIXELS } from "../document.js";
+import { CELL_PX } from "../document.js";
 
 // cell => pixel
 export function gridCells(n) {
-    return FLOOR_CELL_PIXELS * n;
+    return CELL_PX * n;
 }
 
 // pixel => cell
 export function cellCoords(pos) {
-    return Math.round(pos / FLOOR_CELL_PIXELS);
+    return Math.round(pos / CELL_PX);
 }
 
 export function moveTowards(person, destinationPosition, speed) {

@@ -1,4 +1,4 @@
-import { parseFloorLayout, parseOccupantLayout, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants } from "./map-loader.js";
+import { parseFloorLayout, parseOccupantLayout, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants, parsePathLayout } from "./map-loader.js";
 import { Entity } from "../classes/Entity.js";
 
 import { Game } from "../classes/Game.js";
@@ -14,9 +14,9 @@ import { Animations } from "../classes/Animations.js";
 import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
 import { give_item_to } from "./interactions.js";
 import { modifyInventoryTexture } from "./invMenu.js";
-import { SetOfDialogues } from "../experimental/SetOfDialogues.js";
-import { Dialogue } from "../experimental/Dialogue.js";
-import { DialogueOption } from "../experimental/DialogueOption.js";
+import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
+import { Dialogue } from "../classes/interactions/Dialogue.js";
+import { DialogueOption } from "../classes/interactions/DialogueOption.js";
 
 
 
@@ -107,23 +107,17 @@ export async function load_entities(entities, textures) {
 
 export async function load_map(map, grid, textures, images, entities) {
     // do the map!
+    // turn text map into a bunch of coord objects
     const parsedOccupantLayout = parseOccupantLayout(map.occupants);
     applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
+
+    const parsedPathLayout = parsePathLayout(map.paths);
+    
     const parsedFloorLayout = parseFloorLayout(map.floor);
     applyFloorToGameGrid(grid, parsedFloorLayout);
     
-
-
-    textures.mapFloor = await getMapBackground(grid, textures, 0);
-
-    
-    // const occupantsAndOverlaysTexture = await getMapOccupants(grid, textures, images, textures.mapFloor);
-    // textures.mapOccupants = occupantsAndOverlaysTexture.base;
-    // textures.mapOverlays = occupantsAndOverlaysTexture.overlay;
-
+    textures.mapFloor = await getMapBackground(grid, textures, parsedPathLayout);
     textures.mapOverlays = await getMapOccupants(grid, textures, images, textures.mapFloor);
-
-
 
 }
 

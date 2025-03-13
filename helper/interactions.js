@@ -1,4 +1,4 @@
-import { FLOOR_CELL_PIXELS } from "../document.js";
+import { CELL_PX } from "../document.js";
 import { cellCoords } from "./grid.js";
 
 export function give_item_to(game, item, entity) {
@@ -19,7 +19,7 @@ export function give_item_to(game, item, entity) {
         //     console.log(`should probably remove item from map at '${gridX},${gridY}'`)
         //     // const replaceCtx = texture.getContext('2d');
         //     // console.log(replaceCtx)
-        //     game.textures.mapFloor.ctx.clearRect(posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
+        //     game.textures.mapFloor.ctx.clearRect(posX, posY, CELL_PX, CELL_PX);
             
         //     item.position = null;
         //     game.grid[gridX][gridY].occupant = null;
@@ -47,11 +47,11 @@ export function remove_item_from_cell(game, item) {
         // console.log(replaceCtx)
         const texture = game.textures.mapFloor;
 
-        texture.ctx.clearRect(posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS);
+        texture.ctx.clearRect(posX, posY, CELL_PX, CELL_PX);
         // now we need to slice out `game.textures.mapFloor.floorOnly` at this same position and draw it at this same position
         texture.ctx.drawImage(texture.floorOnly,
-            posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS,
-            posX, posY, FLOOR_CELL_PIXELS, FLOOR_CELL_PIXELS
+            posX, posY, CELL_PX, CELL_PX,
+            posX, posY, CELL_PX, CELL_PX
         )
         item.position = null;
         game.grid[gridX][gridY].occupant = null;
