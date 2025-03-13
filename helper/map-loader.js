@@ -168,7 +168,7 @@ export async function getMapBackground(grid, textures, paths = null) {
                         texture,
                         1 * CELL_PX, 1 * CELL_PX, CELL_PX, CELL_PX,
                         CELL_PX * (i), CELL_PX * (j), CELL_PX, CELL_PX,
-                    );                    
+                    );
                     break;
                 case 'water':
                     mapCtx.drawImage(
@@ -189,7 +189,7 @@ export async function getMapBackground(grid, textures, paths = null) {
                 case 'grass':
                     texture = textures.grassDirt;
                     const grassData = choose_tile_texture(grid, i, j, 'grass');
-                    if (check_grid_neighbour(grid, i + 1, j, 'sand') || check_grid_neighbour(grid, i, j+1, 'sand')) texture = textures.grassSand;
+                    if (check_grid_neighbour(grid, i + 1, j, 'sand') || check_grid_neighbour(grid, i, j + 1, 'sand')) texture = textures.grassSand;
                     mapCtx.drawImage(
                         texture,
                         grassData.x, grassData.y, CELL_PX, CELL_PX,
@@ -251,16 +251,16 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
                 if (cell.occupant.name === 'apple') {
                     mapCtx.drawImage(
                         cell.occupant.texture,
-                        CELL_PX * 0.25 + (CELL_PX * (i)),
-                        CELL_PX * 0.25 + (CELL_PX * (j)),
-                        (CELL_PX * 0.5),
-                        (CELL_PX * 0.5),
+                        (CELL_PX * (i)) + (CELL_PX * 0.25),
+                        (CELL_PX * (j)) + (CELL_PX * 0.25) - 4,
+                        CELL_PX * 0.5, CELL_PX * 0.5,
                     );
                 } else {
+                    // 'crate' for generic item
                     mapCtx.drawImage(
                         images.crateShadow,
                         (CELL_PX * (i)),
-                        (CELL_PX * (j)),
+                        (CELL_PX * (j) - 4),
                     );
                 }
             } else {
@@ -270,11 +270,20 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
                     case 'tree':
                         mapCtx.drawImage(
                             // images.tree,
-                            textures.tree1_overlay,
-                            CELL_PX * (i),
-                            CELL_PX * (j - 1),
-                            CELL_PX,
+                            textures.trees_oak,
+                            4 * CELL_PX, 2 * CELL_PX, CELL_PX * 2, CELL_PX,
+                            (CELL_PX * i) - CELL_PX / 2,
+                            CELL_PX * (j),
                             CELL_PX * 2,
+                            CELL_PX,
+                        );
+                        // overlay canvas gets top 1 cell
+                        overlayCtx.drawImage(
+                            textures.trees_oak,
+                            4 * CELL_PX, 1 * CELL_PX, CELL_PX * 2, CELL_PX,
+                            CELL_PX * (i) - CELL_PX / 2, // offset to center the tree
+                            CELL_PX * (j-1), // Destination Y (unchanged)
+                            CELL_PX * 2, CELL_PX// Destination width and height
                         );
                         break;
                     case 'largeTree':
@@ -511,7 +520,7 @@ function check_grid_neighbour(grid, x, y, match) {
     if (grid[x] && grid[x][y]) {
         if (grid[x][y].floor === match) {
             return match;
-        } 
+        }
     }
     return null;
 }

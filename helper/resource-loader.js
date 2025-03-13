@@ -13,31 +13,37 @@ export async function load_image_resources(images, textures) {
     try {
         await load_image_files(images,
             {
-                tree: 'images/tree_1.png',
+                // entities
                 spriteDefault: 'images/sprites_transparent.png',
                 spriteRed: 'images/sprites_transparent_red.png',
                 spriteYellow: 'images/sprites_transparent_yellow.png',
-                cobblestone: 'images/cobblestone.png',
-                manyTextures: 'images/Textures-16.png',
+                // self-made and/or silly things
+                tree: 'images/tree_1.png',
                 largeTree: 'images/large_tree_1.png',
                 largeTree_test: 'images/overlay_tree_test.png',
                 tree1_overlay: 'images/tree_1_overlay.png',
-                fruitSheet: 'images/FruitsSheet16x16.png',
-                shikashiTextures: 'images/shikashiV2_32px.png',
+                // UI stuff
                 inventory_border: 'images/inventory_slot.png',
                 dialogue_background: 'images/dialogue_background_2.png',
-                crate: "images/Crates by Mikiz/Brown crates/Brown Crates 1.png",
-                crateShadow: "images/crate_experiments_4.png",
                 questionMark: "images/questionMark.png",
+                // sheets
+                manyTextures: 'images/Textures-16.png',
+                fruitSheet: 'images/FruitsSheet16x16.png',
+                shikashiTextures: 'images/shikashiV2_32px.png',
                 schwarnhildTextures: "images/basic_tileset_and_assets_standard/assets_spritesheet_v2_free.png",
                 schwarnhildTerrains: "images/basic_tileset_and_assets_standard/terrain_tiles_v2.png",
                 schwarnhildDirtPaths: "images/basic_tileset_and_assets_standard/dirtpath_tiles.png",
-                ghetti_16: "images/ghetti_16.png",
-                ghetti_32: "images/ghetti_32.png",
                 grassDirt: "images/tiles/grass-dirt.png",
                 grassSand: "images/tiles/grass-sand.png",
                 sandGrass: "images/tiles/sand-grass.png",
                 dirt: 'images/tiles/dirt.png',
+                trees_oak: 'images/trees_winter_oak_modified.png',
+                // misc
+                cobblestone: 'images/cobblestone.png',
+                crate: "images/Crates by Mikiz/Brown crates/Brown Crates 1.png",
+                crateShadow: "images/crate_experiments_4.png",
+                ghetti_16: "images/ghetti_16.png",
+                ghetti_32: "images/ghetti_32.png",
 
                 grassTileBasic: "images/tiles/grass.png",
 
@@ -61,9 +67,9 @@ export async function load_image_resources(images, textures) {
         textures.grassDirt = images.grassDirt;
         textures.grassSand = images.grassSand;
         textures.sandGrass = images.sandGrass;
+        textures.trees_oak = images.trees_oak;
 
-        // textures.dirtPaths = await extractSprites(images.schwarnhildDirtPaths)
-        
+      
         // the dialogue and inventory textures
         textures.sampleText = await createDialogueTexture(images.dialogue_background);        
         textures.inventoryBg = await createInventoryBackground(images.inventory_border);
