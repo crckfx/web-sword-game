@@ -1,5 +1,5 @@
 import { Vector2 } from "./Vector2.js";
-import { cell_size } from "../document.js";
+import { CELL_PX } from "../document.js";
 
 export class Camera {
     pos = new Vector2(0,0);
@@ -23,8 +23,8 @@ export class Camera {
     }
 
     isInBounds(x, y) {
-        return x >= this.pos.x - cell_size.x && 
+        return x >= this.pos.x - CELL_PX && 
             x < this.pos.x + this.size.x &&
-            y >= this.pos.y - cell_size.y && y < this.pos.y + this.size.y;
+            y >= this.pos.y - CELL_PX && y < this.pos.y + this.size.y;
     }
 }

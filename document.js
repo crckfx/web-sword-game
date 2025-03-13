@@ -1,13 +1,13 @@
 import { Vector2 } from "./classes/Vector2.js";
 import { gridCells } from "./helper/grid.js";
-import { Player } from "./classes/Player.js";
+import { Player } from "./classes/objects/Player.js";
 import { Animations } from "./classes/Animations.js";
 import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
 import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
 
 
 // declarations. try and put them in order of precedence.
-export const NUM_GRID = new Vector2(24, 28); // total number of map X & Y cells
+export const NUM_GRID = new Vector2(28, 29); // total number of map X & Y cells
 
 // game declarations
 export const CELL_PX = 32;
@@ -25,10 +25,10 @@ const panelLeft = document.getElementById('panel_left');
 const panelRight = document.getElementById('panel_right');
 export const pauseMenu = document.getElementById('pauseMenu');
 
-export const cell_size = getCellSize();
+
 export const MIDDLE_CELL = {
-    x: cell_size.x * ((CAMERA_CELLS.x - 1) / 2),
-    y: cell_size.y * ((CAMERA_CELLS.y - 1) / 2),
+    x: CELL_PX * ((CAMERA_CELLS.x - 1) / 2),
+    y: CELL_PX * ((CAMERA_CELLS.y - 1) / 2),
 };
 
 // ------------------------------------------------------
@@ -39,17 +39,6 @@ applyPreventsToPanel(panelRight);
 const observer = new ResizeObserver(resize);
 observer.observe(panelCenter);
 
-
-
-
-
-// ------------------------------------------------------
-function getCellSize() {
-    return {
-        x: canvas.width / CAMERA_CELLS.x,
-        y: canvas.height / CAMERA_CELLS.y,
-    }
-}
 
 // function to set the canvas size based on its parent (note - overflow:hidden protects against parent growth)
 function resize() {
@@ -78,11 +67,7 @@ function resize() {
     pauseMenu.style.width = `${finalWidth}px`;
     pauseMenu.style.height = `${finalHeight}px`;
 
-
-    const newCellSize = getCellSize();
-    cell_size.x = newCellSize.x;
-    cell_size.y = newCellSize.y;
-    console.log(cell_size.x, cell_size.y, (finalWidth / 11));
+    console.log(finalWidth, finalHeight)
    
     // draw();
 }

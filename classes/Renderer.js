@@ -1,10 +1,13 @@
-import { cell_size, MIDDLE_CELL, CELL_PX } from "../document.js";
+import { MIDDLE_CELL, CELL_PX, NUM_GRID, CAMERA_CELLS } from "../document.js";
 import { wrapText } from "../helper/promptMenu.js";
-import { gridCells } from "../helper/grid.js";
+import { cellCoords, gridCells } from "../helper/grid.js";
 import { player } from "../helper/world-loader.js";
 // import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
 import { Camera } from "./Camera.js";
+import { Entity } from "./objects/Entity.js";
+import { Player } from "./objects/Player.js";
+import { GameObject } from "./GameObject.js";
 
 export class Renderer {
     shouldDrawPlayerInventory = false;
@@ -41,13 +44,14 @@ export class Renderer {
         this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
         this.camera.size.overwrite(this.canvas.width, this.canvas.height);
         // // for boundary checks eg. entities
-        const minX = this.camera.pos.x - cell_size.x;
+        const minX = this.camera.pos.x - CELL_PX;
         const maxX = this.camera.pos.x + this.camera.size.x;
-        const minY = this.camera.pos.y - cell_size.y;
+        const minY = this.camera.pos.y - CELL_PX;
         const maxY = this.camera.pos.y + this.camera.size.y;
 
         // ok now ready to draw
 
+        
         // clear it
         this.ctx.clearRect(0, 0, this.camera.size.x, this.camera.size.y);
         // draw black first
@@ -63,22 +67,39 @@ export class Renderer {
             0, 0, this.camera.size.x, this.camera.size.y                 // at this specified pos + size
         );
 
+        for (let j=-1; j<=CAMERA_CELLS.y; j++) {
+            for (let i=-1; i<=CAMERA_CELLS.x; i++) {
+                const x = cellCoords(this.camera.pos.x) + i;
+                const y = cellCoords(this.camera.pos.y) + j
+                // console.log(x, y);
+                if (this.grid[x] && this.grid[x][y]) {
+                    const cell = this.grid[x][y];
+                    
+                    if (cell.occupant instanceof GameObject) {
+                        this.drawEntity(cell.occupant, this.camera.pos.x, this.camera.pos.y)
+                    } 
+
+                }
+                
+            }
+        }
+
         // draw the **player** texture
         this.ctx.drawImage(
             // player.texture[index],
             player.texture[player.frame],
             MIDDLE_CELL.x, MIDDLE_CELL.y - 8,
-            cell_size.x, cell_size.y
+            CELL_PX, CELL_PX
         );
 
-        // draw **entities**
-        for (const e of Object.values(this.game.entities)) {
-            const pos = e.position;
-            if (pos.x >= minX && pos.x < maxX &&
-                pos.y >= minY && pos.y < maxY) {
-                this.drawEntity(e, this.camera.pos.x, this.camera.pos.y);
-            }
-        }
+        // // draw **entities**
+        // for (const e of Object.values(this.game.entities)) {
+        //     const pos = e.position;
+        //     if (pos.x >= minX && pos.x < maxX &&
+        //         pos.y >= minY && pos.y < maxY) {
+        //         this.drawEntity(e, this.camera.pos.x, this.camera.pos.y);
+        //     }
+        // }
 
         this.ctx.drawImage(
             this.textures.mapOverlays.canvas,
@@ -98,8 +119,8 @@ export class Renderer {
             // this.textures.sword,
             entity.position.x - camX,
             entity.position.y - 6 - camY,
-            cell_size.x,
-            cell_size.y
+            CELL_PX,
+            CELL_PX
         );
         if (entity.hasAlert) {
             this.drawCellBorder(
@@ -114,7 +135,7 @@ export class Renderer {
     drawCellBorder(x, y, colour = 'green') {
         this.ctx.strokeStyle = colour;
         this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(x, y, cell_size.x, cell_size.y);
+        this.ctx.strokeRect(x, y, CELL_PX);
     }
 
     // draw the pause menu (currently still HTML {unlike inventory/bag} )
@@ -146,7 +167,7 @@ export class Renderer {
             this.invCellSize, this.invCellSize
         );
 
-        this.ctx.drawImage(this.textures.sword2, 0, 0, cell_size.x, cell_size.y)
+        this.ctx.drawImage(this.textures.sword2, 0, 0, CELL_PX, CELL_PX);
     }
 
 

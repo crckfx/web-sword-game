@@ -1,9 +1,9 @@
-import { Inventory } from "./Inventory.js";
-import { cellCoords, gridCells } from "../helper/grid.js";
+import { Inventory } from "../Inventory.js";
+import { cellCoords, gridCells } from "../../helper/grid.js";
 import { Item } from "./Item.js";
-import { Vector2 } from "./Vector2.js";
-import { direction_to_2D } from "../helper/directions.js";
-import { GameObject } from "./GameObject.js";
+import { Vector2 } from "../Vector2.js";
+import { direction_to_2D } from "../../helper/directions.js";
+import { GameObject } from "../GameObject.js";
 
 export class Entity extends GameObject {
     isSatisfied = false;

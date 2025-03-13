@@ -1,4 +1,4 @@
-import { Item } from "./Item.js";
+import { Item } from "./objects/Item.js";
 
 export class Inventory {
     name = 'unnamed inventory';

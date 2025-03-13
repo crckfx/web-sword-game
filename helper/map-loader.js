@@ -3,7 +3,7 @@
 // it seems cool to store a map as a text file. 
 // we don't fetch a text file or anything here - just pass map strings in
 
-import { Item } from "../classes/Item.js";
+import { Item } from "../classes/objects/Item.js";
 import { NUM_GRID, CELL_PX } from "../document.js";
 import { gridCells } from "./grid.js";
 import { player } from "./world-loader.js";
@@ -29,7 +29,8 @@ const occupantMap = {
     '2': 'george',
     '3': 'harold',
     'a': 'apple',
-    'i': 'miscItem'
+    'i': 'miscItem',
+    'f': 'fence',
 };
 
 function removeOldOccupant(grid, x, y) {
@@ -106,7 +107,7 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, t
                     e.position.y = gridCells(y);
                     grid[x][y].occupant = e;
                     break;
-                case 'tree': case 'largeTree':
+                case 'tree': case 'largeTree': case 'fence':
                     grid[x][y].occupant = occupant;
                     break;
                 case 'apple':
@@ -242,7 +243,7 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
     const overlayCtx = overlayCanvas.getContext('2d');
     overlayCtx.imageSmoothingEnabled = false;
 
-    // loop over y first, then x
+    // loop over y and x
     for (let j = 0; j < NUM_GRID.y; j++) {
         for (let i = 0; i < NUM_GRID.x; i++) {
             const cell = grid[i][j];
@@ -267,6 +268,19 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
 
 
                 switch (cell.occupant) {
+                    case 'fence':
+                        const fenceData = choose_occupant_texture(grid, i, j, 'fence');
+                        overlayCtx.drawImage(
+                            textures.schwarnhildFences,
+                            fenceData.x, fenceData.y, CELL_PX, 16,
+                            i * CELL_PX, j * CELL_PX - 12, CELL_PX, 24
+                        )
+                        mapCtx.drawImage(
+                            textures.schwarnhildFences,
+                            fenceData.x, fenceData.y + 16, CELL_PX, 16,
+                            i * CELL_PX, j * CELL_PX + 12, CELL_PX, 24
+                        )
+                        break;
                     case 'tree':
                         mapCtx.drawImage(
                             // images.tree,
@@ -282,12 +296,11 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
                             textures.trees_oak,
                             4 * CELL_PX, 1 * CELL_PX, CELL_PX * 2, CELL_PX,
                             CELL_PX * (i) - CELL_PX / 2, // offset to center the tree
-                            CELL_PX * (j-1), // Destination Y (unchanged)
+                            CELL_PX * (j - 1), // Destination Y (unchanged)
                             CELL_PX * 2, CELL_PX// Destination width and height
                         );
                         break;
                     case 'largeTree':
-                        const texture = textures.tree_S_A;
                         // currently checks if arrangement (where cell = c & largeTree = T) = `
                         //      ..c..
                         //      ..T..
@@ -298,7 +311,7 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
 
                             // base map canvas gets bottom 2 cells (skip top 1 cell)
                             mapCtx.drawImage(
-                                texture,
+                                textures.tree_S_A,
                                 0, CELL_PX, // Crop from (x=0, y=32px) in the texture
                                 CELL_PX * 2, CELL_PX * 2, // Crop width and height (2x wide, 2x tall)
                                 CELL_PX * (i) - CELL_PX / 2, // Destination X
@@ -308,7 +321,7 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
 
                             // overlay canvas gets top 1 cell
                             overlayCtx.drawImage(
-                                texture,
+                                textures.tree_S_A,
                                 0, 0, // Crop from (x=0, y=0) in the texture
                                 CELL_PX * 2, CELL_PX, // Crop width and height (2x wide, 1x tall)
                                 CELL_PX * (i) - CELL_PX / 2, // Destination X
@@ -316,7 +329,7 @@ export async function getMapOccupants(grid, textures, images, floorTexture) {
                                 CELL_PX * 2, CELL_PX // Destination width and height
                             );
 
-                            apply_largeTree_x_overlay(grid, texture, overlayCtx, i, j)
+                            apply_largeTree_x_overlays(grid, textures.tree_S_A, overlayCtx, i, j, 'largeTree', textures.meshTree);
 
                             // overlay canvas should also draw these "tree edges"; the parts that extend outside the containing cell.
 
@@ -362,26 +375,26 @@ function checkCell(grid, x, y) {
 
 }
 
-function apply_largeTree_x_overlay(grid, texture, overlayCtx, i, j) {
+function apply_largeTree_x_overlays(grid, texture, overlayCtx, i, j, match, meshTexture) {
 
     if (grid[i + 1]) {
-        if (grid[i + 1][j] && grid[i + 1][j].occupant !== 'largeTree') {
+        if (grid[i + 1][j] && grid[i + 1][j].occupant !== match) {
             overlayCtx.drawImage(
                 texture,
-                CELL_PX * 1.5, CELL_PX - 8, // Crop from (x=0, y=32px) in the texture
+                CELL_PX * 1.5, CELL_PX, // Crop from (x=0, y=32px) in the texture
                 CELL_PX / 2, CELL_PX, // Crop width and height (2x wide, 2x tall)
                 CELL_PX * (i + 1), // Destination X
-                CELL_PX * j - 8, // Destination Y (move down 1 cell)
+                CELL_PX * j, // Destination Y 
                 CELL_PX / 2, CELL_PX // Destination width and height
             );
         }
-        if (grid[i + 1][j + 1] && grid[i + 1][j + 1].occupant !== 'largeTree') {
+        if (grid[i + 1][j + 1] && grid[i + 1][j + 1].occupant !== match) {
             overlayCtx.drawImage(
                 texture,
-                CELL_PX * 1.5, CELL_PX * 2 - 8, // Crop from (x=0, y=32px) in the texture
+                CELL_PX * 1.5, CELL_PX * 2, // Crop from (x=0, y=32px) in the texture
                 CELL_PX / 2, CELL_PX, // Crop width and height (2x wide, 2x tall)
                 CELL_PX * (i + 1), // Destination X
-                CELL_PX * (j + 1) - 8, // Destination Y (move down 1 cell)
+                CELL_PX * (j + 1), // Destination Y
                 CELL_PX / 2, CELL_PX // Destination width and height
             );
 
@@ -391,7 +404,7 @@ function apply_largeTree_x_overlay(grid, texture, overlayCtx, i, j) {
 
     // left side may not need checks!
     if (grid[i - 1] && grid[i - 1][j] && grid[i - 1][j + 1]) {
-        if (grid[i - 1][j].occupant !== 'largeTree') {
+        if (grid[i - 1][j].occupant !== match) {
             overlayCtx.drawImage(
                 texture,
                 0, CELL_PX, // Crop from (x=0, y=32px) in the texture
@@ -402,7 +415,7 @@ function apply_largeTree_x_overlay(grid, texture, overlayCtx, i, j) {
             );
         }
 
-        if (grid[i - 1][j + 1].occupant !== 'largeTree') {
+        if (grid[i - 1][j + 1].occupant !== match) {
             overlayCtx.drawImage(
                 texture,
                 0, CELL_PX * 2, // Crop from (x=0, y=32px) in the texture
@@ -411,7 +424,17 @@ function apply_largeTree_x_overlay(grid, texture, overlayCtx, i, j) {
                 CELL_PX * (j + 1), // Destination Y (move down 1 cell)
                 CELL_PX / 2, CELL_PX // Destination width and height
             );
-        }
+        } 
+        // else {
+        //     overlayCtx.drawImage(
+        //         meshTexture,
+        //         CELL_PX, CELL_PX * 2, // Crop from (x=0, y=32px) in the texture
+        //         CELL_PX, CELL_PX,
+        //         CELL_PX * (i) - CELL_PX / 2, // Destination X
+        //         CELL_PX * (j + 1), // Destination Y (move down 1 cell)
+        //         CELL_PX, CELL_PX
+        //     )
+        // }
     }
 
 }
@@ -523,4 +546,47 @@ function check_grid_neighbour(grid, x, y, match) {
         }
     }
     return null;
+}
+
+
+function choose_occupant_texture(grid, x, y, match) {
+    let sx = 0;
+    let sy = 0;
+
+    let left = check_grid_neighbour_occupant(grid, x - 1, y, match);
+    let right = check_grid_neighbour_occupant(grid, x + 1, y, match);
+    let up = check_grid_neighbour_occupant(grid, x, y - 1, match);
+    let down = check_grid_neighbour_occupant(grid, x, y + 1, match);
+
+    if (up && down)
+        sy = 1;
+    else if (!up && !down)
+        sy = 3;
+    else if (!up && down)
+        sy = 0;
+    else if (up && !down)
+        sy = 2;
+
+    if (left && !right)
+        sx = 2;
+    else if (!left && right)
+        sx = 0;
+    else if (left && right)
+        sx = 1;
+    else if (!left && !right)
+        sx = 3;
+
+    return {
+        x: sx * CELL_PX,
+        y: sy * CELL_PX
+    };
+
+    function check_grid_neighbour_occupant(grid, x, y, match) {
+        if (grid[x] && grid[x][y]) {
+            if (grid[x][y].occupant === match) {
+                return match;
+            }
+        }
+        return null;
+    }
 }

@@ -3,14 +3,8 @@ import { Dialogue } from "./Dialogue.js";
 export class SetOfDialogues {
     dialogues = [];
     count = 0;
-    constructor(dialogues, messages = null, heading = null, canExit=false) {
+    constructor(dialogues = null, messages = null, heading = null, canExit=false) {
         // if Dialogue instances were provided, push them in first
-        if (dialogues !== null) {   
-            for (let i=0; i<dialogues.length; i++) {
-                this.dialogues.push(dialogues[i]);
-            }
-        }
-
         // extra messages? - intended for shorthands
         if (messages !== null) {
             for (let i=0; i<messages.length; i++) {
@@ -22,6 +16,12 @@ export class SetOfDialogues {
                 }));
             }
         }
+        if (dialogues !== null) {   
+            for (let i=0; i<dialogues.length; i++) {
+                this.dialogues.push(dialogues[i]);
+            }
+        }
+
 
         this.canExit = canExit;
     }

@@ -1,5 +1,5 @@
-import { gridCells } from "../helper/grid.js";
-import { Vector2 } from "./Vector2.js";
+import { gridCells } from "../../helper/grid.js";
+import { Vector2 } from "../Vector2.js";
 
 export class Item {
     constructor(name, position, texture, invTexture, description) {

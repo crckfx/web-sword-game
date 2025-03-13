@@ -1,13 +1,13 @@
 import { parseFloorLayout, parseOccupantLayout, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants, parsePathLayout } from "./map-loader.js";
-import { Entity } from "../classes/Entity.js";
+import { Entity } from "../classes/objects/Entity.js";
 
 import { Game } from "../classes/Game.js";
-import { Item } from "../classes/Item.js";
+import { Item } from "../classes/objects/Item.js";
 import { wrapText } from "./promptMenu.js";
 
 
 import { get_standard_entity_animations, STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./walk.js";
-import { Player } from "../classes/Player.js";
+import { Player } from "../classes/objects/Player.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { gridCells } from "./grid.js";
 import { Animations } from "../classes/Animations.js";
@@ -55,12 +55,73 @@ export async function load_entities(entities, textures) {
         ),
 
         interactCondition: () => player.bag.findSlotByName('apple'),
+        // interactAction: function () {
+        //     const index = player.bag.findSlotByName('apple');
+        //     console.log(`index is ${index}`)
+        //     const item = player.bag.slots[index];
+        //     if (give_item_to(swordGame, item, this)) modifyInventoryTexture(swordGame.textures.inventoryItems);
+        // },
+
         interactAction: function () {
-            const index = player.bag.findSlotByName('apple');
-            console.log(`index is ${index}`)
-            const item = player.bag.slots[index];
-            if (give_item_to(swordGame, item, this)) modifyInventoryTexture(swordGame.textures.inventoryItems);
+            const self = this;
+            swordGame.launch_a_dialogue(swordGame.get_dialogue_choice(
+                "Give Fred an apple?",
+                function () {
+                    const index = player.bag.findSlotByName('apple');
+                    console.log(`index is ${index}`)
+                    const item = player.bag.slots[index];
+                    if (give_item_to(swordGame, item, self)) {
+                        modifyInventoryTexture(swordGame.textures.inventoryItems);
+                        self.isSatisfied = true;
+                        swordGame.exitDialogue();
+
+                        swordGame.worldInteract_Entity(self);
+                    }
+
+                },
+                function () {
+                    swordGame.exitDialogue();
+                }
+            ), null);
+
+
+            // swordGame.launch_set_of_dialogues(
+            //     new SetOfDialogues(
+            //         [...self.interactMessage.dialogues,
+
+
+            //         swordGame.get_dialogue_choice(
+            //             "Give Fred an apple?",
+            //             function () {
+            //                 const index = player.bag.findSlotByName('apple');
+            //                 console.log(`index is ${index}`)
+            //                 const item = player.bag.slots[index];
+            //                 if (give_item_to(swordGame, item, self)) {
+            //                     modifyInventoryTexture(swordGame.textures.inventoryItems);
+            //                     self.isSatisfied = true;
+            //                     swordGame.exitDialogue();
+
+            //                     swordGame.worldInteract_Entity(self);
+            //                 } else {
+            //                     console.log("could not give to the fred?");
+            //                 }
+
+            //             },
+            //             function () {
+            //                 swordGame.exitDialogue();
+            //             }
+            //         ),
+            //         ],
+            //         null,
+            //         'FRED CHECK',
+            //         false
+
+            //     ),
+            //     null
+            // );            
         },
+
+
         message_satisfied: "Thank you I was very hungry",
         // animations: new Animations({
         //     walkUp: new FrameIndexPattern(WALK_UP),
@@ -112,10 +173,10 @@ export async function load_map(map, grid, textures, images, entities) {
     applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
 
     const parsedPathLayout = parsePathLayout(map.paths);
-    
+
     const parsedFloorLayout = parseFloorLayout(map.floor);
     applyFloorToGameGrid(grid, parsedFloorLayout);
-    
+
     textures.mapFloor = await getMapBackground(grid, textures, parsedPathLayout);
     textures.mapOverlays = await getMapOccupants(grid, textures, images, textures.mapFloor);
 

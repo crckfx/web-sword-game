@@ -1,11 +1,11 @@
 import { GameControls } from "./controls/GameControls.js";
 import { Renderer } from "./Renderer.js";
-import { Item } from "./Item.js";
+import { Item } from "./objects/Item.js";
 import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
 import { cellCoords, compare_two_vec2, createGrid, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
-import { Entity } from "./Entity.js";
+import { Entity } from "./objects/Entity.js";
 import { player } from "../helper/world-loader.js";
 import { wrapText, tryPromptMove } from "../helper/promptMenu.js";
 import { give_item_to } from "../helper/interactions.js";
@@ -107,6 +107,7 @@ export class Game {
             null,
             false
         )
+        
 
         // this.mainScene.addChild(player);
     }
@@ -129,7 +130,7 @@ export class Game {
             this.tryMove();
 
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
-
+            
 
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
@@ -448,16 +449,18 @@ export class Game {
     worldInteract_Entity(t) {
         // ** handle conditions ** (a basic prototype)
         // check 1. a condition exists and 2. it is not already satisfied
+        player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
         if (t.interactCondition !== null && t.isSatisfied === false) {
             // check the (currently unsatisfied) condition
             const conditionIsMet = t.interactCondition() > -1; // assume an interact condition uses a number??? todo: smooth out
             // console.log(`interact condition: ${conditionIsMet}`)
             if (conditionIsMet) {
-                t.interactAction();
-                t.isSatisfied = true;
+                if (t.interactAction()) {
+                    t.isSatisfied = true;
+                };
+                return;
             }
         } // ** END handle conditions **
-        player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
         const d = this.get_dialogue_entity(t);
         if (d instanceof Dialogue) {
             this.launch_a_dialogue(d, t)
@@ -475,7 +478,7 @@ export class Game {
         if (d instanceof SetOfDialogues)
             return d;
 
-        // otherwise, we'll return a DIALOGUE
+        // otherwise, we'll assume d is a message & return a DIALOGUE
         return new Dialogue({
             heading: e.name,
             message: d,
@@ -499,6 +502,17 @@ export class Game {
                     this.exitDialogue();
                     this.exitPlayerInventory();
                 }),
+            ],
+        })
+    }
+
+    get_dialogue_choice(message = "yes or no?", yes=null, no=null) {
+        return new Dialogue({
+            heading: null,
+            message: message,
+            options: [
+                new DialogueOption("Yes", () => yes()),
+                new DialogueOption("No", () => no()),
             ],
         })
     }

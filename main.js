@@ -1,5 +1,5 @@
 import { load_entities, load_map, player, swordGame } from "./helper/world-loader.js";
-import { Item } from "./classes/Item.js";
+import { Item } from "./classes/objects/Item.js";
 import { NUM_GRID } from "./document.js";
 import { load_image_resources } from "./helper/resource-loader.js";
 import { map_1 } from "./maps/map_1.js";
@@ -19,12 +19,7 @@ async function dummy_init() {
     await load_map(map_2, swordGame.grid, swordGame.textures, swordGame.images, swordGame.entities);
 
     player.texture = swordGame.textures.spriteDefault;
-    // player.sprite = new Sprite({
-    //     resource: swordGame.images.spriteDefault,
-    //     position: player.position,
-    //     vFrames: 8,
-    //     hFrames: 4,
-    // })
+
 
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
     player.receiveItem(new Item('Badghetti', null, swordGame.images.ghetti_16, swordGame.images.ghetti_32, "Would have been sadghetti, but cook was too sad to make it."));
@@ -38,7 +33,7 @@ async function dummy_init() {
     swordGame.controls.bind();
     swordGame.gameLoop.start();
 
-    swordGame.launch_set_of_dialogues(swordGame.setOfDialogues_1);
+    // swordGame.launch_set_of_dialogues(swordGame.setOfDialogues_1); // proving an init dialogue on game load
 
 }
 

@@ -31,8 +31,10 @@ export async function load_image_resources(images, textures) {
                 fruitSheet: 'images/FruitsSheet16x16.png',
                 shikashiTextures: 'images/shikashiV2_32px.png',
                 schwarnhildTextures: "images/basic_tileset_and_assets_standard/assets_spritesheet_v2_free.png",
+                meshTree: "images/tree_mesher.png",
                 schwarnhildTerrains: "images/basic_tileset_and_assets_standard/terrain_tiles_v2.png",
                 schwarnhildDirtPaths: "images/basic_tileset_and_assets_standard/dirtpath_tiles.png",
+                schwarnhildFences: "images/basic_tileset_and_assets_standard/fence_tiles.png",
                 grassDirt: "images/tiles/grass-dirt.png",
                 grassSand: "images/tiles/grass-sand.png",
                 sandGrass: "images/tiles/sand-grass.png",
@@ -68,6 +70,8 @@ export async function load_image_resources(images, textures) {
         textures.grassSand = images.grassSand;
         textures.sandGrass = images.sandGrass;
         textures.trees_oak = images.trees_oak;
+        textures.schwarnhildFences = images.schwarnhildFences;
+        textures.meshTree = images.meshTree;
 
       
         // the dialogue and inventory textures
