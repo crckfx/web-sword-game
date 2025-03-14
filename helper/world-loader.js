@@ -46,7 +46,6 @@ export async function load_entities(entities, textures) {
         isFacing: 'up',
         texture: textures.spriteYellow,
         interactMessage: new SetOfDialogues(
-            null,
             [
                 "Have you seen my apple?",
                 "I think I left it somewhere around here."
@@ -64,83 +63,92 @@ export async function load_entities(entities, textures) {
 
         interactAction: function () {
             const self = this;
-            swordGame.launch_a_dialogue(swordGame.get_dialogue_choice(
-                "Give Fred an apple?",
-                function () {
-                    const index = player.bag.findSlotByName('apple');
-                    console.log(`index is ${index}`)
-                    const item = player.bag.slots[index];
-                    if (give_item_to(swordGame, item, self)) {
-                        modifyInventoryTexture(swordGame.textures.inventoryItems);
-                        self.isSatisfied = true;
-                        swordGame.exitDialogue();
+            // swordGame.launch_a_dialogue(swordGame.get_dialogue_choice(
+            //     "Give Fred an apple?",
+            //     function () {
+            //         const index = player.bag.findSlotByName('apple');
+            //         console.log(`index is ${index}`)
+            //         const item = player.bag.slots[index];
+            //         if (give_item_to(swordGame, item, self)) {
+            //             modifyInventoryTexture(swordGame.textures.inventoryItems);
+            //             self.isSatisfied = true;
+            //             swordGame.exitDialogue();
 
-                        swordGame.worldInteract_Entity(self);
-                    }
+            //             swordGame.worldInteract_Entity(self);
+            //         }
 
-                },
-                function () {
-                    swordGame.exitDialogue();
-                }
-            ), null);
-
-
-            // swordGame.launch_set_of_dialogues(
-            //     new SetOfDialogues(
-            //         [...self.interactMessage.dialogues,
+            //     },
+            //     function () {
+            //         swordGame.exitDialogue();
+            //     }
+            // ), null);
 
 
-            //         swordGame.get_dialogue_choice(
-            //             "Give Fred an apple?",
-            //             function () {
-            //                 const index = player.bag.findSlotByName('apple');
-            //                 console.log(`index is ${index}`)
-            //                 const item = player.bag.slots[index];
-            //                 if (give_item_to(swordGame, item, self)) {
-            //                     modifyInventoryTexture(swordGame.textures.inventoryItems);
-            //                     self.isSatisfied = true;
-            //                     swordGame.exitDialogue();
+            swordGame.launch_set_of_dialogues(
+                new SetOfDialogues(
+                    // include the interact ones
+                    [   
+                        ...self.interactMessage.dialogues,
 
-            //                     swordGame.worldInteract_Entity(self);
-            //                 } else {
-            //                     console.log("could not give to the fred?");
-            //                 }
+                        swordGame.get_dialogue_choice(
+                            // the body message
+                            "Give Fred an apple?",
+                            // the yes function
+                            function () {
+                                const index = player.bag.findSlotByName('apple');
+                                console.log(`index is ${index}`)
+                                const item = player.bag.slots[index];
+                                if (give_item_to(swordGame, item, self)) {
+                                    modifyInventoryTexture(swordGame.textures.inventoryItems);
+                                    self.isSatisfied = true;
+                                    swordGame.exitDialogue();
+                                    // swordGame.worldInteract_Entity(self);
+                                    swordGame.launch_set_of_dialogues(
+                                        new SetOfDialogues(
+                                            [
+                                                new Dialogue({
+                                                    heading: "Inventory",
+                                                    message: "gave fred an apple.",
+                                                }),
 
-            //             },
-            //             function () {
-            //                 swordGame.exitDialogue();
-            //             }
-            //         ),
-            //         ],
-            //         null,
-            //         'FRED CHECK',
-            //         false
+                                                new Dialogue({
+                                                    heading: "Fred",
+                                                    message: self.message_satisfied,
+                                                }),
+                                            ],
+                                        ))
+                                } else {
+                                    console.log("could not give to the fred?");
+                                }
 
-            //     ),
-            //     null
-            // );            
+                            },
+                            // the no function
+                            function () {
+                                swordGame.exitDialogue();
+                                swordGame.launch_a_dialogue(new Dialogue({
+                                    heading: 'Fred',
+                                    message: "Come on man, let me hold something!"
+                                }))
+                            }
+                        ),
+                    ],
+                    'FRED CHECK',
+                    false
+                ),
+                null
+            );
         },
 
-
         message_satisfied: "Thank you I was very hungry",
-        // animations: new Animations({
-        //     walkUp: new FrameIndexPattern(WALK_UP),
-        //     walkLeft: new FrameIndexPattern(WALK_LEFT),
-        //     walkDown: new FrameIndexPattern(WALK_DOWN),
-        //     walkRight: new FrameIndexPattern(WALK_RIGHT),
-
-        //     standUp: new FrameIndexPattern(WALK_UP),
-        //     standLeft: new FrameIndexPattern(WALK_LEFT),
-        //     standDown: new FrameIndexPattern(WALK_DOWN),
-        //     standRight: new FrameIndexPattern(WALK_RIGHT),
-        // }),        
     });
+
+    console.log(entities.fred)
+
     entities.george = new Entity({
         name: 'george',
         isFacing: 'right',
         texture: textures.spriteRed,
         interactMessage: new SetOfDialogues(
-            null,
             [
                 "Not now",
                 "Not now! (2)",
@@ -155,7 +163,6 @@ export async function load_entities(entities, textures) {
         name: 'harold',
         texture: textures.spriteYellow,
         interactMessage: new SetOfDialogues(
-            null,
             [
                 "You there...Ogre!",
                 "Somebody once told me the world was gonna roll me."

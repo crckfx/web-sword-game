@@ -102,12 +102,9 @@ export class Game {
                         new DialogueOption("Also Yes", () => this.exitDialogue()),
                     ]
                 }),
-            ],
-            null,
-            null,
-            false
+            ]
         )
-        
+
 
         // this.mainScene.addChild(player);
     }
@@ -130,7 +127,7 @@ export class Game {
             this.tryMove();
 
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
-            
+
 
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
@@ -264,8 +261,6 @@ export class Game {
 
 
     launch_a_dialogue(dialogue, object) {
-        // this.
-        // this.currentPromptOptions = dialogue.
         if (dialogue.options) {
             this.promptIndex = 0;
         }
@@ -383,18 +378,24 @@ export class Game {
 
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
-        // implement me once we add interacts to dialogue
-        // this.currentPromptOptions[this.promptIndex].action();
+
         if (this.currentDialogueSet !== null) {
             console.log("yes you interacted with a dialogue set's dialogue!!!~1!");
-            this.currentDialogue = this.currentDialogueSet.progress();
-            if (this.currentDialogue === null) {
-                this.exitDialogue();
+            if (this.currentDialogue.options === null) {
+                this.currentDialogue = this.currentDialogueSet.progress();
+                if (this.currentDialogue === null) {
+                    this.exitDialogue();
+                    return;
+                }
             } else {
-                if (this.currentDialogue.options !== null)
-                    this.promptIndex = 0;
-                this.renderer.modifyDialogueWithDialogueClass(this.currentDialogue, null, this.textures.sampleText);
+                this.currentDialogue.options[this.promptIndex].action();
+                return;
             }
+
+
+            if (this.currentDialogue.options !== null)
+                this.promptIndex = 0;
+            this.renderer.modifyDialogueWithDialogueClass(this.currentDialogue, null, this.textures.sampleText);
         }
         else if (this.currentDialogue.options === null)
             this.exitDialogue();
@@ -506,7 +507,7 @@ export class Game {
         })
     }
 
-    get_dialogue_choice(message = "yes or no?", yes=null, no=null) {
+    get_dialogue_choice(message = "yes or no?", yes = null, no = null) {
         return new Dialogue({
             heading: null,
             message: message,

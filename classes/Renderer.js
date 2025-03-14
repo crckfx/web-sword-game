@@ -44,10 +44,6 @@ export class Renderer {
         this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
         this.camera.size.overwrite(this.canvas.width, this.canvas.height);
         // // for boundary checks eg. entities
-        const minX = this.camera.pos.x - CELL_PX;
-        const maxX = this.camera.pos.x + this.camera.size.x;
-        const minY = this.camera.pos.y - CELL_PX;
-        const maxY = this.camera.pos.y + this.camera.size.y;
 
         // ok now ready to draw
 
@@ -118,7 +114,7 @@ export class Renderer {
             // entity.texture[entity.frame],
             // this.textures.sword,
             entity.position.x - camX,
-            entity.position.y - 6 - camY,
+            entity.position.y - 8 - camY,
             CELL_PX,
             CELL_PX
         );
