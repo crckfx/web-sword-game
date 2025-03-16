@@ -1,4 +1,4 @@
-import { parseFloorLayout, parseOccupantLayout, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapBackground, getMapOccupants, parsePathLayout } from "./map-loader.js";
+import { parseFloorLayout, parseOccupantLayout, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapTextures, parsePathLayout } from "./map-loader.js";
 import { Entity } from "../classes/objects/Entity.js";
 
 import { Game } from "../classes/Game.js";
@@ -63,31 +63,10 @@ export async function load_entities(entities, textures) {
 
         interactAction: function () {
             const self = this;
-            // swordGame.launch_a_dialogue(swordGame.get_dialogue_choice(
-            //     "Give Fred an apple?",
-            //     function () {
-            //         const index = player.bag.findSlotByName('apple');
-            //         console.log(`index is ${index}`)
-            //         const item = player.bag.slots[index];
-            //         if (give_item_to(swordGame, item, self)) {
-            //             modifyInventoryTexture(swordGame.textures.inventoryItems);
-            //             self.isSatisfied = true;
-            //             swordGame.exitDialogue();
-
-            //             swordGame.worldInteract_Entity(self);
-            //         }
-
-            //     },
-            //     function () {
-            //         swordGame.exitDialogue();
-            //     }
-            // ), null);
-
-
             swordGame.launch_set_of_dialogues(
                 new SetOfDialogues(
                     // include the interact ones
-                    [   
+                    [
                         ...self.interactMessage.dialogues,
 
                         swordGame.get_dialogue_choice(
@@ -179,13 +158,16 @@ export async function load_map(map, grid, textures, images, entities) {
     const parsedOccupantLayout = parseOccupantLayout(map.occupants);
     applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
 
-    const parsedPathLayout = parsePathLayout(map.paths);
-
     const parsedFloorLayout = parseFloorLayout(map.floor);
+    const parsedPathLayout = parsePathLayout(map.paths);
     applyFloorToGameGrid(grid, parsedFloorLayout);
 
-    textures.mapFloor = await getMapBackground(grid, textures, parsedPathLayout);
-    textures.mapOverlays = await getMapOccupants(grid, textures, images, textures.mapFloor);
+    const mapTextures = await getMapTextures(grid, textures, images, parsedPathLayout);
+    textures.mapFloor = mapTextures.mapFloor;
+    textures.mapOverlays = mapTextures.mapOverlays;
+
+    // textures.mapFloor = await getMapBackground(grid, textures, images, parsedPathLayout);
+    // textures.mapOverlays = await getMapOccupants(grid, textures, images, textures.mapFloor);
 
 }
 

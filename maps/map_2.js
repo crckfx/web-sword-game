@@ -49,9 +49,9 @@ export const map_2 = {
         ggggggwwwgddrrddggggggssssww
         ggggggwwggddrrddgggggggsssww
         gggggggggddrrrddggggggggssww
-        gggggggggddrrddggggggggggssw
+        gggggggggddrrddgggggggggsssw
         gggggggggddrrddgggggggggggsw
-        gggggggggddrrddgggggsgddddss
+        gggggggggddrrddgggggsgssssss
         gggggggggdrrddgggggsssddddds
         gggggggggdrrddgggsssssssddds
         gggggggggdrrddgggswwswwsssss

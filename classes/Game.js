@@ -3,7 +3,7 @@ import { Renderer } from "./Renderer.js";
 import { Item } from "./objects/Item.js";
 import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
-import { cellCoords, compare_two_vec2, createGrid, moveTowards } from "../helper/grid.js";
+import { cellCoords, compare_two_vec2, createGrid, gridCells, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./objects/Entity.js";
 import { player } from "../helper/world-loader.js";
@@ -32,7 +32,6 @@ export class Game {
     isInDialogue = false;
     isInInventory = false;
 
-    currentPromptOptions = null;
     promptIndex = null;
 
 
@@ -61,7 +60,7 @@ export class Game {
             bang_dpad: this.command_dpad.bind(this),
             bang_A: this.command_interact.bind(this),
             bang_B: this.command_back.bind(this),
-            bang_Y: () => console.log('bang Y not implemented'),
+            bang_Y: () => console.log(cellCoords(player.position.x), cellCoords(player.position.y)),
             bang_X: this.enterPlayerInventory.bind(this),
 
             bang_pause: this.command_togglePause.bind(this),
@@ -104,17 +103,10 @@ export class Game {
                 }),
             ]
         )
-
-
-        // this.mainScene.addChild(player);
     }
 
 
 
-
-    // const draw = () => {
-    //     main
-    // }
 
     // MAIN UPDATE
     // -------------------------------------------------------------------
@@ -209,7 +201,6 @@ export class Game {
                 if (this.currentDialogue.options !== null) {
                     this.promptIndex = tryPromptMove(
                         this.controls.current_dpad_dir,
-                        // this.currentPromptOptions.length,
                         this.currentDialogue.options.length,
                         this.promptIndex
                     );
@@ -223,7 +214,6 @@ export class Game {
             if (this.currentDialogue.options !== null) {
                 this.promptIndex = tryPromptMove(
                     this.controls.current_dpad_dir,
-                    // this.currentPromptOptions.length,
                     this.currentDialogue.options.length,
                     this.promptIndex
                 );
@@ -294,7 +284,6 @@ export class Game {
 
 
     exitDialogue() {
-        this.currentPromptOptions = null;
         this.isInDialogue = false;
         this.promptIndex = null;
         this.renderer.shouldDrawDialogueBox = false;

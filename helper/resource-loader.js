@@ -38,6 +38,9 @@ export async function load_image_resources(images, textures) {
                 grassDirt: "images/tiles/grass-dirt.png",
                 grassSand: "images/tiles/grass-sand.png",
                 sandGrass: "images/tiles/sand-grass.png",
+                sandDirt: "images/tiles/sand-dirt.png",
+                dirtSand: "images/tiles/dirt-sand.png",
+                dirtGrass: "images/tiles/dirt-grass.png",
                 dirt: 'images/tiles/dirt.png',
                 trees_oak: 'images/trees_winter_oak_modified.png',
                 // misc
@@ -69,6 +72,9 @@ export async function load_image_resources(images, textures) {
         textures.grassDirt = images.grassDirt;
         textures.grassSand = images.grassSand;
         textures.sandGrass = images.sandGrass;
+        textures.sandDirt = images.sandDirt;
+        textures.dirtSand = images.dirtSand;
+        textures.dirtGrass = images.dirtGrass;
         textures.trees_oak = images.trees_oak;
         textures.schwarnhildFences = images.schwarnhildFences;
         textures.meshTree = images.meshTree;
