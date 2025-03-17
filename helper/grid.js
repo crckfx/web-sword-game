@@ -64,3 +64,12 @@ export function compare_two_vec2(vecA, vecB) {
     console.error('uhh the 2 vectors seem to have the same position?')
     return;
 }
+
+export function check_grid_neighbour_floor(grid, x, y, match) {
+    if (grid[x] && grid[x][y]) {
+        if (grid[x][y].floor === match) {
+            return true;
+        }
+    }
+    return false;
+}

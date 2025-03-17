@@ -45,21 +45,3 @@ window.onblur = () => {
     swordGame.pause();
 }
 
-
-// North edge = 1
-// NorthEast corner = 2
-// East edge = 4
-// SouthEast corner = 8
-// South edge = 16
-// Sout-West corner = 32
-// West edge = 64
-// NorthWest corner = 128 
-
-const map6x8 = [
-    20, 68, 92, 112, 28, 124, 116, 80,
-    21, 84, 87, 221, 127, 255, 241, 17,
-    29, 117, 85, 95, 247, 215, 209, 1,
-    23, 213, 81, 31, 253, 125, 113, 16,
-    5, 69, 93, 119, 223, 255, 245, 65,
-    0, 4, 71, 193, 7, 199, 197, 64
-];

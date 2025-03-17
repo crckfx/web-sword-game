@@ -6,7 +6,8 @@
 import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID, CELL_PX } from "../document.js";
-import { gridCells } from "./grid.js";
+import { do_autotile } from "./autotile.js";
+import { check_grid_neighbour_floor, gridCells } from "./grid.js";
 import { player } from "./world-loader.js";
 
 // define floor signifiers
@@ -144,7 +145,7 @@ function floorSwitch(ctx, textures, x, y, grid) {
             break;
         case 'sand':
             ctx.drawImage(
-                // if (check_grid_neighbour(grid, i + 1, j, 'sand') || check_grid_neighbour(grid, i, j + 1, 'sand')) texture = textures.grassSand;
+                // if (check_grid_neighbour_floor(grid, i + 1, j, 'sand') || check_grid_neighbour_floor(grid, i, j + 1, 'sand')) texture = textures.grassSand;
                 textures.sandGrass,
                 1 * CELL_PX, 1 * CELL_PX, CELL_PX, CELL_PX,
                 CELL_PX * x, CELL_PX * y, CELL_PX, CELL_PX,
@@ -159,16 +160,16 @@ function floorSwitch(ctx, textures, x, y, grid) {
             let drawY = 1 * CELL_PX;
 
             if (
-                check_grid_neighbour(grid, x + 1, y, 'sand') ||
-                check_grid_neighbour(grid, x + 1, y + 1, 'sand') ||
-                check_grid_neighbour(grid, x, y + 1, 'sand') ||
-                check_grid_neighbour(grid, x - 1, y + 1, 'sand') ||
-                check_grid_neighbour(grid, x - 1, y, 'sand') ||
-                check_grid_neighbour(grid, x - 1, y - 1, 'sand') ||
-                check_grid_neighbour(grid, x, y - 1, 'sand') ||
-                check_grid_neighbour(grid, x + 1, y - 1, 'sand')
+                check_grid_neighbour_floor(grid, x + 1, y, 'sand') ||
+                check_grid_neighbour_floor(grid, x + 1, y + 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x, y + 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x - 1, y + 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x - 1, y, 'sand') ||
+                check_grid_neighbour_floor(grid, x - 1, y - 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x, y - 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x + 1, y - 1, 'sand')
             ) {
-                const dirtData = choose_tile_texture(grid, x, y, 'dirt');
+                const dirtData = do_autotile(grid, x, y, 'dirt');
                 drawX = dirtData.x;
                 drawY = dirtData.y;
                 //
@@ -196,7 +197,7 @@ function floorSwitch(ctx, textures, x, y, grid) {
         case 'grass':
             texture = textures.grassDirt;
             const grassData = choose_tile_texture(grid, x, y, 'grass');
-            // if (check_grid_neighbour(grid, x + 1, y, 'sand') || check_grid_neighbour(grid, x, y + 1, 'sand')) texture = textures.grassSand;
+            // if (check_grid_neighbour_floor(grid, x + 1, y, 'sand') || check_grid_neighbour_floor(grid, x, y + 1, 'sand')) texture = textures.grassSand;
 
             // const nx = grassData.neighbour.x + x;
             // const ny = grassData.neighbour.y + y;
@@ -208,14 +209,14 @@ function floorSwitch(ctx, textures, x, y, grid) {
             // }
 
             if (
-                check_grid_neighbour(grid, x + 1, y, 'sand') ||
-                check_grid_neighbour(grid, x + 1, y + 1, 'sand') ||
-                check_grid_neighbour(grid, x, y + 1, 'sand') ||
-                check_grid_neighbour(grid, x - 1, y + 1, 'sand') ||
-                check_grid_neighbour(grid, x - 1, y, 'sand') ||
-                check_grid_neighbour(grid, x - 1, y - 1, 'sand') ||
-                check_grid_neighbour(grid, x, y - 1, 'sand') ||
-                check_grid_neighbour(grid, x + 1, y - 1, 'sand')
+                check_grid_neighbour_floor(grid, x + 1, y, 'sand') ||
+                check_grid_neighbour_floor(grid, x + 1, y + 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x, y + 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x - 1, y + 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x - 1, y, 'sand') ||
+                check_grid_neighbour_floor(grid, x - 1, y - 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x, y - 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x + 1, y - 1, 'sand')
             ) {
                 //
                 texture = textures.grassSand;
@@ -560,24 +561,14 @@ function debugCell(grid, x, y,) {
 
 
 function choose_tile_texture(grid, x, y, match) {
-
-
     const coords = do_autotile(grid, x, y, match);
     return {
         x: coords.x * CELL_PX,
         y: coords.y * CELL_PX,
-        neighbour: coords.neighbour
     };
 }
 
-function check_grid_neighbour(grid, x, y, match) {
-    if (grid[x] && grid[x][y]) {
-        if (grid[x][y].floor === match) {
-            return true;
-        }
-    }
-    return false;
-}
+
 
 
 function choose_occupant_texture(grid, x, y, match) {
@@ -628,210 +619,5 @@ function choose_occupant_texture(grid, x, y, match) {
 }
 
 
-// first 
-//  4       6       4       2       8       8       7
-//  6       9       6       3       8       8       7
-//  4       6       4       2       6       6       7
-//  2       3       2       1       6       6       7
-//  5       5       5       5       3       4       3
-//  5       5       5       5       4       5       4
-//  X       X       7       7       3       4       3
-
-const testBin = `
-0 0 0   0 0 0   0 0 0   0 0 0   1 1 1   1 1 1   0 1 0
-0 1 1   1 1 1   1 1 0   0 1 0   1 1 1   1 1 1   1 1 1
-0 1 1   1 1 1   1 1 0   0 1 0   1 1 0   0 1 1   1 1 1
-
-0 1 1   1 1 1   1 1 0   0 1 0   1 1 0   0 1 1   0 1 1
-0 1 1   1 1 1   1 1 0   0 1 0   1 1 1   1 1 1   1 1 1
-0 1 1   1 1 1   1 1 0   0 1 0   1 1 1   1 1 1   0 1 1
-
-0 1 1   1 1 1   1 1 0   0 1 0   0 1 0   0 1 0   1 1 0
-0 1 1   1 1 1   1 1 0   0 1 0   1 1 1   1 1 1   1 1 1
-0 0 0   0 0 0   0 0 0   0 0 0   0 1 1   1 1 0   1 1 0
-
-0 0 0   0 0 0   0 0 0   0 0 0   0 1 1   1 1 0   1 1 1
-0 1 1   1 1 1   1 1 0   0 1 0   1 1 1   1 1 1   1 1 1
-0 0 0   0 0 0   0 0 0   0 0 0   0 1 0   0 1 0   0 1 0
-
-0 1 1   1 1 0   0 0 0   0 0 0   0 0 0   0 0 0   0 0 0
-0 1 1   1 1 0   1 1 1   1 1 1   0 1 1   1 1 1   1 1 0
-0 1 0   0 1 0   1 1 0   0 1 1   0 1 0   0 1 0   0 1 0
-
-0 1 0   0 1 0   1 1 0   0 1 1   0 1 0   0 1 0   0 1 0
-0 1 1   1 1 0   1 1 1   1 1 1   0 1 1   1 1 1   1 1 0
-0 1 1   1 1 0   0 0 0   0 0 0   0 1 0   0 1 0   0 1 0
-
-X X X   X X X   1 1 0   0 1 1   0 1 0   0 1 0   0 1 0
-X X X   X X X   1 1 1   1 1 1   0 1 1   1 1 1   1 1 0
-X X X   X X X   0 1 1   1 1 0   0 0 0   0 0 0   0 0 0
-
-`;
-
-// 1 1 1 2 3 3 ?
-// 1 1 1 2 3 3
-// 1 1 1 2
-// 2 2 2 2
 
 
-// 1: 4,4
-// 2: 4,1 4,3 1,4 3,4
-// 3: 4,2 2,4 5,5 7,5 5,7 7,7
-// 4: 1,1 3,1 1,3 3,3 5,6 6,5 7,6 6,7
-// 5: 1,5 2,5 3,5 4,5 1,6 2,6 3,6 4,6 6,6
-// 6: 2,1 1,2 3,2 2,3 5,3 6,3 5,4 6,4
-// 7: 7,1 7,2 7,3 7,4 3,7 4,7
-// 8: 5,1 6,1 5,2 6,2
-// 9: 2,2
-
-const newBin = `
-X X X X X X X X X
-X - - - - - - - X
-X - - - - - - - X
-X - - - - - - - X
-X - - - - - - - X
-X - - - - - - - X
-X - - - - - - - X
-X - - - - - - - X
-X X X X X X X X X
-`
-
-
-function do_autotile(grid, x, y, match) {
-
-    const coords = new Vector2(7, 7);
-
-    const neighbour = new Vector2(0, 0);
-
-    let up = check_grid_neighbour(grid, x, y - 1, match);
-    let left = check_grid_neighbour(grid, x - 1, y, match);
-    let right = check_grid_neighbour(grid, x + 1, y, match);
-    let down = check_grid_neighbour(grid, x, y + 1, match);
-
-    let left_up = check_grid_neighbour(grid, x - 1, y - 1, match);
-    let right_up = check_grid_neighbour(grid, x + 1, y - 1, match);
-    let left_down = check_grid_neighbour(grid, x - 1, y + 1, match);
-    let right_down = check_grid_neighbour(grid, x + 1, y + 1, match);
-
-    if (!up) {
-        left_up = false;
-        right_up = false;
-    }
-    if (!down) {
-        left_down = false;
-        right_down = false;
-    }
-    if (!left) {
-        left_up = false;
-        left_down = false;
-    }
-    if (!right) {
-        right_up = false;
-        right_down = false;
-    }
-
-
-    const weight = 1 + left + right + up + down + left_up + left_down + right_up + right_down;
-    if (weight === 9) {
-        coords.overwrite(1, 1)
-    } else if (weight === 8) {
-        // a 2x2 at top row, 1 column in from the right
-        if (!right_down) coords.overwrite(4, 0);
-        else if (!left_down) coords.overwrite(5, 0);
-        else if (!right_up) coords.overwrite(4, 1);
-        else if (!left_up) coords.overwrite(5, 1);
-    } else if (weight === 7) {
-        // first the 2 guys on the bottom row next to the blanks
-        if (left_up && right_down) coords.overwrite(2, 6);
-        else if (right_up && left_down) coords.overwrite(3, 6);
-        // then the 4 top guys down the rightmost column
-        else if (left_down && right_down) coords.overwrite(6, 0)
-        else if (right_up && right_down) coords.overwrite(6, 1)
-        else if (left_up && left_down) coords.overwrite(6, 2)
-        else if (left_up && right_up) coords.overwrite(6, 3)
-    } else if (weight === 6) {
-        // 2 quadrants. if there's no edges we check the second quadrant
-        // the 4 edges of the initial 3x3
-        if (!up) coords.overwrite(1, 0);
-        else if (!left) coords.overwrite(0, 1);
-        else if (!right) coords.overwrite(2, 1);
-        else if (!down) coords.overwrite(1, 2);
-        // a 2x2 at 3rd row, 1 column in from the right
-        else if (right_down)
-            coords.overwrite(4, 2);
-        else if (left_down)
-            coords.overwrite(5, 2);
-        else if (right_up)
-            coords.overwrite(4, 3);
-        else if (left_up)
-            coords.overwrite(5, 3);
-    } else if (weight === 5) {
-        // first the lone "all-edge, no-corner"
-        if (left && right && up && down) {
-            coords.overwrite(5, 5);
-        } else if (!left) {
-            if (right_up) coords.overwrite(0, 4)
-            else if (right_down) coords.overwrite(0, 5)
-        } else if (!right) {
-            if (left_up) coords.overwrite(1, 4)
-            else if (left_down) coords.overwrite(1, 5)
-        } else if (!up) {
-            if (left_down) coords.overwrite(2, 4)
-            else if (right_down) coords.overwrite(3, 4)
-        } else if (!down) {
-            if (left_up) coords.overwrite(2, 5)
-            else if (right_up) coords.overwrite(3, 5)
-        } else {
-            console.log("whacky error if reached here");
-        }
-    } else if (weight === 4) {
-        // 2 quadrants?
-        if (!left_up && !right_up && !left_down && !right_down) {
-            // first, the 4 edges of bottom-right 3x3
-            // ****
-            if (!up) coords.overwrite(5, 4)
-            else if (!left) coords.overwrite(4, 5)
-            else if (!right) coords.overwrite(6, 5)
-            else if (!down) coords.overwrite(5, 6)
-        } else {
-            // otherwise, the 4 corners of the initial 16
-            // ****
-            if (right_down) coords.overwrite(0, 0);
-            else if (left_down) coords.overwrite(2, 0);
-            else if (right_up) coords.overwrite(0, 2);
-            else if (left_up) coords.overwrite(2, 2);
-        }
-    } else if (weight === 3) {
-        // first the 2 guys from the initial 16; the "two-edge" joiners
-        if (up && down) coords.overwrite(3, 1)
-        else if (left && right) coords.overwrite(1, 3)
-        // then, the 4 corners of a 3x3 in the bottom-right of the sheet
-        else if (right && down) coords.overwrite(4, 4)
-        else if (left && down) coords.overwrite(6, 4)
-        else if (right && up) coords.overwrite(4, 6)
-        else if (left && up) coords.overwrite(6, 6)
-        // else debugCell();
-    } else if (weight === 2) {
-        // the "only-one-edge" cases; lining the outside of the 3x3 (part of initial 16)
-        if (down) coords.overwrite(3, 0)
-        else if (up) coords.overwrite(3, 2)
-        else if (left) coords.overwrite(2, 3);
-        else if (right) coords.overwrite(0, 3);
-    } else if (weight === 1) {
-        // no edges, no corners, just the assumed middle cell
-        coords.overwrite(3, 3)
-    }
-
-    if (coords.x === 7 && coords.y === 7) {
-        console.log(`coords for cell at '${x}, ${y}' weighted ${weight} are ${coords.x}, ${coords.y}`);
-        // coords.overwrite(1,1);
-    }
-
-
-    return {
-        x: coords.x,
-        y: coords.y,
-        neighbour: neighbour
-    };
-
-}
