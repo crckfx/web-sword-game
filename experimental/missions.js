@@ -27,9 +27,8 @@ export function appleMission(game, entity) {
                 ...entity.interactMessage.dialogues, // use any existing dialogues first ("have you seen my apple?" etc.)
                 // then define the a choice dialogue
                 game.get_dialogue_choice(
-                    // the body message
-                    `Give ${name} an apple?`,
-                    // the yes function
+                    `Give ${name} an apple?`,   // 1. the body message
+                    // 2. the 'yes' function
                     function () {
                         const index = player.bag.findSlotByName('apple');
                         console.log(`index is ${index}`)
@@ -44,18 +43,19 @@ export function appleMission(game, entity) {
                         }
 
                     },
-                    // the no function
+                    // 3. the 'no' function
                     function () {
                         game.exitDialogue();
                         game.launch_a_dialogue(new Dialogue({
                             heading: name,
                             message: "Come on man, let me hold something!"
-                        }))
-                    }
+                        }));
+                    },
+                    'Inventory', // 4. the heading
                 ),
             ],
-            'FRED CHECK', // obsolete? or not implemented properly?
-            false
+            '(FRED) CHECK', // obsolete? or not implemented properly?
+            false // cannot exit this dialogue
         ),
     );
 }

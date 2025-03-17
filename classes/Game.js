@@ -3,41 +3,36 @@ import { Renderer } from "./Renderer.js";
 import { Item } from "./objects/Item.js";
 import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
-import { cellCoords, compare_two_vec2, createGrid, gridCells, moveTowards } from "../helper/grid.js";
+import { cellCoords, compare_two_vec2, createGrid, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./objects/Entity.js";
 import { player } from "../helper/world-loader.js";
-import { wrapText, tryPromptMove } from "../helper/promptMenu.js";
+import { tryPromptMove } from "../helper/promptMenu.js";
 import { give_item_to } from "../helper/interactions.js";
 import { modifyInventoryTexture, tryInventoryMove } from "../helper/invMenu.js";
-// import { tryPromptMove } from "../experimental/promptMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
-import { GameObject } from "./GameObject.js";
 import { Dialogue } from "./interactions/Dialogue.js";
 import { DialogueOption } from "./interactions/DialogueOption.js";
 import { SetOfDialogues } from "./interactions/SetOfDialogues.js";
 import { add_two_vectors } from "../helper/vectorHelper.js";
 
 export class Game {
-    // renderer = null;
-    // gameLoop = null;
     grid = null;
     textures = {};
     images = {};
     entities = {};
     controls = null;
-    // pause stuff
+    // state stuff
     isPaused = false;
     pauseTimestamp = null;
     isInDialogue = false;
     isInInventory = false;
 
+    // dialogue-specific stuff
+    currentDialogue = null 
+    currentDialogueSet = null 
     promptIndex = null;
-
-
-    currentDialogue = null // new experimental
-    currentDialogueSet = null // new experimental
-
+    
 
     constructor() {
         // create the game grid
@@ -104,8 +99,6 @@ export class Game {
             ]
         )
     }
-
-
 
 
     // MAIN UPDATE
@@ -205,7 +198,7 @@ export class Game {
                         this.promptIndex
                     );
                 }
-                // console.log("implement prompt in inventory")
+                return;
             } else {
                 tryInventoryMove(this.controls.current_dpad_dir);
                 return;
@@ -218,26 +211,25 @@ export class Game {
                     this.promptIndex
                 );
             }
-            // console.log("implement prompt in inventory")
+            return;
         }
-
-
     }
 
-    // function to handle press on the BACK button
+    // function to handle press on the BACK (B) button
     command_back() {
-        // console.log('oh wowza did ya press "B"?');
         if (this.isPaused) {
             this.resume();
         } else if (this.isInDialogue) {
-            // if (this.promptIndex === null)
-            //     this.exitDialogue();
             if (this.isInInventory) {
+                // handle dialogue inside of inventory
                 this.exitDialogue();
             } else if (this.currentDialogueSet) {
+                // handle dialogueSet outside of inventory
                 if (this.currentDialogueSet.canExit)
                     this.exitDialogue();
             } else {
+                // handle a loaded dialogue with no set?
+                // todo: implement dialogue-specific canExit?
                 this.exitDialogue();
             }
         } else if (this.isInInventory) {
@@ -250,6 +242,7 @@ export class Game {
     }
 
 
+    // launch a SINGLE dialogue (hopefully make me obsolete)
     launch_a_dialogue(dialogue, object) {
         if (dialogue.options) {
             this.promptIndex = 0;
@@ -261,27 +254,25 @@ export class Game {
     }
 
 
+    // launch a SET of dialogues
     launch_set_of_dialogues(DS) {
         if (DS instanceof SetOfDialogues) {
             console.log('launching dialogue set !~!!!!!');
+            DS.launch();
+
+            this.currentDialogueSet = DS;
+
+            const d = this.currentDialogueSet.getDialogue();
+
+            if (d.options) {
+                this.promptIndex = 0;
+            }
+            this.currentDialogue = d;
+            this.isInDialogue = true;
+            this.renderer.modifyDialogueWithDialogueClass(d, null, this.textures.sampleText);
+            this.renderer.shouldDrawDialogueBox = true;
         }
-        DS.launch();
-
-        this.currentDialogueSet = DS;
-
-        const d = this.currentDialogueSet.getDialogue();
-
-        if (d.options) {
-            this.promptIndex = 0;
-        }
-        this.currentDialogue = d;
-        this.isInDialogue = true;
-        this.renderer.modifyDialogueWithDialogueClass(d, null, this.textures.sampleText);
-        this.renderer.shouldDrawDialogueBox = true;
     }
-
-
-
 
     exitDialogue() {
         this.isInDialogue = false;
@@ -291,11 +282,8 @@ export class Game {
     }
     // ---------
 
-
+    // function to execute player movement
     tryMove() {
-
-
-
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
             switch (player.isFacing) {
                 case 'left':
@@ -339,17 +327,13 @@ export class Game {
 
         const x = nextX / CELL_PX;
         const y = nextY / CELL_PX;
-
         if (this.grid[x] && this.grid[x][y]) {
             if (this.grid[x][y].occupant === null) {
                 player.destination.x = nextX;
                 player.destination.y = nextY;
             }
         }
-
-
     }
-
 
 
     enterPlayerInventory() {
@@ -358,7 +342,6 @@ export class Game {
             this.isInInventory = true;
         }
     }
-
     exitPlayerInventory() {
         this.renderer.shouldDrawPlayerInventory = false;
         this.isInInventory = false;
@@ -367,7 +350,6 @@ export class Game {
 
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
-
         if (this.currentDialogueSet !== null) {
             console.log("yes you interacted with a dialogue set's dialogue!!!~1!");
             if (this.currentDialogue.options === null) {
@@ -496,9 +478,9 @@ export class Game {
         })
     }
 
-    get_dialogue_choice(message = "yes or no?", yes = null, no = null) {
+    get_dialogue_choice(message = "yes or no?", yes = null, no = null, heading) {
         return new Dialogue({
-            heading: null,
+            heading: heading ?? null,
             message: message,
             options: [
                 new DialogueOption("Yes", () => yes()),
