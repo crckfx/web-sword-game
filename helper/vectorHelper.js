@@ -15,8 +15,3 @@ export function add_two_vectors(vec_a, vec_b) {
         vec_a.y + vec_b.y,
     )
 }
-
-
-// export function vec_a_minus_vec_b() {
-
-// }

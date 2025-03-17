@@ -1,5 +1,6 @@
 import { check_grid_neighbour_floor } from "./grid.js";
 
+// the array for the textures we downloaded (https://opengameart.org/content/32x32-floor-tiles)
 const some_layout_array = [
     28, 124, 112, 16, 247, 223, 125,
     31, 255, 241, 17, 253, 127, 95,
@@ -36,7 +37,9 @@ export function do_autotile(grid, x, y, match) {
     if (down && left) left_down = check_grid_neighbour_floor(grid, x - 1, y + 1, match);
     if (left && up) left_up = check_grid_neighbour_floor(grid, x - 1, y - 1, match);
 
+    // start at 0 for summing
     let sum = 0;
+    // use summing logic from (https://www.boristhebrave.com/permanent/24/06/cr31/stagecast/wang/blob.html)
     if (up) sum += 1;
     if (right_up) sum += 2;
     if (right) sum += 4;

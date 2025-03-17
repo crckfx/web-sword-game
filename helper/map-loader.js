@@ -169,7 +169,7 @@ function floorSwitch(ctx, textures, x, y, grid) {
                 check_grid_neighbour_floor(grid, x, y - 1, 'sand') ||
                 check_grid_neighbour_floor(grid, x + 1, y - 1, 'sand')
             ) {
-                const dirtData = do_autotile(grid, x, y, 'dirt');
+                const dirtData = choose_tile_texture(grid, x, y, 'dirt');
                 drawX = dirtData.x;
                 drawY = dirtData.y;
                 //
@@ -551,15 +551,7 @@ export function parsePathLayout(mapString = null) {
 
 
 
-function debugCell(grid, x, y,) {
-    console.log("-----")
-    console.log(x, y)
-    console.log(grid[x][y])
-    console.log(left, right, up, down, left_up, right_up, left_down, right_down);
-    console.log("-----")
-}
-
-
+// convert autotile cell coords to texture pixel coords
 function choose_tile_texture(grid, x, y, match) {
     const coords = do_autotile(grid, x, y, match);
     return {
@@ -567,9 +559,6 @@ function choose_tile_texture(grid, x, y, match) {
         y: coords.y * CELL_PX,
     };
 }
-
-
-
 
 function choose_occupant_texture(grid, x, y, match) {
     let sx = 0;

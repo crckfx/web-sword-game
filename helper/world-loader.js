@@ -42,6 +42,7 @@ export async function load_entities(entities, textures) {
         texture: textures.spriteRed,
         interactMessage: "hello my name a gary",
     });
+
     entities.fred = new Entity({
         name: 'fred',
         isFacing: 'up',
@@ -53,72 +54,11 @@ export async function load_entities(entities, textures) {
             ],
             'fred'
         ),
-
         interactCondition: () => player.bag.findSlotByName('apple'),
-
-        interactAction: () => appleMission(entities.fred),
-
-        // interactAction: function () {
-        //     const self = this;
-        //     swordGame.launch_set_of_dialogues(
-        //         new SetOfDialogues(
-        //             // include the interact ones
-        //             [
-        //                 ...self.interactMessage.dialogues,
-
-        //                 swordGame.get_dialogue_choice(
-        //                     // the body message
-        //                     "Give Fred an apple?",
-        //                     // the yes function
-        //                     function () {
-        //                         const index = player.bag.findSlotByName('apple');
-        //                         console.log(`index is ${index}`)
-        //                         const item = player.bag.slots[index];
-        //                         if (give_item_to(swordGame, item, self)) {
-        //                             modifyInventoryTexture(swordGame.textures.inventoryItems);
-        //                             self.isSatisfied = true;
-        //                             swordGame.exitDialogue();
-        //                             // swordGame.worldInteract_Entity(self);
-        //                             swordGame.launch_set_of_dialogues(
-        //                                 new SetOfDialogues(
-        //                                     [
-        //                                         new Dialogue({
-        //                                             heading: "Inventory",
-        //                                             message: "gave fred an apple.",
-        //                                         }),
-
-        //                                         new Dialogue({
-        //                                             heading: "Fred",
-        //                                             message: self.message_satisfied,
-        //                                         }),
-        //                                     ],
-        //                                 ))
-        //                         } else {
-        //                             console.log("could not give to the fred?");
-        //                         }
-
-        //                     },
-        //                     // the no function
-        //                     function () {
-        //                         swordGame.exitDialogue();
-        //                         swordGame.launch_a_dialogue(new Dialogue({
-        //                             heading: 'Fred',
-        //                             message: "Come on man, let me hold something!"
-        //                         }))
-        //                     }
-        //                 ),
-        //             ],
-        //             'FRED CHECK',
-        //             false
-        //         ),
-        //         null
-        //     );
-        // },
-
+        interactAction: () => appleMission(swordGame, entities.fred),
         message_satisfied: "Thank you I was very hungry",
     });
 
-    console.log(entities.fred)
 
     entities.george = new Entity({
         name: 'george',
@@ -162,10 +102,6 @@ export async function load_map(map, grid, textures, images, entities) {
     const mapTextures = await getMapTextures(grid, textures, images, parsedPathLayout);
     textures.mapFloor = mapTextures.mapFloor;
     textures.mapOverlays = mapTextures.mapOverlays;
-
-    // textures.mapFloor = await getMapBackground(grid, textures, images, parsedPathLayout);
-    // textures.mapOverlays = await getMapOccupants(grid, textures, images, textures.mapFloor);
-
 }
 
 
