@@ -17,6 +17,7 @@ import { modifyInventoryTexture } from "./invMenu.js";
 import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
 import { Dialogue } from "../classes/interactions/Dialogue.js";
 import { DialogueOption } from "../classes/interactions/DialogueOption.js";
+import { appleMission } from "../experimental/missions.js";
 
 
 
@@ -54,69 +55,65 @@ export async function load_entities(entities, textures) {
         ),
 
         interactCondition: () => player.bag.findSlotByName('apple'),
+
+        interactAction: () => appleMission(entities.fred),
+
         // interactAction: function () {
-        //     const index = player.bag.findSlotByName('apple');
-        //     console.log(`index is ${index}`)
-        //     const item = player.bag.slots[index];
-        //     if (give_item_to(swordGame, item, this)) modifyInventoryTexture(swordGame.textures.inventoryItems);
+        //     const self = this;
+        //     swordGame.launch_set_of_dialogues(
+        //         new SetOfDialogues(
+        //             // include the interact ones
+        //             [
+        //                 ...self.interactMessage.dialogues,
+
+        //                 swordGame.get_dialogue_choice(
+        //                     // the body message
+        //                     "Give Fred an apple?",
+        //                     // the yes function
+        //                     function () {
+        //                         const index = player.bag.findSlotByName('apple');
+        //                         console.log(`index is ${index}`)
+        //                         const item = player.bag.slots[index];
+        //                         if (give_item_to(swordGame, item, self)) {
+        //                             modifyInventoryTexture(swordGame.textures.inventoryItems);
+        //                             self.isSatisfied = true;
+        //                             swordGame.exitDialogue();
+        //                             // swordGame.worldInteract_Entity(self);
+        //                             swordGame.launch_set_of_dialogues(
+        //                                 new SetOfDialogues(
+        //                                     [
+        //                                         new Dialogue({
+        //                                             heading: "Inventory",
+        //                                             message: "gave fred an apple.",
+        //                                         }),
+
+        //                                         new Dialogue({
+        //                                             heading: "Fred",
+        //                                             message: self.message_satisfied,
+        //                                         }),
+        //                                     ],
+        //                                 ))
+        //                         } else {
+        //                             console.log("could not give to the fred?");
+        //                         }
+
+        //                     },
+        //                     // the no function
+        //                     function () {
+        //                         swordGame.exitDialogue();
+        //                         swordGame.launch_a_dialogue(new Dialogue({
+        //                             heading: 'Fred',
+        //                             message: "Come on man, let me hold something!"
+        //                         }))
+        //                     }
+        //                 ),
+        //             ],
+        //             'FRED CHECK',
+        //             false
+        //         ),
+        //         null
+        //     );
         // },
-
-        interactAction: function () {
-            const self = this;
-            swordGame.launch_set_of_dialogues(
-                new SetOfDialogues(
-                    // include the interact ones
-                    [
-                        ...self.interactMessage.dialogues,
-
-                        swordGame.get_dialogue_choice(
-                            // the body message
-                            "Give Fred an apple?",
-                            // the yes function
-                            function () {
-                                const index = player.bag.findSlotByName('apple');
-                                console.log(`index is ${index}`)
-                                const item = player.bag.slots[index];
-                                if (give_item_to(swordGame, item, self)) {
-                                    modifyInventoryTexture(swordGame.textures.inventoryItems);
-                                    self.isSatisfied = true;
-                                    swordGame.exitDialogue();
-                                    // swordGame.worldInteract_Entity(self);
-                                    swordGame.launch_set_of_dialogues(
-                                        new SetOfDialogues(
-                                            [
-                                                new Dialogue({
-                                                    heading: "Inventory",
-                                                    message: "gave fred an apple.",
-                                                }),
-
-                                                new Dialogue({
-                                                    heading: "Fred",
-                                                    message: self.message_satisfied,
-                                                }),
-                                            ],
-                                        ))
-                                } else {
-                                    console.log("could not give to the fred?");
-                                }
-
-                            },
-                            // the no function
-                            function () {
-                                swordGame.exitDialogue();
-                                swordGame.launch_a_dialogue(new Dialogue({
-                                    heading: 'Fred',
-                                    message: "Come on man, let me hold something!"
-                                }))
-                            }
-                        ),
-                    ],
-                    'FRED CHECK',
-                    false
-                ),
-                null
-            );
-        },
 
         message_satisfied: "Thank you I was very hungry",
     });
