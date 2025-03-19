@@ -1,13 +1,7 @@
 import { Vector2 } from "./classes/Vector2.js";
-import { gridCells } from "./helper/grid.js";
-import { Player } from "./classes/objects/Player.js";
-import { Animations } from "./classes/Animations.js";
-import { FrameIndexPattern } from "./classes/FrameIndexPattern.js";
-import { STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./helper/walk.js";
-
 
 // declarations. try and put them in order of precedence.
-export const NUM_GRID = new Vector2(28, 29); // total number of map X & Y cells
+export const NUM_GRID = new Vector2(32, 35); // total number of map X & Y cells
 
 // game declarations
 export const CELL_PX = 32;
@@ -67,9 +61,7 @@ function resize() {
     pauseMenu.style.width = `${finalWidth}px`;
     pauseMenu.style.height = `${finalHeight}px`;
 
-    console.log(finalWidth, finalHeight)
-   
-    // draw();
+    // console.log(finalWidth, finalHeight)   
 }
 
 export function getHtmlControls() {

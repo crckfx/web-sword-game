@@ -3,18 +3,18 @@ import { Renderer } from "./Renderer.js";
 import { Item } from "./objects/Item.js";
 import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
-import { cellCoords, compare_two_vec2, createGrid, moveTowards } from "../helper/grid.js";
+import { cellCoords, createGrid, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./objects/Entity.js";
 import { player } from "../helper/world-loader.js";
 import { tryPromptMove } from "../helper/promptMenu.js";
-import { give_item_to } from "../helper/interactions.js";
-import { modifyInventoryTexture, tryInventoryMove } from "../helper/invMenu.js";
+import { tryInventoryMove } from "../helper/invMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
 import { Dialogue } from "./interactions/Dialogue.js";
 import { DialogueOption } from "./interactions/DialogueOption.js";
 import { SetOfDialogues } from "./interactions/SetOfDialogues.js";
 import { add_two_vectors } from "../helper/vectorHelper.js";
+import { get_dialogue_inventory, worldInteract_Entity, worldInteract_Item } from "../helper/gameHelpers.js";
 
 export class Game {
     grid = null;
@@ -29,10 +29,10 @@ export class Game {
     isInInventory = false;
 
     // dialogue-specific stuff
-    currentDialogue = null 
-    currentDialogueSet = null 
+    currentDialogue = null
+    currentDialogueSet = null
     promptIndex = null;
-    
+
 
     constructor() {
         // create the game grid
@@ -62,42 +62,6 @@ export class Game {
             bang_resume: this.command_togglePause.bind(this),
         });
         // 
-
-
-        this.dialogue_1 = new Dialogue({
-            heading: "Dialogue Class",
-            message: "Some body text",
-            options: [
-                new DialogueOption("Go Back", this.exitDialogue.bind(this)),
-                new DialogueOption("Exit to Game", () => {
-                    this.exitDialogue();
-                    this.exitPlayerInventory();
-                },),
-            ]
-        });
-
-
-        this.setOfDialogues_1 = new SetOfDialogues(
-            [
-                new Dialogue({
-                    heading: "Set of Dialogues",
-                    message: "Initial message",
-                }),
-                new Dialogue({
-                    heading: "Set of Dialogues",
-                    message: "Second message",
-                }),
-
-                new Dialogue({
-                    heading: "Set of Dialogues",
-                    message: "Third message. Exit?",
-                    options: [
-                        new DialogueOption("Yes", () => this.exitDialogue()),
-                        new DialogueOption("Also Yes", () => this.exitDialogue()),
-                    ]
-                }),
-            ]
-        )
     }
 
 
@@ -131,14 +95,6 @@ export class Game {
                 };
             }
 
-            // const fredCell = this.entities.fred.getFacingCell();
-            // if (fredCell.x === playerCell.x && fredCell.y === playerCell.y) {
-            //     this.entities.fred.hasAlert = true;
-            // } else {
-            //     this.entities.fred.hasAlert = false;
-            // }
-            // console.log(fredCell.x, fredCell.y);
-            // this.entities.fred.step(delta);
         }
         player.step(delta);
     }
@@ -258,9 +214,9 @@ export class Game {
     launch_set_of_dialogues(DS) {
         if (DS instanceof SetOfDialogues) {
             console.log('launching dialogue set !~!!!!!');
+            this.currentDialogueSet = DS;
             DS.launch();
 
-            this.currentDialogueSet = DS;
 
             const d = this.currentDialogueSet.getDialogue();
 
@@ -271,6 +227,8 @@ export class Game {
             this.isInDialogue = true;
             this.renderer.modifyDialogueWithDialogueClass(d, null, this.textures.sampleText);
             this.renderer.shouldDrawDialogueBox = true;
+        } else {
+            console.error("DS is not a DialogueSet?");
         }
     }
 
@@ -280,8 +238,23 @@ export class Game {
         this.renderer.shouldDrawDialogueBox = false;
         this.currentDialogueSet = null;
     }
-    // ---------
 
+    // ---------
+    
+    enterPlayerInventory() {
+        if (!this.isPaused && !this.isInDialogue) {
+            this.renderer.shouldDrawPlayerInventory = true;
+            this.isInInventory = true;
+        }
+    }
+    exitPlayerInventory() {
+        this.renderer.shouldDrawPlayerInventory = false;
+        this.isInInventory = false;
+        player.bagCursorIndex = 0;
+    }
+    
+    // ---------    
+    
     // function to execute player movement
     tryMove() {
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
@@ -328,6 +301,7 @@ export class Game {
         const x = nextX / CELL_PX;
         const y = nextY / CELL_PX;
         if (this.grid[x] && this.grid[x][y]) {
+            // only move if no occupant here
             if (this.grid[x][y].occupant === null) {
                 player.destination.x = nextX;
                 player.destination.y = nextY;
@@ -336,17 +310,6 @@ export class Game {
     }
 
 
-    enterPlayerInventory() {
-        if (!this.isPaused && !this.isInDialogue) {
-            this.renderer.shouldDrawPlayerInventory = true;
-            this.isInInventory = true;
-        }
-    }
-    exitPlayerInventory() {
-        this.renderer.shouldDrawPlayerInventory = false;
-        this.isInInventory = false;
-        player.bagCursorIndex = 0;
-    }
 
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
@@ -362,8 +325,6 @@ export class Game {
                 this.currentDialogue.options[this.promptIndex].action();
                 return;
             }
-
-
             if (this.currentDialogue.options !== null)
                 this.promptIndex = 0;
             this.renderer.modifyDialogueWithDialogueClass(this.currentDialogue, null, this.textures.sampleText);
@@ -381,7 +342,7 @@ export class Game {
         if (player.bag.slots[player.bagCursorIndex] === null) return;
         const index = player.bagCursorIndex;
         const item = player.bag.slots[index];
-        this.launch_a_dialogue(this.get_dialogue_inventory(item));
+        this.launch_a_dialogue(get_dialogue_inventory(this, item));
     }
 
     // press 'A' on 'WORLD' 
@@ -390,103 +351,16 @@ export class Game {
         if (t !== null) {
             if (t instanceof Entity) {
                 console.log(`Interacted with entity ${t.name}`);
-                this.worldInteract_Entity(t);
+                worldInteract_Entity(this, t);
             } else if (t instanceof Item) {
                 // interact with an item in the world (NOT inventory)
                 console.log(`Interacted with item ${t.name}`);
-                this.worldInteract_Item(t);
+                worldInteract_Item(this, t);
 
             } else {
                 console.log("not sure what you're interacting with", t);
             }
         }
-    }
-
-    worldInteract_Item(t) {
-        const grid = this.grid;
-        const x = cellCoords(t.position.x);
-        const y = cellCoords(t.position.y);
-        if (grid[x] && grid[x][y]) {
-            // console.log(`take item from ${x}, ${y}`);
-            if (give_item_to(this, t, player)) {
-                modifyInventoryTexture(this.textures.inventoryItems);
-                player.interactTarget = null;
-
-                this.launch_a_dialogue(this.get_dialogue_pickup(t), t);
-
-            };
-        }
-    }
-
-    worldInteract_Entity(t) {
-        // ** handle conditions ** (a basic prototype)
-        // check 1. a condition exists and 2. it is not already satisfied
-        player.interactTarget.isFacing = compare_two_vec2(player.position, t.position);
-        if (t.interactCondition !== null && t.isSatisfied === false) {
-            // check the (currently unsatisfied) condition
-            const conditionIsMet = t.interactCondition() > -1; // assume an interact condition uses a number??? todo: smooth out
-            // console.log(`interact condition: ${conditionIsMet}`)
-            if (conditionIsMet) {
-                if (t.interactAction()) {
-                    t.isSatisfied = true;
-                };
-                return;
-            }
-        } // ** END handle conditions **
-        const d = this.get_dialogue_entity(t);
-        if (d instanceof Dialogue) {
-            this.launch_a_dialogue(d, t)
-
-        } else if (d instanceof SetOfDialogues) {
-            this.launch_set_of_dialogues(d);
-        }
-        // display the dialogue box
-
-    }
-
-    get_dialogue_entity(e) {
-        const d = e.getDialogue();
-        // if 'd' is a SetOfDialogues, we should return that set
-        if (d instanceof SetOfDialogues)
-            return d;
-
-        // otherwise, we'll assume d is a message & return a DIALOGUE
-        return new Dialogue({
-            heading: e.name,
-            message: d,
-        })
-    }
-    get_dialogue_pickup(item) {
-        return new Dialogue({
-            heading: item.name,
-            message: `Picked up ${item.name}.`,
-        })
-    }
-
-    get_dialogue_inventory(item) {
-        //
-        return new Dialogue({
-            heading: item.name,
-            message: item.description,
-            options: [
-                new DialogueOption("Okay", this.exitDialogue.bind(this)),
-                new DialogueOption("Exit", () => {
-                    this.exitDialogue();
-                    this.exitPlayerInventory();
-                }),
-            ],
-        })
-    }
-
-    get_dialogue_choice(message = "yes or no?", yes = null, no = null, heading) {
-        return new Dialogue({
-            heading: heading ?? null,
-            message: message,
-            options: [
-                new DialogueOption("Yes", () => yes()),
-                new DialogueOption("No", () => no()),
-            ],
-        })
     }
 
 }

@@ -33,8 +33,6 @@ async function dummy_init() {
     swordGame.controls.bind();
     swordGame.gameLoop.start();
 
-    // swordGame.launch_set_of_dialogues(swordGame.setOfDialogues_1); // proving an init dialogue on game load
-
 }
 
 window.onload = () => {

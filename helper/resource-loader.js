@@ -41,6 +41,7 @@ export async function load_image_resources(images, textures) {
                 sandDirt: "images/tiles/sand-dirt.png",
                 dirtSand: "images/tiles/dirt-sand.png",
                 dirtGrass: "images/tiles/dirt-grass.png",
+                stoneDirt: "images/tiles/stone-dirt.png",
                 dirt: 'images/tiles/dirt.png',
                 trees_oak: 'images/trees_winter_oak_modified.png',
                 // misc
@@ -67,7 +68,6 @@ export async function load_image_resources(images, textures) {
 
         textures.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
         textures.tree_S_B = await extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
-        textures.schwarnhildDirtPaths = images.schwarnhildDirtPaths;
         textures.grassTileBasic = images.grassTileBasic;
         textures.grassDirt = images.grassDirt;
         textures.grassSand = images.grassSand;
@@ -75,10 +75,12 @@ export async function load_image_resources(images, textures) {
         textures.sandDirt = images.sandDirt;
         textures.dirtSand = images.dirtSand;
         textures.dirtGrass = images.dirtGrass;
+        textures.stoneDirt = images.stoneDirt;
+        // uhh
         textures.trees_oak = images.trees_oak;
+        textures.schwarnhildDirtPaths = images.schwarnhildDirtPaths;
         textures.schwarnhildFences = images.schwarnhildFences;
         textures.meshTree = images.meshTree;
-
       
         // the dialogue and inventory textures
         textures.sampleText = await createDialogueTexture(images.dialogue_background);        

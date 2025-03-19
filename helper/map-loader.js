@@ -139,9 +139,17 @@ function floorSwitch(ctx, textures, x, y, grid) {
     const cell = grid[x][y];
     let texture = textures.questionMark;
     switch (cell.floor) {
-        case 'road':
         case 'grass2':
             drawGridCell(ctx, textures[cell.floor], x, y);
+            break;
+        case 'road':
+            texture = textures.stoneDirt;
+            const roadData = choose_tile_texture(grid, x, y, 'road');
+            ctx.drawImage(
+                texture,
+                roadData.x, roadData.y, CELL_PX, CELL_PX,
+                CELL_PX * x, CELL_PX * y, CELL_PX, CELL_PX,
+            );            
             break;
         case 'sand':
             ctx.drawImage(
@@ -161,13 +169,13 @@ function floorSwitch(ctx, textures, x, y, grid) {
 
             if (
                 check_grid_neighbour_floor(grid, x + 1, y, 'sand') ||
-                check_grid_neighbour_floor(grid, x + 1, y + 1, 'sand') ||
+                // check_grid_neighbour_floor(grid, x + 1, y + 1, 'sand') ||
                 check_grid_neighbour_floor(grid, x, y + 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x - 1, y + 1, 'sand') ||
+                // check_grid_neighbour_floor(grid, x - 1, y + 1, 'sand') ||
                 check_grid_neighbour_floor(grid, x - 1, y, 'sand') ||
-                check_grid_neighbour_floor(grid, x - 1, y - 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x, y - 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x + 1, y - 1, 'sand')
+                // check_grid_neighbour_floor(grid, x - 1, y - 1, 'sand') ||
+                check_grid_neighbour_floor(grid, x, y - 1, 'sand')
+                // check_grid_neighbour_floor(grid, x + 1, y - 1, 'sand')
             ) {
                 const dirtData = choose_tile_texture(grid, x, y, 'dirt');
                 drawX = dirtData.x;

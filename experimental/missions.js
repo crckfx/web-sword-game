@@ -1,5 +1,6 @@
 import { Dialogue } from "../classes/interactions/Dialogue.js";
 import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
+import { get_dialogue_choice } from "../helper/gameHelpers.js";
 import { give_item_to } from "../helper/interactions.js";
 import { modifyInventoryTexture } from "../helper/invMenu.js";
 import { player } from "../helper/world-loader.js";
@@ -26,7 +27,7 @@ export function appleMission(game, entity) {
             [
                 ...entity.interactMessage.dialogues, // use any existing dialogues first ("have you seen my apple?" etc.)
                 // then define the a choice dialogue
-                game.get_dialogue_choice(
+                get_dialogue_choice(
                     `Give ${name} an apple?`,   // 1. the body message
                     // 2. the 'yes' function
                     function () {

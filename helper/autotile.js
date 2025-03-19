@@ -11,7 +11,7 @@ const some_layout_array = [
     null, null, 221, 119, 5, 69, 65
 ];
 
-// turn an array index into XY coords
+// turn an array index into XY coords (assuming 7x7 total)
 function indexToCoords(index) {
     return { x: index % 7, y: Math.floor(index / 7) };
 }
@@ -22,40 +22,41 @@ function findValueCoords(value, table) {
 }
 
 export function do_autotile(grid, x, y, match) {
-    // const coords = new Vector2(7, 7); // intentionally out of bounds at set
     // check the 4 edges
-    let up = check_grid_neighbour_floor(grid, x, y - 1, match);
-    let left = check_grid_neighbour_floor(grid, x - 1, y, match);
-    let right = check_grid_neighbour_floor(grid, x + 1, y, match);
-    let down = check_grid_neighbour_floor(grid, x, y + 1, match);
+    const up = check_grid_neighbour_floor(grid, x, y - 1, match);
+    const left = check_grid_neighbour_floor(grid, x - 1, y, match);
+    const right = check_grid_neighbour_floor(grid, x + 1, y, match);
+    const down = check_grid_neighbour_floor(grid, x, y + 1, match);
 
     // new approach: init corners to false
-    let left_up, right_up, left_down, right_down = false;
+    let left_up = 0
+    let right_up = 0
+    let left_down = 0;
+    let right_down = 0;
     // check a corner if its condition is met
     if (up && right) right_up = check_grid_neighbour_floor(grid, x + 1, y - 1, match);
     if (right && down) right_down = check_grid_neighbour_floor(grid, x + 1, y + 1, match);
     if (down && left) left_down = check_grid_neighbour_floor(grid, x - 1, y + 1, match);
     if (left && up) left_up = check_grid_neighbour_floor(grid, x - 1, y - 1, match);
 
-    // start at 0 for summing
-    let sum = 0;
     // use summing logic from (https://www.boristhebrave.com/permanent/24/06/cr31/stagecast/wang/blob.html)
-    if (up) sum += 1;
-    if (right_up) sum += 2;
-    if (right) sum += 4;
-    if (right_down) sum += 8;
-    if (down) sum += 16;
-    if (left_down) sum += 32;
-    if (left) sum += 64;
-    if (left_up) sum += 128;
+    const sum =
+        0
+        + up
+        + right_up * 2
+        + right * 4
+        + right_down * 8
+        + down * 16
+        + left_down * 32
+        + left * 64
+        + left_up * 128;
+
     const otherCoords = findValueCoords(sum, some_layout_array);
 
+    // log unexpected / error
     if (otherCoords === null) {
-        console.log(`coords for cell at '${x}, ${y}' weighted ${weight} are ${otherCoords.x}, ${otherCoords.y}`);
-        // coords.overwrite(1,1);
+        console.log(`coords for cell at '${x}, ${y}' are ${otherCoords.x}, ${otherCoords.y}`);
     }
 
-
     return otherCoords;
-
 }
