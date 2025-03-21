@@ -102,14 +102,14 @@ export async function load_entities(entities, textures) {
 export async function load_map(map, grid, textures, images, entities) {
     // do the map!
     // turn text map into a bunch of coord objects
-    const parsedOccupantLayout = parseOccupantLayout(map.occupants);
-    applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
+    // const parsedOccupantLayout = parseOccupantLayout(map.occupants);
+    // applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
 
-    const parsedFloorLayout = parseFloorLayout(map.floor);
-    const parsedPathLayout = parsePathLayout(map.paths);
-    applyFloorToGameGrid(grid, parsedFloorLayout);
+    // const parsedFloorLayout = parseFloorLayout(map.floor);
+    // const parsedPathLayout = parsePathLayout(map.paths);
+    // applyFloorToGameGrid(grid, parsedFloorLayout);
 
-    const mapTextures = await getMapTextures(grid, textures, images, parsedPathLayout);
+    const mapTextures = await getMapTextures(grid, textures, images, null);
     textures.mapFloor = mapTextures.mapFloor;
     textures.mapOverlays = mapTextures.mapOverlays;
 }
@@ -118,9 +118,12 @@ export async function load_map(map, grid, textures, images, entities) {
 
 export function hackyTextureChooser(index) {
     // let texture = null;
-    if (index >= 4) return swordGame.images.dirtGrass;
-    if (index >= 3) return swordGame.images.stoneGrass;
-    if (index >= 2) return swordGame.images.sandGrass;
-    if (index >= 1) return swordGame.textures.grass2;
-    return swordGame.textures.water[0];
+    if (index > 6) return swordGame.images.dirtGrass;
+    if (index === 6) return swordGame.images.dirtGrass;
+    if (index === 5) return swordGame.images.stoneDirt;
+    if (index === 4) return swordGame.images.dirtGrass;
+    if (index === 3) return swordGame.images.sandGrass;
+    if (index === 2) return swordGame.images.grassDirt;
+    if (index === 1) return swordGame.textures.grass2;
+    if (index === 0) return swordGame.textures.water[0];
 }

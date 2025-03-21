@@ -1,7 +1,7 @@
 import { CELL_PX } from "../document.js";
 import { cellCoords } from "./grid.js";
 
-export function give_item_to(game, item, entity) {
+export function give_item_to(game, item, entity, otherGrid) {
     if (item.isHeldBy !== null) {       // if somebody is holding item
         const oldEntity = item.isHeldBy;
         const oldIndex = oldEntity.bag.findSlotByItem(item);
@@ -18,7 +18,7 @@ export function give_item_to(game, item, entity) {
     return true;
 }
 
-export function remove_item_from_cell(game, item) {
+export function remove_item_from_cell(game, item, otherGrid) {
     const posX = item.position.x;
     const posY = item.position.y;
     const gridX = cellCoords(posX);

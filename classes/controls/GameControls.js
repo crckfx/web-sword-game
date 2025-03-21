@@ -122,7 +122,7 @@ export class GameControls {
         this.buttonStates[input] = false;
         this.HtmlControls.buttons[input].classList.remove('active');
         // console.log(`released ${input}.`);
-        if (input === 'Y') this.bang_Y(false);
+        // if (input === 'Y') this.bang_Y(false);
 
     }
     // --------------------------------------------

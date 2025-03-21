@@ -38,7 +38,7 @@ export class GameLevel {
 
         for (let i = 0; i < map.floors.length; i++) {
             const floor = map.floors[i];
-            // console.log(i, hackyTextureChooser(i));
+            console.log(i, hackyTextureChooser(i), floor.match);
 
             // push a layer for each floor layer; assume the values are filled out for now
             const layer = new MapLayer(
@@ -93,8 +93,8 @@ export class GameLevel {
         for (let i = 0; i < this.mapLayers.length; i++) {
             const layer = this.mapLayers[i];
             levelDrawKit.floors.ctx.drawImage(
-                layer.texture.mapFloor.canvas,
-                0, 0, layer.texture.mapFloor.canvas.width, layer.texture.mapFloor.canvas.height
+                layer.texture.canvas,
+                0, 0, layer.texture.canvas.width, layer.texture.canvas.height
             )
         }
 
@@ -116,17 +116,17 @@ export class GameLevel {
                     case 'lachie':
                         // removeOldOccupant(grid, x, y)
                         const cell = grid[y][x];
-                        // player.position.x = gridCells(x);
-                        // player.position.y = gridCells(y);
-                        // player.destination.x = gridCells(x);
-                        // player.destination.y = gridCells(y);
-                        cell.occupant = player;
-                        // cell.occupant = null;
+                        player.position.x = gridCells(x);
+                        player.position.y = gridCells(y);
+                        player.destination.x = gridCells(x);
+                        player.destination.y = gridCells(y);
+                        // cell.occupant = player;
+                        cell.occupant = null;
                         break;
                     case 'gary': case 'fred': case 'george': case 'harold':
                         const e = entities[occupant]; // remember, we pass in the entities object as an argument
-                        // e.position.x = gridCells(x);
-                        // e.position.y = gridCells(y);
+                        e.position.x = gridCells(x);
+                        e.position.y = gridCells(y);
                         grid[y][x].occupant = e;
                         break;
                     case 'apple':
@@ -180,10 +180,10 @@ export class GameLevel {
             const i = layoutEntry.x;
             const j = layoutEntry.y
 
-            if (grid[layoutEntry.y] && grid[layoutEntry.x]) {
+            if (grid[j] && grid[j][i]) {
 
 
-                const cell = grid[layoutEntry.y][layoutEntry.x];
+                const cell = grid[j][i];
                 // console.log(layoutEntry, cell)
                 if (cell.floor === layer.match && cell.z === layer.z) {
                     if (!layer.auto) {
@@ -206,15 +206,9 @@ export class GameLevel {
         }
 
         return {
-            mapFloor: {
                 // floorOnly: floorOnly,
                 canvas: mapCanvas,
                 ctx: mapCtx
-            },
-            // mapOverlays: {
-            //     canvas: overlayCanvas,
-            //     ctx: overlayCtx
-            // }
         }
     }
 

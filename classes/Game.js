@@ -51,6 +51,7 @@ export class Game {
             cameraCellsX: CAMERA_CELLS.x,
             cameraCellsY: CAMERA_CELLS.y,
             game: this,
+            levels: this.levels,
         });
         // create the loop
         this.gameLoop = new GameLoop(this.update.bind(this), this.renderer.draw.bind(this.renderer));
@@ -62,7 +63,21 @@ export class Game {
             bang_dpad: this.command_dpad.bind(this),
             bang_A: this.command_interact.bind(this),
             bang_B: this.command_back.bind(this),
-            bang_Y: () => console.log(cellCoords(player.position.x), cellCoords(player.position.y)),
+            bang_Y: () => {
+                const c = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
+                if (this.controls.current_dpad_dir !== null) {
+                    console.log(`dpad on bang is ${this.controls.current_dpad_dir}`);
+                    const dirVec = direction_to_2D(this.controls.current_dpad_dir);
+                    // console.log()
+                    c.x += dirVec.x;
+                    c.y += dirVec.y
+                    
+                }
+                
+                console.log('coords:', c.x, c.y)
+                console.log('main:', this.grid[c.x][c.y])
+                console.log('level:', this.levels[0].grid[c.y][c.x])
+            },
             bang_X: this.enterPlayerInventory.bind(this),
 
             bang_pause: this.command_togglePause.bind(this),

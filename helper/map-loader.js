@@ -131,110 +131,6 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, t
 }
 
 
-function drawGridCell(ctx, texture, x, y) {
-    ctx.drawImage(texture, x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX)
-}
-
-function floorSwitch(ctx, textures, x, y, grid) {
-    const cell = grid[x][y];
-    let texture = textures.questionMark;
-    switch (cell.floor) {
-        case 'grass2':
-            drawGridCell(ctx, textures[cell.floor], x, y);
-            break;
-        case 'road':
-            texture = textures.stoneDirt;
-            const roadData = choose_tile_texture(grid, x, y, 'road');
-            ctx.drawImage(
-                texture,
-                roadData.x, roadData.y, CELL_PX, CELL_PX,
-                CELL_PX * x, CELL_PX * y, CELL_PX, CELL_PX,
-            );            
-            break;
-        case 'sand':
-            ctx.drawImage(
-                // if (check_grid_neighbour_floor(grid, i + 1, j, 'sand') || check_grid_neighbour_floor(grid, i, j + 1, 'sand')) texture = textures.grassSand;
-                textures.sandGrass,
-                1 * CELL_PX, 1 * CELL_PX, CELL_PX, CELL_PX,
-                CELL_PX * x, CELL_PX * y, CELL_PX, CELL_PX,
-            );
-            break;
-        case 'water':
-            drawGridCell(ctx, textures.water[0], x, y)
-            break;
-        case 'dirt':
-            texture = textures.dirtSand;
-            let drawX = 1 * CELL_PX;
-            let drawY = 1 * CELL_PX;
-
-            if (
-                check_grid_neighbour_floor(grid, x + 1, y, 'sand') ||
-                check_grid_neighbour_floor(grid, x, y + 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x - 1, y, 'sand') ||
-                check_grid_neighbour_floor(grid, x, y - 1, 'sand')
-            ) {
-                const dirtData = choose_tile_texture(grid, x, y, 'dirt');
-                drawX = dirtData.x;
-                drawY = dirtData.y;
-                //
-            }
-
-            // if (dirtData.neighbour.x !== 0 || dirtData.neighbour.y !== 0) {
-            //     // console.log(`yeah we got some neighbour data back: ${dirtData.neighbour.x}, ${dirtData.neighbour.y}`)
-            //     const nx = dirtData.neighbour.x + x;
-            //     const ny = dirtData.neighbour.y + y;
-            //     if (grid[nx] && grid[nx][ny]) {
-            //         const cell = grid[nx][ny];
-            //         // console.log(cell.floor)
-            //         if (cell.floor === 'sand') texture = textures.dirtSand;
-            //         else if (cell.floor === 'grass') texture = textures.dirtGrass;
-            //     }
-            // }
-
-            ctx.drawImage(
-                texture,
-                drawX, drawY, CELL_PX, CELL_PX,
-                CELL_PX * x, CELL_PX * y, CELL_PX, CELL_PX,
-            );
-            // drawGridCell(mapCtx, textures.dirt, i, j)
-            break;
-        case 'grass':
-            texture = textures.grassDirt;
-            const grassData = choose_tile_texture(grid, x, y, 'grass');
-            // if (check_grid_neighbour_floor(grid, x + 1, y, 'sand') || check_grid_neighbour_floor(grid, x, y + 1, 'sand')) texture = textures.grassSand;
-
-            // const nx = grassData.neighbour.x + x;
-            // const ny = grassData.neighbour.y + y;
-            // if (grid[nx] && grid[nx][ny]) {
-            //     const cell = grid[nx][ny];
-            //     // console.log(cell.floor)
-            //     if (cell.floor === 'dirt') texture = textures.grassDirt;
-            //     else if (cell.floor === 'sand') texture = textures.grassSand;
-            // }
-
-            if (
-                check_grid_neighbour_floor(grid, x + 1, y, 'sand') ||
-                check_grid_neighbour_floor(grid, x + 1, y + 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x, y + 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x - 1, y + 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x - 1, y, 'sand') ||
-                check_grid_neighbour_floor(grid, x - 1, y - 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x, y - 1, 'sand') ||
-                check_grid_neighbour_floor(grid, x + 1, y - 1, 'sand')
-            ) {
-                //
-                texture = textures.grassSand;
-            }
-
-
-            ctx.drawImage(
-                texture,
-                grassData.x, grassData.y, CELL_PX, CELL_PX,
-                CELL_PX * x, CELL_PX * y, CELL_PX, CELL_PX,
-            );
-            break;
-    }
-}
 
 function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
     const cell = grid[i][j];
@@ -349,12 +245,12 @@ export async function getMapTextures(grid, textures, images, paths = null) {
     const floorOnlyCtx = floorOnly.getContext('2d');
     // Copy the current floor BEFORE objects are drawn
 
-    // loop over the entire game grid
-    for (let i = 0; i < grid.length; i++) {
-        for (let j = 0; j < grid[i].length; j++) {
-            floorSwitch(mapCtx, textures, i, j, grid);
-        }
-    }
+    // // loop over the entire game grid
+    // for (let i = 0; i < grid.length; i++) {
+    //     for (let j = 0; j < grid[i].length; j++) {
+    //         floorSwitch(mapCtx, textures, i, j, grid);
+    //     }
+    // }
 
     if (paths !== null) {
         for (const key in paths) {

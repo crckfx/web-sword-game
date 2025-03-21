@@ -39,7 +39,6 @@ export class Renderer {
 
         this.ctx.imageSmoothingEnabled = false;
 
-
     }
 
     // A.K.A. "render_entire_grid"
@@ -61,7 +60,7 @@ export class Renderer {
 
         // draw the **floor+doodad** base texture
         this.ctx.drawImage(
-            this.textures.mapFloor.canvas,
+            this.game.levels[0].drawKit.floors.canvas,
             this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,    // draw a section of the floor
             0, 0, this.camera.size.x, this.camera.size.y                 // at this specified pos + size
         );

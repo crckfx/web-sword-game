@@ -24,7 +24,7 @@ export function get_dialogue_entity(e) {
     // if 'd' is a SetOfDialogues, we should return that set
     if (d instanceof SetOfDialogues)
         return d;
-    
+
     // otherwise, we'll assume d is a message & return a DIALOGUE
     return new Dialogue({
         heading: e.name,
@@ -59,9 +59,13 @@ export function get_dialogue_inventory(game, item) {
 // can we get 'player' out of here?
 export function worldInteract_Item(game, t) {
     const grid = game.grid;
+
     const x = cellCoords(t.position.x);
-    const y = cellCoords(t.position.y);
+    const y = cellCoords(t.position.y)
+
     if (grid[x] && grid[x][y]) {
+
+
         // console.log(`take item from ${x}, ${y}`);
         if (give_item_to(game, t, player)) {
             modifyInventoryTexture(game.textures.inventoryItems);
@@ -69,6 +73,7 @@ export function worldInteract_Item(game, t) {
             game.launch_a_dialogue(get_dialogue_pickup(t), t);
         };
     }
+
 }
 
 
