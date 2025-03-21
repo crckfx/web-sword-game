@@ -1,7 +1,6 @@
 import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
-import { do_autotile } from "../helper/autotile.js";
 import { do_autotile_alt } from "../helper/autotile_newgrid.js";
 import { gridCells } from "../helper/grid.js";
 import { occupantMap, tileMap } from "../helper/map-loader.js";
@@ -280,8 +279,11 @@ export class GameLevel {
                 const cell = this.grid[j][i];
                 if (cell.occupant !== null) {
                     // console.log(cell.occupant)
-                    this.occupantSwitch_alt(this.drawKit.occupants.ctx, this.drawKit.overlays.ctx, this.grid, textures, images, i, j)
-
+                    this.occupantSwitch_alt(
+                        this.drawKit.occupants.ctx, 
+                        this.drawKit.overlays.ctx, 
+                        this.grid, textures, 
+                        images, i, j)
                 }
             }
         }

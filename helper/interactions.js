@@ -1,7 +1,7 @@
 import { CELL_PX } from "../document.js";
 import { cellCoords } from "./grid.js";
 
-export function give_item_to(game, item, entity, otherGrid) {
+export function give_item_to(game, item, entity) {
     if (item.isHeldBy !== null) {       // if somebody is holding item
         const oldEntity = item.isHeldBy;
         const oldIndex = oldEntity.bag.findSlotByItem(item);
@@ -24,7 +24,7 @@ export function remove_item_from_cell(game, item) {
     const gridX = cellCoords(posX);
     const gridY = cellCoords(posY);
 
-    const grid = game.otherGrid;
+    const grid = game.grid;
     if (grid[gridY] && grid[gridY][gridX]) {
         console.log(`should probably remove item from map at '${gridX},${gridY}'`)
         // hopefully grab the correct drawkit for this :)

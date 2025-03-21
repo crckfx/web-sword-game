@@ -62,7 +62,7 @@ export function worldInteract_Item(game, t) {
     const x = cellCoords(t.position.x);
     const y = cellCoords(t.position.y)
 
-    const grid = game.otherGrid;
+    const grid = game.grid;
     if (grid[y] && grid[y][x]) {
         // console.log(`take item from ${x}, ${y}`);
         if (give_item_to(game, t, player)) {

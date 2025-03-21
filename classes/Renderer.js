@@ -40,11 +40,11 @@ export class Renderer {
         this.ctx.imageSmoothingEnabled = false;
 
         this.drawKit = null;
-        this.otherGrid = null;
+        this.grid = null;
     }
 
     bind(drawKit, grid) {
-        this.otherGrid = grid;
+        this.grid = grid;
         this.drawKit = drawKit;
     }
 
@@ -64,7 +64,6 @@ export class Renderer {
         this.ctx.fillRect(0, 0, this.camera.size.x, this.camera.size.y); // ?? could do an image background here instead
         
         // draw it up
-
         // draw the **floor+doodad** base texture
         this.ctx.drawImage(
             this.drawKit.floors.canvas,
@@ -77,8 +76,8 @@ export class Renderer {
                 const x = cellCoords(this.camera.pos.x) + i;
                 const y = cellCoords(this.camera.pos.y) + j
                 // console.log(x, y);
-                if (this.otherGrid[y] && this.otherGrid[y][x]) {
-                    const cell = this.otherGrid[y][x];
+                if (this.grid[y] && this.grid[y][x]) {
+                    const cell = this.grid[y][x];
                      
                     if (cell.occupant instanceof GameObject) {
                         this.drawEntity(cell.occupant, this.camera.pos.x, this.camera.pos.y)

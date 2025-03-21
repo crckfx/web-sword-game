@@ -36,7 +36,6 @@ export class Game {
     promptIndex = null;
 
     // levels = [];
-    otherGrid = null;
 
     constructor({
         levels
@@ -85,7 +84,7 @@ export class Game {
     }
 
     bindGrid() {
-        this.otherGrid = this.levels[0].grid;
+        this.grid = this.levels[0].grid;
     }
 
     // MAIN UPDATE
@@ -108,8 +107,8 @@ export class Game {
                 const interactOffset = direction_to_2D(player.isFacing);
                 const interactCell = add_two_vectors(playerCell, interactOffset);
 
-                if (this.otherGrid[interactCell.y] && this.otherGrid[interactCell.y][interactCell.x]) {
-                    const occupant = this.otherGrid[interactCell.y][interactCell.x].occupant;
+                if (this.grid[interactCell.y] && this.grid[interactCell.y][interactCell.x]) {
+                    const occupant = this.grid[interactCell.y][interactCell.x].occupant;
                     // if (typeof(cell.occupant) === "object") {
                     if (occupant instanceof Item || occupant instanceof Entity) {
                         player.interactTarget = occupant;
@@ -324,9 +323,9 @@ export class Game {
         const x = nextX / CELL_PX;
         const y = nextY / CELL_PX;
 
-        if (this.otherGrid[y] && this.otherGrid[y][x]) {
+        if (this.grid[y] && this.grid[y][x]) {
             // only move if no occupant here
-            if (this.otherGrid[y][x].occupant === null) {
+            if (this.grid[y][x].occupant === null) {
                 player.destination.x = nextX;
                 player.destination.y = nextY;
             }
