@@ -32,7 +32,7 @@ export class Renderer {
         this.game = game;
         this.ctx = ctx;
         this.canvas = canvas;
-        this.grid = game.grid ?? null;
+        // this.grid = game.grid ?? null;
         this.cells = new Vector2(cameraCellsX, cameraCellsY) ?? new Vector2(4, 3);
         this.textures = game.textures ?? null;
         this.images = game.images ?? null;
@@ -40,9 +40,11 @@ export class Renderer {
         this.ctx.imageSmoothingEnabled = false;
 
         this.drawKit = null;
+        this.otherGrid = null;
     }
 
-    bind(drawKit) {
+    bind(drawKit, grid) {
+        this.otherGrid = grid;
         this.drawKit = drawKit;
     }
 
@@ -75,8 +77,8 @@ export class Renderer {
                 const x = cellCoords(this.camera.pos.x) + i;
                 const y = cellCoords(this.camera.pos.y) + j
                 // console.log(x, y);
-                if (this.grid[x] && this.grid[x][y]) {
-                    const cell = this.grid[x][y];
+                if (this.otherGrid[y] && this.otherGrid[y][x]) {
+                    const cell = this.otherGrid[y][x];
                      
                     if (cell.occupant instanceof GameObject) {
                         this.drawEntity(cell.occupant, this.camera.pos.x, this.camera.pos.y)

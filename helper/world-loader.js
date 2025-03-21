@@ -6,7 +6,7 @@ import { Item } from "../classes/objects/Item.js";
 import { wrapText } from "./promptMenu.js";
 
 
-import { get_standard_entity_animations, STAND_DOWN, STAND_LEFT, STAND_RIGHT, STAND_UP, WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP } from "./walk.js";
+import { get_standard_entity_animations } from "./walk.js";
 import { Player } from "../classes/objects/Player.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { gridCells } from "./grid.js";
@@ -98,22 +98,6 @@ export async function load_entities(entities, textures) {
         )
     });
 }
-
-export async function load_map(map, grid, textures, images, entities) {
-    // do the map!
-    // turn text map into a bunch of coord objects
-    const parsedOccupantLayout = parseOccupantLayout(map.occupants);
-    applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
-
-    const parsedFloorLayout = parseFloorLayout(map.floor);
-    const parsedPathLayout = parsePathLayout(map.paths);
-    applyFloorToGameGrid(grid, parsedFloorLayout);
-
-    const mapTextures = await getMapTextures(grid, textures, images, null);
-    textures.mapFloor = mapTextures.mapFloor;
-    textures.mapOverlays = mapTextures.mapOverlays;
-}
-
 
 
 export function hackyTextureChooser(index) {

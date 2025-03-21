@@ -58,12 +58,22 @@ export function get_dialogue_inventory(game, item) {
 // --------------------
 // can we get 'player' out of here?
 export function worldInteract_Item(game, t) {
-    const grid = game.grid;
-
+    
     const x = cellCoords(t.position.x);
     const y = cellCoords(t.position.y)
 
-    if (grid[x] && grid[x][y]) {
+    // const grid = game.grid;
+    // if (grid[x] && grid[x][y]) {
+    //     // console.log(`take item from ${x}, ${y}`);
+    //     if (give_item_to(game, t, player)) {
+    //         modifyInventoryTexture(game.textures.inventoryItems);
+    //         player.interactTarget = null;
+    //         game.launch_a_dialogue(get_dialogue_pickup(t), t);
+    //     };
+    // }
+
+    const grid = game.otherGrid;
+    if (grid[y] && grid[y][x]) {
         // console.log(`take item from ${x}, ${y}`);
         if (give_item_to(game, t, player)) {
             modifyInventoryTexture(game.textures.inventoryItems);
