@@ -106,3 +106,11 @@ export async function load_map(map, grid, textures, images, entities) {
 
 
 
+export function hackyTextureChooser(index) {
+    // let texture = null;
+    if (index >= 4) return swordGame.images.dirtGrass;
+    if (index >= 3) return swordGame.images.stoneGrass;
+    if (index >= 2) return swordGame.images.sandGrass;
+    if (index >= 1) return swordGame.textures.grass2;
+    return swordGame.textures.water[0];
+}

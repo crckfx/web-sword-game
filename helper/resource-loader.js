@@ -42,6 +42,7 @@ export async function load_image_resources(images, textures) {
                 dirtSand: "images/tiles/dirt-sand.png",
                 dirtGrass: "images/tiles/dirt-grass.png",
                 stoneDirt: "images/tiles/stone-dirt.png",
+                stoneGrass: "images/tiles/stone-grass.png",
                 dirt: 'images/tiles/dirt.png',
                 trees_oak: 'images/trees_winter_oak_modified.png',
                 // misc

@@ -20,7 +20,7 @@ export const tileMap = {
     'w': 'water',
 };
 // define occupant signifiers
-const occupantMap = {
+export const occupantMap = {
     'T': 'tree',
     't': 'largeTree',
     'W': 'water',
@@ -169,13 +169,9 @@ function floorSwitch(ctx, textures, x, y, grid) {
 
             if (
                 check_grid_neighbour_floor(grid, x + 1, y, 'sand') ||
-                // check_grid_neighbour_floor(grid, x + 1, y + 1, 'sand') ||
                 check_grid_neighbour_floor(grid, x, y + 1, 'sand') ||
-                // check_grid_neighbour_floor(grid, x - 1, y + 1, 'sand') ||
                 check_grid_neighbour_floor(grid, x - 1, y, 'sand') ||
-                // check_grid_neighbour_floor(grid, x - 1, y - 1, 'sand') ||
                 check_grid_neighbour_floor(grid, x, y - 1, 'sand')
-                // check_grid_neighbour_floor(grid, x + 1, y - 1, 'sand')
             ) {
                 const dirtData = choose_tile_texture(grid, x, y, 'dirt');
                 drawX = dirtData.x;

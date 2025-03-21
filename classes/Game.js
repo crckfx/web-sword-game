@@ -15,6 +15,8 @@ import { DialogueOption } from "./interactions/DialogueOption.js";
 import { SetOfDialogues } from "./interactions/SetOfDialogues.js";
 import { add_two_vectors } from "../helper/vectorHelper.js";
 import { get_dialogue_inventory, worldInteract_Entity, worldInteract_Item } from "../helper/gameHelpers.js";
+import { GameLevel } from "../experimental/GameLevel.js";
+import { MapLayer } from "../experimental/MapLayer.js";
 
 export class Game {
     grid = null;
@@ -62,7 +64,9 @@ export class Game {
             bang_resume: this.command_togglePause.bind(this),
         });
         // 
+
     }
+
 
 
     // MAIN UPDATE

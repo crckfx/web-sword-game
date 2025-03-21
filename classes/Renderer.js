@@ -19,6 +19,8 @@ export class Renderer {
 
     camera = new Camera();
 
+    gameLevel = null;
+
     // RENDERER CONSTRUCTOR
     constructor({
         canvas,
@@ -36,6 +38,7 @@ export class Renderer {
         this.images = game.images ?? null;
 
         this.ctx.imageSmoothingEnabled = false;
+
 
     }
 
