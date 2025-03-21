@@ -29,58 +29,21 @@ async function dummy_init() {
     // swordGame.entities.harold.hasAlert = true;
     // assign pointer and keyboard listeners
 
-    swordGame.test_level = new GameLevel({
-        gridX: 29,
-        gridY: 28,
-    });
 
-
+    // console.log(swordGame.levels)
     // this is where we start messing with LEVEL loading
-    const testLevel = swordGame.test_level;
+    const testLevel = swordGame.levels[0];
     await testLevel.load_map_floors(map_5);
     await testLevel.load_map_occupants(map_5, swordGame.textures, swordGame.images, swordGame.entities);
 
 
-
-    // swordGame.textures.mapFloor.ctx.clearRect(0,0, swordGame.textures.mapFloor.canvas.width,swordGame.textures.mapFloor.canvas.height)
-
-    // for (let i = 0; i < testLevel.mapLayers.length; i++) {
-    //     const layer = testLevel.mapLayers[i];
-    //     // swordGame.textures.mapFloor.ctx.drawImage(
-    //     //     layer.texture.mapFloor.canvas, 
-    //     //     0,0
-    //     // )
-    //     swordGame.renderer.ctx.drawImage(
-    //         layer.texture.mapFloor.canvas,
-    //         0, 0
-    //     )
-    //     // swordGame.renderer.ctx.drawImage(
-    //     //     layer.texture.mapFloor.canvas, 
-    //     //     12 * CELL_PX, 0 * CELL_PX,
-    //     //     layer.texture.mapFloor.canvas.width, layer.texture.mapFloor.canvas.height,
-    //     //     0, layer.z * -8,
-    //     //     layer.texture.mapFloor.canvas.width, layer.texture.mapFloor.canvas.height
-    //     // )
-    // }
-
-    // for (const key in swordGame.entities) {
-    //     const entity = swordGame.entities[key]
-    //     const camX = 6 * CELL_PX;
-    //     const camY = 4 * CELL_PX;
-    //     // draw an entity specifically
-    //     swordGame.renderer.ctx.drawImage(
-    //             entity.getEntitySprite(),
-    //             // entity.texture[entity.frame],
-    //             // this.textures.sword,
-    //             entity.position.x - camX,
-    //             entity.position.y - 8 - camY,
-    //             CELL_PX,
-    //             CELL_PX
-    //         );
-        
-    // }
-
-    // console.log(testLevel);
+    swordGame.textures.mapFloor.ctx.clearRect(0,0, swordGame.textures.mapFloor.canvas.width,swordGame.textures.mapFloor.canvas.height)
+    swordGame.textures.mapFloor.ctx.drawImage(testLevel.drawKit.floors.canvas, 0,0);
+    swordGame.textures.mapFloor.ctx.drawImage(testLevel.drawKit.occupants.canvas, 0,0);
+    
+    swordGame.textures.mapOverlays.ctx.clearRect(0,0, swordGame.textures.mapOverlays.canvas.width,swordGame.textures.mapOverlays.canvas.height)
+    swordGame.textures.mapOverlays.ctx.drawImage(testLevel.drawKit.overlays.canvas, 0,0);
+    
 
     swordGame.controls.bind();
     swordGame.gameLoop.start();

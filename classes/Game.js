@@ -35,10 +35,15 @@ export class Game {
     currentDialogueSet = null
     promptIndex = null;
 
+    // levels = [];
 
-    constructor() {
+    constructor({
+        levels
+    }) {
+        this.levels = levels ?? [];
         // create the game grid
         this.grid = createGrid(NUM_GRID.x, NUM_GRID.y);
+        // this.grid = this.levels[0].grid;
         // create the renderer
         this.renderer = new Renderer({
             canvas: document.getElementById('game_canv'),
@@ -64,7 +69,6 @@ export class Game {
             bang_resume: this.command_togglePause.bind(this),
         });
         // 
-
     }
 
 

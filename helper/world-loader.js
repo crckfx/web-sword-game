@@ -18,6 +18,8 @@ import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
 import { Dialogue } from "../classes/interactions/Dialogue.js";
 import { DialogueOption } from "../classes/interactions/DialogueOption.js";
 import { appleMission } from "../experimental/missions.js";
+import { GameLevel } from "../experimental/GameLevel.js";
+import { NUM_GRID } from "../document.js";
 
 
 
@@ -31,7 +33,15 @@ export const player = new Player({
 });
 
 
-export const swordGame = new Game();
+export const swordGame = new Game({
+    levels: [
+        new GameLevel({
+            gridX: NUM_GRID.x,
+            gridY: NUM_GRID.y,
+        })
+    ]
+
+});
 
 
 export async function load_entities(entities, textures) {
