@@ -36,6 +36,8 @@ export class Game {
     promptIndex = null;
 
     levels = null;
+    currentLevel = null;
+
 
     constructor() {
         // create the game grid for a level instead though
@@ -83,26 +85,93 @@ export class Game {
         this.grid = level.grid;
 
         this.renderer.bind(level.drawKit, level.grid);        
+        
+        // // update player
+        // player.position.x = gridCells(level.playerInitCellPos.x);
+        // player.position.y = gridCells(level.playerInitCellPos.y);
+        // player.destination.x = gridCells(level.playerInitCellPos.x);
+        // player.destination.y = gridCells(level.playerInitCellPos.y);
+        // const playerData = level.entityData['player'];
+        // if (playerData) player.isFacing = playerData.isFacing;
 
-        player.position.x = gridCells(level.playerInitCellPos.x);
-        player.position.y = gridCells(level.playerInitCellPos.y);
-        player.destination.x = gridCells(level.playerInitCellPos.x);
-        player.destination.y = gridCells(level.playerInitCellPos.y);
+        for (const key in level.entityData) {
+            if (key === 'player') {
+                const playerData = level.entityData[key];
+                const posX = gridCells(playerData.cellCoord.x);
+                const posY = gridCells(playerData.cellCoord.y);
+                player.isFacing = playerData.isFacing;
+                player.position.x = posX;
+                player.position.y = posY;
+                player.destination.x = posX;
+                player.destination.y = posY;
+                console.log("~~~!!!! ~~PLAYER PLAYER PLAYEWR ~~~!!!!");
+            } else {
+                const e = this.entities[key];
+                console.log(`~~~ ~~ ${key} ${key} ${key} ~~~!!!!`);
+                const entityData = level.entityData[key];
+                const entityDataPos = entityData.cellCoord;  
+                e.position.x = gridCells(entityDataPos.x);
+                e.position.y = gridCells(entityDataPos.y);
+                
 
-        // update entity positions
-        for (const key in level.initialCellPositions) {
-            const vec = level.initialCellPositions[key]
-            // console.log(key)
-            const e = this.entities[key]; // remember, we pass in the entities object as an argument
-            if (!vec || !e) {
-                console.warn('something must be missing here in bindLevel');
-                return;
             }
-            e.position.x = gridCells(vec.x);
-            e.position.y = gridCells(vec.y);
-
         }
 
+        // // update entity positions
+        // for (const key in level.initialCellPositions) {
+        //     const vec = level.initialCellPositions[key]
+        //     // console.log(key)
+        //     const e = this.entities[key]; // remember, we pass in the entities object as an argument
+        //     if (!vec || !e) {
+        //         console.warn('something must be missing here in bindLevel');
+        //         return;
+        //     }
+        //     e.position.x = gridCells(vec.x);
+        //     e.position.y = gridCells(vec.y);
+
+        // }
+        this.currentLevel = level;
+
+    }
+
+    cacheLevel() {
+        const level = this.currentLevel;
+        // level.playerInitCellPos.overwrite(cellCoords(player.position.x), cellCoords(player.position.y));
+        // level.entityData['player'].isFacing = player.isFacing;
+        // // update entity positions
+        // for (const key in level.initialCellPositions) {
+        //     const e = this.entities[key]; // remember, we pass in the entities object as an argument
+            
+        //     const entityData = level.entityData[key];
+        //     if (entityData) {
+        //         entityData.isFacing = e.isFacing;
+        //     }
+
+        //     const vec = level.initialCellPositions[key]
+        //     vec.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
+            
+        // }
+
+        for (const key in level.entityData) {
+            if (key === 'player') {
+                const playerData = level.entityData[key];
+                playerData.isFacing = player.isFacing;
+                playerData.cellCoord.overwrite(cellCoords(player.position.x), cellCoords(player.position.y));
+            } else {
+                const e = this.entities[key];
+                const entityData = level.entityData[key];
+                if (entityData) {
+                    // entityData.isFacing = e.isFacing;
+                    entityData.cellCoord.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
+                }                
+                
+
+            }
+        }
+
+
+
+        this.currentLevel = null;
     }
 
     // MAIN UPDATE

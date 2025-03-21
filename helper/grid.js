@@ -1,5 +1,6 @@
 import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
+import { do_autotile } from "./autotile.js";
 
 // cell => pixel
 export function gridCells(n) {
@@ -55,3 +56,13 @@ export function check_grid_neighbour_floor(grid, x, y, match) {
     }
     return 0;
 }
+
+// convert autotile cell coords to texture pixel coords
+export function choose_tile_texture(grid, x, y, match, z) {
+    const coords = do_autotile(grid, x, y, match, z);
+    return {
+        x: coords.x * CELL_PX,
+        y: coords.y * CELL_PX,
+    };
+}
+

@@ -28,7 +28,7 @@ async function dummy_init() {
     });
     testLevel.drawKit = await load_map_floors(testLevel, map_5);
     await load_map_occupants(testLevel, map_5, swordGame.textures, swordGame.images, swordGame.entities);
-    
+
 
     // this is where we start messing with LEVEL loading
     const destinationLevel = new GameLevel({
@@ -37,7 +37,7 @@ async function dummy_init() {
     });
     destinationLevel.drawKit = await load_map_floors(destinationLevel, map_expedition);
     await load_map_occupants(destinationLevel, map_expedition, swordGame.textures, swordGame.images, swordGame.entities);
-    
+
     // bind the renderer to use the 'drawKit' generated from map_5
     swordGame.bindLevel(testLevel);
     // swordGame.bindLevel(destinationLevel);
@@ -50,12 +50,16 @@ async function dummy_init() {
     // swordGame.entities.harold.hasAlert = true;
 
 
-    swordGame.controls.HtmlControls.pauseMenu.load_main_map_btn.onclick = () => swordGame.pause();
+    swordGame.controls.HtmlControls.pauseMenu.load_main_map_btn.onclick = () => {
+        swordGame.pause();
+        swordGame.cacheLevel();
+        swordGame.bindLevel(testLevel);
+        swordGame.resume();
+    }
     swordGame.controls.HtmlControls.pauseMenu.load_expedition_map_btn.onclick = () => {
         swordGame.pause();
-        
+        swordGame.cacheLevel();
         swordGame.bindLevel(destinationLevel);
-
         swordGame.resume();
     };
 

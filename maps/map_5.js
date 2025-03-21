@@ -1,4 +1,28 @@
+import { Vector2 } from "../classes/Vector2.js";
+
 export const map_5 = {
+    entityData: {
+        player: {
+            cellCoord: new Vector2(null, null),
+            isFacing: 'right',
+        },
+        gary: {
+            cellCoord: new Vector2(null, null),
+            isFacing: 'up',
+        },
+        fred: {
+            cellCoord: new Vector2(null, null),
+            isFacing: 'up',
+        },
+        george: {
+            cellCoord: new Vector2(null, null),
+            isFacing: 'up',
+        },
+        harold: {
+            cellCoord: new Vector2(null, null),
+            isFacing: 'up',
+        },
+    },
     floors: [
         {
             match: 'water',

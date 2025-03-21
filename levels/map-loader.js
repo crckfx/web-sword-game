@@ -6,8 +6,8 @@
 import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID, CELL_PX } from "../document.js";
-import { choose_4x4_texture_coords, do_autotile } from "../helper/autotile.js";
-import { check_grid_neighbour_floor, gridCells } from "../helper/grid.js";
+import { choose_4x4_texture_coords, } from "../helper/autotile.js";
+import { choose_tile_texture, gridCells } from "../helper/grid.js";
 import { hackyTextureChooser, player } from "../helper/world-loader.js";
 import { createDrawKit } from "./draw-kit.js";
 import { check_tree_cell } from "./load-helper.js";
@@ -95,13 +95,14 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, textures, ima
                     break;
                 case 'lachie':
                     removeOldOccupant(grid, x, y)
-                    const cell = grid[y][x];                    
+                    const cell = grid[y][x];
                     level.playerInitCellPos.overwrite(x, y);
+                    level.entityData['player'].cellCoord.overwrite(x, y)
                     cell.occupant = null;
                     break;
                 case 'gary': case 'fred': case 'george': case 'harold':
-
                     level.initialCellPositions[occupant].overwrite(x, y);
+                    level.entityData[occupant].cellCoord.overwrite(x, y)
                     grid[y][x].occupant = entities[occupant];
                     break;
                 case 'apple':
@@ -164,7 +165,7 @@ export async function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
         const y = layoutEntry.y
 
         if (grid[y] && grid[y][x]) {
-        const cell = grid[y][x];
+            const cell = grid[y][x];
             // console.log(layoutEntry, cell)
             if (cell.floor === layer.match && cell.z === layer.z) {
                 if (!layer.auto) {
@@ -190,15 +191,6 @@ export async function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
 }
 
 
-// convert autotile cell coords to texture pixel coords
-function choose_tile_texture(grid, x, y, match, z) {
-    const coords = do_autotile(grid, x, y, match, z);
-    return {
-        x: coords.x * CELL_PX,
-        y: coords.y * CELL_PX,
-    };
-}
-
 
 
 
@@ -222,6 +214,8 @@ export async function load_map_floors(level, map) {
     const mapLayers = []; // add the map layers here instead
     const mapWidthPx = CELL_PX * level.numGrid.x;
     const mapHeightPx = CELL_PX * level.numGrid.y;
+
+    level.entityData = map.entityData;
 
     for (let i = 0; i < map.floors.length; i++) {
         const floor = map.floors[i];
@@ -253,6 +247,8 @@ export async function load_map_occupants(level, map, textures, images, entities)
     const parsedOccupantLayout = parseOccupantLayout(map.occupants);
     console.log(parsedOccupantLayout);
     applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities);
+
+
 
     for (let j = 0; j < level.numGrid.y; j++) {
         for (let i = 0; i < level.numGrid.x; i++) {
