@@ -15,8 +15,8 @@ import { DialogueOption } from "./interactions/DialogueOption.js";
 import { SetOfDialogues } from "./interactions/SetOfDialogues.js";
 import { add_two_vectors } from "../helper/vectorHelper.js";
 import { get_dialogue_inventory, worldInteract_Entity, worldInteract_Item } from "../helper/gameHelpers.js";
-import { GameLevel } from "../experimental/GameLevel.js";
-import { MapLayer } from "../experimental/MapLayer.js";
+import { GameLevel } from "../levels/GameLevel.js";
+import { MapLayer } from "../levels/MapLayer.js";
 
 export class Game {
     grid = null;
@@ -35,12 +35,9 @@ export class Game {
     currentDialogueSet = null
     promptIndex = null;
 
-    // levels = [];
+    levels = null;
 
-    constructor({
-        levels
-    }) {
-        this.levels = levels ?? [];
+    constructor() {
         // create the game grid for a level instead though
 
         // create the renderer
@@ -50,7 +47,6 @@ export class Game {
             cameraCellsX: CAMERA_CELLS.x,
             cameraCellsY: CAMERA_CELLS.y,
             game: this,
-            // levels: this.levels,
         });
         // create the loop
         this.gameLoop = new GameLoop(this.update.bind(this), this.renderer.draw.bind(this.renderer));
@@ -83,8 +79,9 @@ export class Game {
         // 
     }
 
-    bindGrid() {
-        this.grid = this.levels[0].grid;
+    bindLevel(level) {
+        this.grid = level.grid;
+        
     }
 
     // MAIN UPDATE

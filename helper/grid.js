@@ -55,6 +55,21 @@ export function createGrid(cellsX, cellsY) {
     return grid;
 }
 
+    export function createGrid_alt(cellsX, cellsY) {
+        const grid = new Array(cellsY);
+        for (let j = 0; j < cellsY; j++) {
+            grid[j] = new Array(cellsX);
+            for (let i = 0; i < cellsX; i++) {
+                grid[j][i] = {
+                    floor: null,
+                    occupant: null,
+                    z: 0
+                }
+            }
+        }
+        return grid;
+    }
+
 export function compare_two_vec2(vecA, vecB) {
     // "on what side of vecB is vecA situated?"
     if (vecA.x > vecB.x) return 'right';

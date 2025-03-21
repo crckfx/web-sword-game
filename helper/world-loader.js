@@ -1,4 +1,3 @@
-import { parseFloorLayout, parseOccupantLayout, applyFloorToGameGrid, applyOccupantsToGameGrid, getMapTextures, parsePathLayout } from "./map-loader.js";
 import { Entity } from "../classes/objects/Entity.js";
 
 import { Game } from "../classes/Game.js";
@@ -18,7 +17,7 @@ import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
 import { Dialogue } from "../classes/interactions/Dialogue.js";
 import { DialogueOption } from "../classes/interactions/DialogueOption.js";
 import { appleMission } from "../experimental/missions.js";
-import { GameLevel } from "../experimental/GameLevel.js";
+import { GameLevel } from "../levels/GameLevel.js";
 import { NUM_GRID } from "../document.js";
 
 
@@ -33,15 +32,7 @@ export const player = new Player({
 });
 
 
-export const swordGame = new Game({
-    levels: [
-        new GameLevel({
-            gridX: NUM_GRID.x,
-            gridY: NUM_GRID.y,
-        })
-    ]
-
-});
+export const swordGame = new Game();
 
 
 export async function load_entities(entities, textures) {
