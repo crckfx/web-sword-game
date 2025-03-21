@@ -6,7 +6,6 @@
 import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID, CELL_PX } from "../document.js";
-import { do_autotile } from "../helper/autotile.js";
 import { choose_4x4_texture_coords, do_autotile_alt } from "../helper/autotile_newgrid.js";
 import { check_grid_neighbour_floor, gridCells } from "../helper/grid.js";
 import { hackyTextureChooser, player } from "../helper/world-loader.js";
