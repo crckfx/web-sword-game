@@ -3,7 +3,7 @@ import { Renderer } from "./Renderer.js";
 import { Item } from "./objects/Item.js";
 import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
-import { cellCoords, moveTowards } from "../helper/grid.js";
+import { cellCoords, gridCells, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./objects/Entity.js";
 import { player } from "../helper/world-loader.js";
@@ -81,7 +81,28 @@ export class Game {
 
     bindLevel(level) {
         this.grid = level.grid;
-        
+
+        this.renderer.bind(level.drawKit, level.grid);        
+
+        player.position.x = gridCells(level.playerInitCellPos.x);
+        player.position.y = gridCells(level.playerInitCellPos.y);
+        player.destination.x = gridCells(level.playerInitCellPos.x);
+        player.destination.y = gridCells(level.playerInitCellPos.y);
+
+        // update entity positions
+        for (const key in level.initialCellPositions) {
+            const vec = level.initialCellPositions[key]
+            // console.log(key)
+            const e = this.entities[key]; // remember, we pass in the entities object as an argument
+            if (!vec || !e) {
+                console.warn('something must be missing here in bindLevel');
+                return;
+            }
+            e.position.x = gridCells(vec.x);
+            e.position.y = gridCells(vec.y);
+
+        }
+
     }
 
     // MAIN UPDATE

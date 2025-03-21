@@ -17,7 +17,6 @@ import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
 import { Dialogue } from "../classes/interactions/Dialogue.js";
 import { DialogueOption } from "../classes/interactions/DialogueOption.js";
 import { appleMission } from "../experimental/missions.js";
-import { GameLevel } from "../levels/GameLevel.js";
 import { NUM_GRID } from "../document.js";
 
 

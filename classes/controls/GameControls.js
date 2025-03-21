@@ -162,6 +162,7 @@ export class GameControls {
 
         this.HtmlControls.pauseMenu.resumeBtn.onclick = () => this.bang_resume();
 
+
     }
 
 

@@ -6,7 +6,7 @@
 import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID, CELL_PX } from "../document.js";
-import { choose_4x4_texture_coords, do_autotile_alt } from "../helper/autotile_newgrid.js";
+import { choose_4x4_texture_coords, do_autotile } from "../helper/autotile.js";
 import { check_grid_neighbour_floor, gridCells } from "../helper/grid.js";
 import { hackyTextureChooser, player } from "../helper/world-loader.js";
 import { createDrawKit } from "./draw-kit.js";
@@ -40,9 +40,9 @@ export const occupantMap = {
 
 function removeOldOccupant(grid, x, y) {
     // triple check a cell exists before accessing/removing from it
-    if (grid[x]) {
-        if (grid[x][y]) {
-            const oldCell = grid[x][y];
+    if (grid[y]) {
+        if (grid[y][x]) {
+            const oldCell = grid[y][x];
             if (oldCell.occupant !== null) {
                 oldCell.occupant = null;
             }
@@ -85,7 +85,8 @@ export function parseOccupantLayout(mapString) {
 
 
 // translate an occupant name into a game entity
-export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, textures, images, entities) {
+export function applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities) {
+    const grid = level.grid;
     for (const { x, y, occupant } of parsedOccupantLayout) {
         if (grid[y] && grid[y][x]) {
             switch (occupant) {
@@ -93,20 +94,15 @@ export function applyOccupantsToGameGrid(grid, parsedOccupantLayout, textures, i
                     grid[y][x].occupant = occupant;
                     break;
                 case 'lachie':
-                    // removeOldOccupant(grid, x, y)
-                    const cell = grid[y][x];
-                    player.position.x = gridCells(x);
-                    player.position.y = gridCells(y);
-                    player.destination.x = gridCells(x);
-                    player.destination.y = gridCells(y);
-                    // cell.occupant = player;
+                    removeOldOccupant(grid, x, y)
+                    const cell = grid[y][x];                    
+                    level.playerInitCellPos.overwrite(x, y);
                     cell.occupant = null;
                     break;
                 case 'gary': case 'fred': case 'george': case 'harold':
-                    const e = entities[occupant]; // remember, we pass in the entities object as an argument
-                    e.position.x = gridCells(x);
-                    e.position.y = gridCells(y);
-                    grid[y][x].occupant = e;
+
+                    level.initialCellPositions[occupant].overwrite(x, y);
+                    grid[y][x].occupant = entities[occupant];
                     break;
                 case 'apple':
                     const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple, textures.apple2);
@@ -163,32 +159,27 @@ export async function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
 
     for (const key in layer.floorLayout) {
         const layoutEntry = layer.floorLayout[key];
-        const i = layoutEntry.x;
-        const j = layoutEntry.y
 
-        if (grid[j] && grid[j][i]) {
+        const x = layoutEntry.x;
+        const y = layoutEntry.y
 
-
-            const cell = grid[j][i];
+        if (grid[y] && grid[y][x]) {
+        const cell = grid[y][x];
             // console.log(layoutEntry, cell)
             if (cell.floor === layer.match && cell.z === layer.z) {
                 if (!layer.auto) {
                     mapCtx.drawImage(layer.image,
-                        i * CELL_PX, j * CELL_PX, CELL_PX, CELL_PX
+                        x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX
                     );
                 } else {
-                    const data = choose_tile_texture(grid, i, j, layer.match, cell.z)
+                    const data = choose_tile_texture(grid, x, y, layer.match, cell.z)
                     mapCtx.drawImage(layer.image,
                         data.x, data.y, CELL_PX, CELL_PX,
-                        i * CELL_PX, j * CELL_PX, CELL_PX, CELL_PX
+                        x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX
                     )
                 }
             }
-
         }
-
-
-
     }
 
     return {
@@ -201,7 +192,7 @@ export async function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
 
 // convert autotile cell coords to texture pixel coords
 function choose_tile_texture(grid, x, y, match, z) {
-    const coords = do_autotile_alt(grid, x, y, match, z);
+    const coords = do_autotile(grid, x, y, match, z);
     return {
         x: coords.x * CELL_PX,
         y: coords.y * CELL_PX,
@@ -261,7 +252,7 @@ export async function load_map_occupants(level, map, textures, images, entities)
     // maybe begin building the occupants here too?
     const parsedOccupantLayout = parseOccupantLayout(map.occupants);
     console.log(parsedOccupantLayout);
-    applyOccupantsToGameGrid(level.grid, parsedOccupantLayout, textures, images, entities);
+    applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities);
 
     for (let j = 0; j < level.numGrid.y; j++) {
         for (let i = 0; i < level.numGrid.x; i++) {

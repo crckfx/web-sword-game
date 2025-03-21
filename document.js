@@ -81,6 +81,9 @@ export function getHtmlControls() {
         pauseMenu: {
             container: document.getElementById('pauseMenu'),
             resumeBtn: document.getElementById('pauseMenu_resumeBtn'),
+            load_main_map_btn: document.getElementById('pauseMenu_load_main_map_btn'),
+            load_expedition_map_btn: document.getElementById('pauseMenu_load_expedition_map_btn'),
+
         },
     };
 

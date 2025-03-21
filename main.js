@@ -11,6 +11,7 @@ import { map_5 } from "./maps/map_5.js";
 import { Entity } from "./classes/objects/Entity.js";
 import { load_map_floors, load_map_occupants } from "./levels/map-loader.js";
 import { GameLevel } from "./levels/GameLevel.js";
+import { map_expedition } from "./maps/map_expedition.js";
 
 
 // the entry point
@@ -25,12 +26,21 @@ async function dummy_init() {
         gridX: NUM_GRID.x,
         gridY: NUM_GRID.y,
     });
-
-
     testLevel.drawKit = await load_map_floors(testLevel, map_5);
     await load_map_occupants(testLevel, map_5, swordGame.textures, swordGame.images, swordGame.entities);
-    swordGame.renderer.bind(testLevel.drawKit, testLevel.grid);    // bind the renderer to use the 'drawKit' generated from map_5
+    
+
+    // this is where we start messing with LEVEL loading
+    const destinationLevel = new GameLevel({
+        gridX: 16,
+        gridY: 12,
+    });
+    destinationLevel.drawKit = await load_map_floors(destinationLevel, map_expedition);
+    await load_map_occupants(destinationLevel, map_expedition, swordGame.textures, swordGame.images, swordGame.entities);
+    
+    // bind the renderer to use the 'drawKit' generated from map_5
     swordGame.bindLevel(testLevel);
+    // swordGame.bindLevel(destinationLevel);
 
     player.texture = swordGame.textures.spriteDefault;
     player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
@@ -38,6 +48,17 @@ async function dummy_init() {
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;
+
+
+    swordGame.controls.HtmlControls.pauseMenu.load_main_map_btn.onclick = () => swordGame.pause();
+    swordGame.controls.HtmlControls.pauseMenu.load_expedition_map_btn.onclick = () => {
+        swordGame.pause();
+        
+        swordGame.bindLevel(destinationLevel);
+
+        swordGame.resume();
+    };
+
 
     swordGame.controls.bind();
     swordGame.gameLoop.start();

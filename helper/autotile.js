@@ -30,7 +30,7 @@ function findValueCoords(value, table) {
     return index !== null ? indexToCoords(index) : null;
 }
 
-export function do_autotile_alt(grid, x, y, match, z) {
+export function do_autotile(grid, x, y, match, z) {
     // check the 4 edges
     const up = check_grid_neighbour_floor_alt(grid, x, y - 1, match, z);
     const left = check_grid_neighbour_floor_alt(grid, x - 1, y, match, z);
