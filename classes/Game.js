@@ -42,9 +42,8 @@ export class Game {
         levels
     }) {
         this.levels = levels ?? [];
-        // create the game grid
-        this.grid = createGrid(NUM_GRID.x, NUM_GRID.y);
-        // this.grid = this.levels[0].grid;
+        // create the game grid for a level instead though
+
         // create the renderer
         this.renderer = new Renderer({
             canvas: document.getElementById('game_canv'),
@@ -52,7 +51,7 @@ export class Game {
             cameraCellsX: CAMERA_CELLS.x,
             cameraCellsY: CAMERA_CELLS.y,
             game: this,
-            levels: this.levels,
+            // levels: this.levels,
         });
         // create the loop
         this.gameLoop = new GameLoop(this.update.bind(this), this.renderer.draw.bind(this.renderer));
@@ -75,9 +74,7 @@ export class Game {
                     
                 }
                 
-                console.log('coords:', c.x, c.y)
-                console.log('main:', this.grid[c.x][c.y])
-                console.log('level:', this.levels[0].grid[c.y][c.x])
+
             },
             bang_X: this.enterPlayerInventory.bind(this),
 
@@ -110,15 +107,6 @@ export class Game {
             if (player.interactTarget === null) {
                 const interactOffset = direction_to_2D(player.isFacing);
                 const interactCell = add_two_vectors(playerCell, interactOffset);
-
-                // if (this.grid[interactCell.x] && this.grid[interactCell.x][interactCell.y]) {
-                //     const occupant = this.grid[interactCell.x][interactCell.y].occupant;
-                //     // if (typeof(cell.occupant) === "object") {
-                //     if (occupant instanceof Item || occupant instanceof Entity) {
-                //         player.interactTarget = occupant;
-                //         // console.log(cell.occupant);
-                //     }
-                // };
 
                 if (this.otherGrid[interactCell.y] && this.otherGrid[interactCell.y][interactCell.x]) {
                     const occupant = this.otherGrid[interactCell.y][interactCell.x].occupant;
@@ -335,15 +323,7 @@ export class Game {
 
         const x = nextX / CELL_PX;
         const y = nextY / CELL_PX;
-        
-        // if (this.grid[x] && this.grid[x][y]) {
-        //     // only move if no occupant here
-        //     if (this.grid[x][y].occupant === null) {
-        //         player.destination.x = nextX;
-        //         player.destination.y = nextY;
-        //     }
-        // }
-        
+
         if (this.otherGrid[y] && this.otherGrid[y][x]) {
             // only move if no occupant here
             if (this.otherGrid[y][x].occupant === null) {

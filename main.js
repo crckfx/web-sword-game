@@ -35,13 +35,6 @@ async function dummy_init() {
     // swordGame.entities.harold.hasAlert = true;
     
 
-    // loop over the grid and do YX => XY patch
-    for (let j=0; j<NUM_GRID.y; j++) {
-        for (let i=0; i<NUM_GRID.x; i++) {
-            swordGame.grid[i][j] = testLevel.grid[j][i];
-        }
-    }
-
     swordGame.controls.bind();
     swordGame.gameLoop.start();
 

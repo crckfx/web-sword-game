@@ -3,8 +3,8 @@ import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
 
 const NUM_FRAMES_WALK = 4;
 const NUM_FRAMES_STAND = 1;
-const DURATION_WALK = 600;
-const DURATION_STAND = 600;
+const DURATION_WALK = 500;
+const DURATION_STAND = 500;
 
 function createFrames(duration, numFrames, rootFrame = 0, offset = 0) {
     // duration: total cycle length (ms). 
