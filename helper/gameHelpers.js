@@ -64,8 +64,6 @@ export function worldInteract_Item(game, t) {
     const y = cellCoords(t.position.y)
 
     if (grid[x] && grid[x][y]) {
-
-
         // console.log(`take item from ${x}, ${y}`);
         if (give_item_to(game, t, player)) {
             modifyInventoryTexture(game.textures.inventoryItems);

@@ -39,6 +39,11 @@ export class Renderer {
 
         this.ctx.imageSmoothingEnabled = false;
 
+        this.drawKit = null;
+    }
+
+    bind(drawKit) {
+        this.drawKit = drawKit;
     }
 
     // A.K.A. "render_entire_grid"
@@ -60,7 +65,7 @@ export class Renderer {
 
         // draw the **floor+doodad** base texture
         this.ctx.drawImage(
-            this.game.levels[0].drawKit.floors.canvas,
+            this.drawKit.floors.canvas,
             this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,    // draw a section of the floor
             0, 0, this.camera.size.x, this.camera.size.y                 // at this specified pos + size
         );
@@ -72,7 +77,7 @@ export class Renderer {
                 // console.log(x, y);
                 if (this.grid[x] && this.grid[x][y]) {
                     const cell = this.grid[x][y];
-                    
+                     
                     if (cell.occupant instanceof GameObject) {
                         this.drawEntity(cell.occupant, this.camera.pos.x, this.camera.pos.y)
                     } 
@@ -90,17 +95,9 @@ export class Renderer {
             CELL_PX, CELL_PX
         );
 
-        // // draw **entities**
-        // for (const e of Object.values(this.game.entities)) {
-        //     const pos = e.position;
-        //     if (pos.x >= minX && pos.x < maxX &&
-        //         pos.y >= minY && pos.y < maxY) {
-        //         this.drawEntity(e, this.camera.pos.x, this.camera.pos.y);
-        //     }
-        // }
-
         this.ctx.drawImage(
-            this.textures.mapOverlays.canvas,
+            // this.textures.mapOverlays.canvas,
+            this.drawKit.overlays.canvas,
             this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,
             0, 0, this.camera.size.x, this.camera.size.y
         );

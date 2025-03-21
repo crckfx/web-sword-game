@@ -63,6 +63,11 @@ export class GameLevel {
         dkCanv_floor.height = mapHeightPx;
         const dkCtx_floor = dkCanv_floor.getContext('2d');
 
+        const dkCanv_floorsOnly = document.createElement('canvas');
+        dkCanv_floorsOnly.width = mapWidthPx;
+        dkCanv_floorsOnly.height = mapHeightPx;
+        const dkCtx_floorsOnly = dkCanv_floorsOnly.getContext('2d');
+
         const dkCanv_occ = document.createElement('canvas');
         dkCanv_occ.width = mapWidthPx;
         dkCanv_occ.height = mapHeightPx;
@@ -77,6 +82,8 @@ export class GameLevel {
 
         const levelDrawKit = {
             floors: {
+                floorsOnlyCtx: dkCtx_floorsOnly,
+                floorsOnly: dkCanv_floorsOnly,
                 canvas: dkCanv_floor,
                 ctx: dkCtx_floor
             },
@@ -86,7 +93,7 @@ export class GameLevel {
             },
             overlays: {
                 canvas: dkCanv_over,
-                ctx: dkCtx_over  
+                ctx: dkCtx_over
             }
         }
 
@@ -97,6 +104,11 @@ export class GameLevel {
                 0, 0, layer.texture.canvas.width, layer.texture.canvas.height
             )
         }
+
+        levelDrawKit.floors.floorsOnlyCtx.drawImage(
+            levelDrawKit.floors.canvas,
+            0,0,levelDrawKit.floors.canvas.width, levelDrawKit.floors.canvas.height
+        )
 
         this.drawKit = levelDrawKit;
 
@@ -206,9 +218,9 @@ export class GameLevel {
         }
 
         return {
-                // floorOnly: floorOnly,
-                canvas: mapCanvas,
-                ctx: mapCtx
+            // floorOnly: floorOnly,
+            canvas: mapCanvas,
+            ctx: mapCtx
         }
     }
 
@@ -342,7 +354,7 @@ export class GameLevel {
                             0, CELL_PX, // Crop from (x=0, y=32px) in the texture
                             CELL_PX * 2, CELL_PX * 2, // Crop width and height (2x wide, 2x tall)
                             CELL_PX * (i) - CELL_PX / 2, // Destination X
-                            CELL_PX * (j-1), // Destination Y 
+                            CELL_PX * (j - 1), // Destination Y 
                             CELL_PX * 2, CELL_PX * 2 // Destination width and height
                         );
 
@@ -378,29 +390,29 @@ export class GameLevel {
         }
 
         // check cell above
-        if (grid[y-1] && grid[y-1][x] ) {
-            const cell = grid[y-1][x];
+        if (grid[y - 1] && grid[y - 1][x]) {
+            const cell = grid[y - 1][x];
             if (cell.occupant !== 'largeTree') return false;
         }
-    
+
         return true;
-    
+
     }
-    
+
     choose_occupant_texture(grid, x, y, match) {
         let sx = 0;
         let sy = 0;
-    
+
         let left = check_grid_neighbour_occupant(grid, x - 1, y, match);
         let up = check_grid_neighbour_occupant(grid, x, y - 1, match);
         let right = check_grid_neighbour_occupant(grid, x + 1, y, match);
         let down = check_grid_neighbour_occupant(grid, x, y + 1, match);
-    
+
         // let left_up = check_grid_neighbour_occupant(grid, x - 1, y - 1, match);
         // let right_up = check_grid_neighbour_occupant(grid, x + 1, y - 1, match);
         // let right_down = check_grid_neighbour_occupant(grid, x + 1, y + 1, match);
         // let left_down = check_grid_neighbour_occupant(grid, x - 1, y + 1, match);
-    
+
         if (!up && down)
             sy = 0;
         else if (up && down)
@@ -409,7 +421,7 @@ export class GameLevel {
             sy = 2;
         else if (!up && !down)
             sy = 3;
-    
+
         if (!left && right)
             sx = 0;
         else if (left && right)
@@ -418,12 +430,12 @@ export class GameLevel {
             sx = 2;
         else if (!left && !right)
             sx = 3;
-    
+
         return {
             x: sx * CELL_PX,
             y: sy * CELL_PX
         };
-    
+
         function check_grid_neighbour_occupant(grid, x, y, match) {
             if (grid[y] && grid[y][x]) {
                 if (grid[y][x].occupant === match) {
@@ -433,7 +445,7 @@ export class GameLevel {
             return null;
         }
     }
-   
+
 
 
 }

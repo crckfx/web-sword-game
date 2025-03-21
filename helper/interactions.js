@@ -27,11 +27,11 @@ export function remove_item_from_cell(game, item, otherGrid) {
         console.log(`should probably remove item from map at '${gridX},${gridY}'`)
         // const replaceCtx = texture.getContext('2d');
         // console.log(replaceCtx)
-        const texture = game.textures.mapFloor;
+        const texture = game.renderer.drawKit.floors;
 
         texture.ctx.clearRect(posX, posY, CELL_PX, CELL_PX);
         // now we need to slice out `game.textures.mapFloor.floorOnly` at this same position and draw it at this same position
-        texture.ctx.drawImage(texture.floorOnly,
+        texture.ctx.drawImage(texture.floorsOnly,
             posX, posY, CELL_PX, CELL_PX,
             posX, posY, CELL_PX, CELL_PX
         )

@@ -1,4 +1,4 @@
-import { hackyTextureChooser, load_entities, load_map, player, swordGame } from "./helper/world-loader.js";
+import { hackyTextureChooser, load_entities, player, swordGame } from "./helper/world-loader.js";
 import { Item } from "./classes/objects/Item.js";
 import { CELL_PX, NUM_GRID } from "./document.js";
 import { load_image_resources } from "./helper/resource-loader.js";
@@ -19,7 +19,7 @@ async function dummy_init() {
     // swordGame.init_game(NUM_GRID.x, NUM_GRID.y);    
     await load_image_resources(swordGame.images, swordGame.textures);
     await load_entities(swordGame.entities, swordGame.textures);
-    await load_map(map_2, swordGame.grid, swordGame.textures, swordGame.images, swordGame.entities);
+    // await load_map(map_2, swordGame.grid, swordGame.textures, swordGame.images, swordGame.entities);
 
 
     
@@ -39,14 +39,13 @@ async function dummy_init() {
     await testLevel.load_map_floors(map_5);
     await testLevel.load_map_occupants(map_5, swordGame.textures, swordGame.images, swordGame.entities);
 
-    
+    swordGame.renderer.bind(testLevel.drawKit);
 
-    swordGame.textures.mapFloor.ctx.clearRect(0,0, swordGame.textures.mapFloor.canvas.width,swordGame.textures.mapFloor.canvas.height)
-    swordGame.textures.mapFloor.ctx.drawImage(testLevel.drawKit.floors.canvas, 0,0);
-    swordGame.textures.mapFloor.ctx.drawImage(testLevel.drawKit.occupants.canvas, 0,0);
-    
-    swordGame.textures.mapOverlays.ctx.clearRect(0,0, swordGame.textures.mapOverlays.canvas.width,swordGame.textures.mapOverlays.canvas.height)
-    swordGame.textures.mapOverlays.ctx.drawImage(testLevel.drawKit.overlays.canvas, 0,0);
+    // swordGame.textures.mapFloor.ctx.clearRect(0,0, swordGame.textures.mapFloor.canvas.width,swordGame.textures.mapFloor.canvas.height)
+    // swordGame.textures.mapFloor.ctx.drawImage(testLevel.drawKit.floors.canvas, 0,0);
+    // swordGame.textures.mapFloor.ctx.drawImage(testLevel.drawKit.occupants.canvas, 0,0);
+    // swordGame.textures.mapOverlays.ctx.clearRect(0,0, swordGame.textures.mapOverlays.canvas.width,swordGame.textures.mapOverlays.canvas.height)
+    // swordGame.textures.mapOverlays.ctx.drawImage(testLevel.drawKit.overlays.canvas, 0,0);
 
 
     for (let j=0; j<NUM_GRID.y; j++) {

@@ -102,12 +102,12 @@ export async function load_entities(entities, textures) {
 export async function load_map(map, grid, textures, images, entities) {
     // do the map!
     // turn text map into a bunch of coord objects
-    // const parsedOccupantLayout = parseOccupantLayout(map.occupants);
-    // applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
+    const parsedOccupantLayout = parseOccupantLayout(map.occupants);
+    applyOccupantsToGameGrid(grid, parsedOccupantLayout, entities, textures, images);
 
-    // const parsedFloorLayout = parseFloorLayout(map.floor);
-    // const parsedPathLayout = parsePathLayout(map.paths);
-    // applyFloorToGameGrid(grid, parsedFloorLayout);
+    const parsedFloorLayout = parseFloorLayout(map.floor);
+    const parsedPathLayout = parsePathLayout(map.paths);
+    applyFloorToGameGrid(grid, parsedFloorLayout);
 
     const mapTextures = await getMapTextures(grid, textures, images, null);
     textures.mapFloor = mapTextures.mapFloor;
