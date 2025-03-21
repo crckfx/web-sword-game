@@ -1,3 +1,5 @@
+import { CELL_PX } from "../document.js";
+
 function check_grid_neighbour_floor_alt(grid, x, y, match, z) {
     if (grid[y] && grid[y][x]) {
         if (grid[y][x].floor === match && grid[y][x].z === z) {
@@ -66,4 +68,42 @@ export function do_autotile_alt(grid, x, y, match, z) {
     }
 
     return otherCoords;
+}
+
+
+
+
+
+export function choose_4x4_texture_coords(grid, x, y, match) {
+    let sx = 0;
+    let sy = 0;
+
+    let left = check_4x4_neighbour(grid, x - 1, y, match);
+    let up = check_4x4_neighbour(grid, x, y - 1, match);
+    let right = check_4x4_neighbour(grid, x + 1, y, match);
+    let down = check_4x4_neighbour(grid, x, y + 1, match);
+
+    if (!up && down) sy = 0;
+    else if (up && down) sy = 1;
+    else if (up && !down) sy = 2;
+    else if (!up && !down) sy = 3;
+
+    if (!left && right) sx = 0;
+    else if (left && right) sx = 1;
+    else if (left && !right) sx = 2;
+    else if (!left && !right) sx = 3;
+
+    return {
+        x: sx * CELL_PX,
+        y: sy * CELL_PX
+    };
+
+    function check_4x4_neighbour(grid, x, y, match) {
+        if (grid[y] && grid[y][x]) {
+            if (grid[y][x].occupant === match) {
+                return match;
+            }
+        }
+        return null;
+    }
 }

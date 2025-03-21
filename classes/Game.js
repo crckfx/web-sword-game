@@ -3,7 +3,7 @@ import { Renderer } from "./Renderer.js";
 import { Item } from "./objects/Item.js";
 import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
-import { cellCoords, createGrid, moveTowards } from "../helper/grid.js";
+import { cellCoords, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./objects/Entity.js";
 import { player } from "../helper/world-loader.js";

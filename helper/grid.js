@@ -14,8 +14,8 @@ export function cellCoords(pos) {
 export function moveTowards(person, destinationPosition, speed) {
     let distanceToTravelX = destinationPosition.x - person.position.x;
     let distanceToTravelY = destinationPosition.y - person.position.y;
-    
-    let distance = Math.sqrt(distanceToTravelX**2 + distanceToTravelY**2);
+
+    let distance = Math.sqrt(distanceToTravelX ** 2 + distanceToTravelY ** 2);
 
     if (distance <= speed) {
         person.position.x = destinationPosition.x;
@@ -28,47 +28,14 @@ export function moveTowards(person, destinationPosition, speed) {
 
         distanceToTravelX = destinationPosition.x - person.position.x;
         distanceToTravelY = destinationPosition.y - person.position.y;
-        distance = Math.sqrt(distanceToTravelX**2 + distanceToTravelY**2);
+        distance = Math.sqrt(distanceToTravelX ** 2 + distanceToTravelY ** 2);
     }
 
     return distance;
 }
 
-export const isSpaceFree = (walls, x, y) => {
-    const str = `${x}.${y}`;
-    // const isWallPresent = walls.has(str)
-    
-    return true;
-}
 
-export function createGrid(cellsX, cellsY) {
-    const grid = new Array(cellsX);
-    for (let i = 0; i < cellsX; i++) {
-        grid[i] = new Array(cellsY);
-        for (let j = 0; j < cellsY; j++) {
-            grid[i][j] = {
-                floor: null,
-                occupant: null,
-            }
-        }
-    }
-    return grid;
-}
 
-    export function createGrid_alt(cellsX, cellsY) {
-        const grid = new Array(cellsY);
-        for (let j = 0; j < cellsY; j++) {
-            grid[j] = new Array(cellsX);
-            for (let i = 0; i < cellsX; i++) {
-                grid[j][i] = {
-                    floor: null,
-                    occupant: null,
-                    z: 0
-                }
-            }
-        }
-        return grid;
-    }
 
 export function compare_two_vec2(vecA, vecB) {
     // "on what side of vecB is vecA situated?"

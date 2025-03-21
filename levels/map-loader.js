@@ -7,7 +7,7 @@ import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID, CELL_PX } from "../document.js";
 import { do_autotile } from "../helper/autotile.js";
-import { do_autotile_alt } from "../helper/autotile_newgrid.js";
+import { choose_4x4_texture_coords, do_autotile_alt } from "../helper/autotile_newgrid.js";
 import { check_grid_neighbour_floor, gridCells } from "../helper/grid.js";
 import { hackyTextureChooser, player } from "../helper/world-loader.js";
 import { createDrawKit } from "./draw-kit.js";
@@ -264,17 +264,15 @@ export async function load_map_occupants(level, map, textures, images, entities)
     console.log(parsedOccupantLayout);
     applyOccupantsToGameGrid(level.grid, parsedOccupantLayout, textures, images, entities);
 
-
     for (let j = 0; j < level.numGrid.y; j++) {
         for (let i = 0; i < level.numGrid.x; i++) {
             const cell = level.grid[j][i];
             if (cell.occupant !== null) {
                 // console.log(cell.occupant)
-                occupantSwitch_alt(
-                    level,
-                    level.drawKit.occupants.ctx, 
-                    level.drawKit.overlays.ctx, 
-                    level.grid, textures, 
+                occupantSwitch(
+                    level.drawKit.occupants.ctx,
+                    level.drawKit.overlays.ctx,
+                    level.grid, textures,
                     images, i, j)
             }
         }
@@ -282,7 +280,7 @@ export async function load_map_occupants(level, map, textures, images, entities)
 }
 
 
-function occupantSwitch_alt(level, mapCtx, overlayCtx, grid, textures, images, i, j) {
+function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
     const cell = grid[j][i];
     if (cell.occupant instanceof Item) {
         if (cell.occupant.name === 'apple') {
@@ -303,7 +301,7 @@ function occupantSwitch_alt(level, mapCtx, overlayCtx, grid, textures, images, i
     } else {
         switch (cell.occupant) {
             case 'fence':
-                const fenceData = choose_occupant_texture(grid, i, j, 'fence');
+                const fenceData = choose_4x4_texture_coords(grid, i, j, 'fence');
                 overlayCtx.drawImage(
                     textures.schwarnhildFences,
                     fenceData.x, fenceData.y, CELL_PX, 16,
@@ -335,10 +333,9 @@ function occupantSwitch_alt(level, mapCtx, overlayCtx, grid, textures, images, i
                 );
                 break;
             case 'largeTree':
-                // currently checks if arrangement (where cell = c & largeTree = T) = `
-                //      ..c..
-                //      ..T..
-                // ` 
+                // currently checks for arrangement 
+                // ..T..
+                // ..c..  (where cell = c, and largeTree = T)
                 // ie. make sure there is another largetree element ABOVE this. 
                 // otherwise, don't draw. we need a cell underneath this one to be a tree otherwise 
                 if (check_tree_cell(grid, i, j, 'largeTree')) {
@@ -358,15 +355,12 @@ function occupantSwitch_alt(level, mapCtx, overlayCtx, grid, textures, images, i
                         0, 0, // Crop from (x=0, y=0) in the texture
                         CELL_PX * 2, CELL_PX, // Crop width and height (2x wide, 1x tall)
                         CELL_PX * (i) - CELL_PX / 2, // Destination X
-                        CELL_PX * (j - 2), // Destination Y (unchanged)
+                        CELL_PX * (j - 2), // Destination Y 
                         CELL_PX * 2, CELL_PX // Destination width and height
                     );
 
-                    // overlay canvas should also draw these "tree edges"; the parts that extend outside the containing cell.
-                    // TODO: WRITE A NEW FUNCTION TO HANDLE THE SIDE OVERLAYS; THE TOP IS ALREADY DONE
                     // this.apply_largeTree_x_overlays(grid, textures.tree_S_A, overlayCtx, i, j-2, 'largeTree', textures.meshTree);
-
-
+                    // TODO: WRITE A NEW FUNCTION TO HANDLE THE SIDE OVERLAYS; THE TOP IS ALREADY DONE
                 } else {
                     // console.log('skipping tree cell that does not have down,right,down-right neighbours');
                 }
@@ -378,50 +372,3 @@ function occupantSwitch_alt(level, mapCtx, overlayCtx, grid, textures, images, i
 
 
 
-
-function choose_occupant_texture(grid, x, y, match) {
-    let sx = 0;
-    let sy = 0;
-
-    let left = check_grid_neighbour_occupant(grid, x - 1, y, match);
-    let up = check_grid_neighbour_occupant(grid, x, y - 1, match);
-    let right = check_grid_neighbour_occupant(grid, x + 1, y, match);
-    let down = check_grid_neighbour_occupant(grid, x, y + 1, match);
-
-    // let left_up = check_grid_neighbour_occupant(grid, x - 1, y - 1, match);
-    // let right_up = check_grid_neighbour_occupant(grid, x + 1, y - 1, match);
-    // let right_down = check_grid_neighbour_occupant(grid, x + 1, y + 1, match);
-    // let left_down = check_grid_neighbour_occupant(grid, x - 1, y + 1, match);
-
-    if (!up && down)
-        sy = 0;
-    else if (up && down)
-        sy = 1;
-    else if (up && !down)
-        sy = 2;
-    else if (!up && !down)
-        sy = 3;
-
-    if (!left && right)
-        sx = 0;
-    else if (left && right)
-        sx = 1;
-    else if (left && !right)
-        sx = 2;
-    else if (!left && !right)
-        sx = 3;
-
-    return {
-        x: sx * CELL_PX,
-        y: sy * CELL_PX
-    };
-
-    function check_grid_neighbour_occupant(grid, x, y, match) {
-        if (grid[y] && grid[y][x]) {
-            if (grid[y][x].occupant === match) {
-                return match;
-            }
-        }
-        return null;
-    }
-}
