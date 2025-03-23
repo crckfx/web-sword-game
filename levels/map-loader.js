@@ -5,11 +5,10 @@
 
 import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
-import { NUM_GRID, CELL_PX } from "../document.js";
+import { CELL_PX } from "../document.js";
 import { choose_4x4_texture_coords, } from "../helper/autotile.js";
 import { choose_tile_texture, gridCells, removeOldOccupant } from "../helper/grid.js";
 import { player } from "../helper/world-loader.js";
-import { createDrawKit } from "./draw-kit.js";
 import { check_tree_cell } from "./load-helper.js";
 import { MapLayer } from "./MapLayer.js";
 
@@ -44,7 +43,7 @@ export const occupantMap = {
 // deals with parsing the string-based map layers into sets of coords
 // -------------------------------------------------------------------------------
 // take a (floor) layout as string and return a list of x+y+name+z
-function parseFloorLayout(floor) {
+export function parseFloorLayout(floor) {
     const mapString = floor.layout;
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
@@ -59,7 +58,7 @@ function parseFloorLayout(floor) {
 }
 
 // take a layout (occupants) string and return an array full of list of coord/name objects
-function parseOccupantLayout(mapString) {
+export function parseOccupantLayout(mapString) {
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
     for (let y = 0; y < rows.length; y++) {
@@ -90,104 +89,8 @@ function parsePathLayout(mapString = null) {
 }
 // *******************************************************************************
 
-// ***** experimental ****
-export async function get_map_layers(map, images) {
-    const mapLayers = []; // add the map layers here instead
 
-    for (let i = 0; i < map.floors.length; i++) {
-        const floor = map.floors[i];
-
-        if (!floor.imageName || !images[floor.imageName]) {
-            console.error(`no imageName provided for ${floor.match}`)
-            continue;
-        }
-        // push a layer for each floor layer; assume the values are filled out for now
-        const layer = new MapLayer(
-            images[floor.imageName],
-            floor.match,
-            floor.auto,
-            floor.z
-        )
-        // add the parsed layout (it isn't a param yet lol)
-        layer.floorLayout = parseFloorLayout(floor);
-        // // apply the floorLayout data for this layer to the level grid
-        // applyFloorToGameGrid(level.grid, layer.floorLayout);
-        // // build the mini-drawKit for this layer
-        // layer.texture = getMapTexture(level.grid, layer, mapWidthPx, mapHeightPx);
-        // finally, push the build layer
-        mapLayers.push(layer);
-    }
-
-
-    return mapLayers
-    
-} // **********************
-
-export function load_map_floors(level, map, images) {
-    const mapLayers = []; // add the map layers here instead
-    const mapWidthPx = CELL_PX * level.numGrid.x;
-    const mapHeightPx = CELL_PX * level.numGrid.y;
-
-
-    for (let i = 0; i < map.floors.length; i++) {
-        const floor = map.floors[i];
-
-        if (floor.imageName) {
-            console.log(`imageName for floor ${floor.match} is ${floor.imageName}`)
-            if (images[floor.imageName]) {
-                console.log(`found image for ${floor.imageName}`);
-                console.log(images[floor.imageName])
-            } else {
-                console.warn(`no image for ${floor.imageName}`)
-            }
-        }
-
-        // push a layer for each floor layer; assume the values are filled out for now
-        const layer = new MapLayer(
-            images[floor.imageName],
-            floor.match,
-            floor.auto,
-            floor.z
-        )
-        // add the parsed layout (it isn't a param yet lol)
-        layer.floorLayout = parseFloorLayout(floor);
-        // apply the floorLayout data for this layer to the level grid
-        applyFloorToGameGrid(level.grid, layer.floorLayout);
-        // build the mini-drawKit for this layer
-        layer.texture = getMapTexture(level.grid, layer, mapWidthPx, mapHeightPx);
-        // finally, push the build layer
-        mapLayers.push(layer);
-    }
-    console.log(`finished building ${mapLayers.length} map layers for floor`)
-
-    return createDrawKit(mapLayers, mapWidthPx, mapHeightPx);
-}
-
-export async function load_map_occupants(level, map, textures, images, entities) {
-    // maybe begin building the occupants here too?
-    const parsedOccupantLayout = parseOccupantLayout(map.occupants);
-    // console.log(parsedOccupantLayout);
-    applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities);
-
-
-
-    for (let j = 0; j < level.numGrid.y; j++) {
-        for (let i = 0; i < level.numGrid.x; i++) {
-            const cell = level.grid[j][i];
-            if (cell.occupant !== null) {
-                // console.log(cell.occupant)
-                occupantSwitch(
-                    level.drawKit.occupants.ctx,
-                    level.drawKit.overlays.ctx,
-                    level.grid, textures,
-                    images, i, j)
-            }
-        }
-    }
-}
-
-
-function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
+export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
     const cell = grid[j][i];
     if (cell.occupant instanceof Item) {
         if (cell.occupant.name === 'apple') {
@@ -210,12 +113,12 @@ function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
             case 'fence':
                 const fenceData = choose_4x4_texture_coords(grid, i, j, 'fence');
                 overlayCtx.drawImage(
-                    textures.schwarnhildFences,
+                    images.schwarnhildFences,
                     fenceData.x, fenceData.y, CELL_PX, 16,
                     i * CELL_PX, j * CELL_PX - 12, CELL_PX, 24
                 )
                 mapCtx.drawImage(
-                    textures.schwarnhildFences,
+                    images.schwarnhildFences,
                     fenceData.x, fenceData.y + 16, CELL_PX, 16,
                     i * CELL_PX, j * CELL_PX + 12, CELL_PX, 24
                 )
@@ -223,7 +126,7 @@ function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
             case 'tree':
                 mapCtx.drawImage(
                     // images.tree,
-                    textures.trees_oak,
+                    images.trees_oak,
                     4 * CELL_PX, 2 * CELL_PX, CELL_PX * 2, CELL_PX,
                     (CELL_PX * i) - CELL_PX / 2,
                     CELL_PX * (j),
@@ -232,7 +135,7 @@ function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
                 );
                 // overlay canvas gets top 1 cell
                 overlayCtx.drawImage(
-                    textures.trees_oak,
+                    images.trees_oak,
                     4 * CELL_PX, 1 * CELL_PX, CELL_PX * 2, CELL_PX,
                     CELL_PX * (i) - CELL_PX / 2, // offset to center the tree
                     CELL_PX * (j - 1), // Destination Y (unchanged)
@@ -248,7 +151,7 @@ function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
                 if (check_tree_cell(grid, i, j, 'largeTree')) {
                     // base map canvas gets bottom 2 cells (skip top 1 cell)
                     mapCtx.drawImage(
-                        textures.tree_S_A,
+                        images.tree_S_A,
                         0, CELL_PX, // Crop from (x=0, y=32px) in the texture
                         CELL_PX * 2, CELL_PX * 2, // Crop width and height (2x wide, 2x tall)
                         CELL_PX * (i) - CELL_PX / 2, // Destination X
@@ -258,7 +161,7 @@ function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
 
                     // overlay canvas gets top 1 cell
                     overlayCtx.drawImage(
-                        textures.tree_S_A,
+                        images.tree_S_A,
                         0, 0, // Crop from (x=0, y=0) in the texture
                         CELL_PX * 2, CELL_PX, // Crop width and height (2x wide, 1x tall)
                         CELL_PX * (i) - CELL_PX / 2, // Destination X
@@ -266,7 +169,7 @@ function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
                         CELL_PX * 2, CELL_PX // Destination width and height
                     );
 
-                    // this.apply_largeTree_x_overlays(grid, textures.tree_S_A, overlayCtx, i, j-2, 'largeTree', textures.meshTree);
+                    // this.apply_largeTree_x_overlays(grid, images.tree_S_A, overlayCtx, i, j-2, 'largeTree', images.meshTree);
                     // TODO: WRITE A NEW FUNCTION TO HANDLE THE SIDE OVERLAYS; THE TOP IS ALREADY DONE
                 } else {
                     // console.log('skipping tree cell that does not have down,right,down-right neighbours');
@@ -288,18 +191,13 @@ export function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
     const mapCtx = mapCanvas.getContext('2d');
     mapCtx.imageSmoothingEnabled = false;
     
-    console.log(layer.match, layer.image)
-
     for (const key in layer.floorLayout) {
         const layoutEntry = layer.floorLayout[key];
-
         const x = layoutEntry.x;
         const y = layoutEntry.y
 
         if (grid[y] && grid[y][x]) {
             const cell = grid[y][x];
-            // console.log(layoutEntry, cell)
-
 
             if (cell.floor === layer.match && cell.z === layer.z) {
                 if (!layer.auto) {
@@ -316,16 +214,14 @@ export function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
             }
         }
     }
-
     return {
-        // floorOnly: floorOnly,
         canvas: mapCanvas,
         ctx: mapCtx
     }
 }
 
 // take a grid and a layout list, and write to the grid's 
-function applyFloorToGameGrid(grid, parsedFloorLayout) {
+export function applyFloorToLevelLayer(grid, parsedFloorLayout) {
     for (const { x, y, tile, z } of parsedFloorLayout) {
         if (grid[y] && grid[y][x]) {
             // if the position exists in the grid, write the floor name to it
@@ -341,7 +237,7 @@ function applyFloorToGameGrid(grid, parsedFloorLayout) {
 
 
 // translate an occupant name into a game entity
-function applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities) {
+export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entities) {
     const grid = level.grid;
     for (const { x, y, occupant } of parsedOccupantLayout) {
         if (grid[y] && grid[y][x]) {
@@ -362,7 +258,7 @@ function applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, en
                     grid[y][x].occupant = entities[occupant];
                     break;
                 case 'apple':
-                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple, textures.apple2);
+                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, images.apple, images.apple2);
                     grid[y][x].occupant = newApple;
                     break;
                 case 'miscItem':

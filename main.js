@@ -9,7 +9,6 @@ import { Vector2 } from "./classes/Vector2.js";
 import { Sprite } from "./classes/Sprite.js";
 import { map_5 } from "./maps/map_5.js";
 import { Entity } from "./classes/objects/Entity.js";
-import { get_map_layers, load_map_floors, load_map_occupants } from "./levels/map-loader.js";
 import { GameLevel } from "./levels/GameLevel.js";
 import { map_expedition } from "./maps/map_expedition.js";
 
@@ -26,19 +25,17 @@ async function dummy_init() {
         gridX: NUM_GRID.x,
         gridY: NUM_GRID.y,
         map : map_5,
+        images: swordGame.images,
+        entities: swordGame.entities,
     });
-    testLevel.drawKit = load_map_floors(testLevel, map_5, swordGame.images);
-    await load_map_occupants(testLevel, map_5, swordGame.textures, swordGame.images, swordGame.entities);
 
-
-    // this is where we start messing with LEVEL loading
     const destinationLevel = new GameLevel({
         gridX: 16,
         gridY: 12,
         map: map_expedition,
+        images: swordGame.images,
+        entities: swordGame.entities,
     });
-    destinationLevel.drawKit = load_map_floors(destinationLevel, map_expedition, swordGame.images);
-    await load_map_occupants(destinationLevel, map_expedition, swordGame.textures, swordGame.images, swordGame.entities);
 
     // bind the renderer to use the 'drawKit' generated from map_5
     swordGame.bindLevel(testLevel);

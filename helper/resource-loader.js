@@ -57,17 +57,18 @@ export async function load_image_resources(images, textures) {
             }
         )
 
+        images.apple = await extract_sized_single_texture(images.fruitSheet, 0, 0, 16, 16)
+        images.apple2 = await extract_sized_single_texture(images.shikashiTextures, 0, 14, 32, 32);
+        
         textures.tree1_overlay = await extract_sized_single_texture(images.tree1_overlay, 0, 0, 16, 32)
         textures.tree2_overlay = await extract_sized_single_texture(images.largeTree_test, 0, 0, 32, 48)
-        textures.apple = await extract_sized_single_texture(images.fruitSheet, 0, 0, 16, 16)
         // console.log(textures.apple);
         textures.sword = await extract_sized_single_texture(images.shikashiTextures, 0, 0, 32, 32);
         textures.sword2 = await extract_sized_single_texture(images.shikashiTextures, 1, 5, 32, 32);
-        textures.apple2 = await extract_sized_single_texture(images.shikashiTextures, 0, 14, 32, 32);
         textures.egg = await extract_sized_single_texture(images.shikashiTextures, 6, 15, 32, 32);
         textures.potPlant3 = await extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
 
-        textures.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
+        images.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
         textures.tree_S_B = await extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
         textures.grassTileBasic = images.grassTileBasic;
         textures.grassDirt = images.grassDirt;
