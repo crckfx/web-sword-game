@@ -4,11 +4,12 @@
 // we don't fetch a text file or anything here - just pass map strings in
 
 import { Item } from "../classes/objects/Item.js";
+import { Trigger } from "../classes/objects/Trigger.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
 import { choose_4x4_texture_coords, } from "../helper/autotile.js";
 import { choose_tile_texture, gridCells, removeOldOccupant } from "../helper/grid.js";
-import { player } from "../helper/world-loader.js";
+import { player, swordGame } from "../helper/world-loader.js";
 import { check_tree_cell } from "./load-helper.js";
 import { MapLayer } from "./MapLayer.js";
 
@@ -35,6 +36,7 @@ export const occupantMap = {
     'a': 'apple',
     'i': 'miscItem',
     'f': 'fence',
+    'X': 'trigger',
 };
 
 
@@ -149,12 +151,12 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                 // ie. make sure there is another largetree element ABOVE this. 
                 // otherwise, don't draw. we need a cell underneath this one to be a tree otherwise 
                 if (check_tree_cell(grid, i, j, 'largeTree')) {
-                    // base map canvas gets bottom 2 cells (skip top 1 cell)
-
-                    if (grid[j][i-1] && grid[j][i-1].occupant === 'largeTree') {
-                        console.log(`there is another tree to the left of ${i},${j}`)
+                    if (grid[j][i - 1] && grid[j][i - 1].occupant === 'largeTree' && check_tree_cell(grid, i - 1, j, 'largeTree')) {
+                        // console.log(`there is another tree to the left of ${i},${j}`)
+                        // todo: draw meshtree, but first figure out rules
                     } else {
-                        console.log(`no tree to the left of ${i},${j}`)
+                        // console.log(`no tree to the left of ${i},${j}`)
+                        // todo: draw meshtree, but first figure out rules
                     }
 
                     mapCtx.drawImage(
@@ -175,7 +177,7 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                         CELL_PX * 2, CELL_PX // Destination width and height
                     );
 
-                    // this.apply_largeTree_x_overlays(grid, images.tree_S_A, overlayCtx, i, j-2, 'largeTree', images.meshTree);
+                    // apply_largeTree_x_overlays(grid, images.tree_S_A, overlayCtx, i, j, 'largeTree');
                     // TODO: WRITE A NEW FUNCTION TO HANDLE THE SIDE OVERLAYS; THE TOP IS ALREADY DONE
                 } else {
                     // console.log('skipping tree cell that does not have down,right,down-right neighbours');
@@ -196,7 +198,7 @@ export function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
     mapCanvas.height = mapHeightPx;
     const mapCtx = mapCanvas.getContext('2d');
     mapCtx.imageSmoothingEnabled = false;
-    
+
     for (const key in layer.floorLayout) {
         const layoutEntry = layer.floorLayout[key];
         const x = layoutEntry.x;
@@ -270,6 +272,13 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                 case 'miscItem':
                     const newItem = new Item('miscItem', { x: gridCells(x), y: gridCells(y) }, null, images.questionMark);
                     grid[y][x].occupant = newItem;
+                    break;
+                case 'trigger':
+                    if (level.triggers[0]) {
+                        grid[y][x].occupant = level.triggers[0];
+                    } else {
+                        console.error(`you don't have a ${triggerCount}th trigger in your set?`)
+                    }
                     break;
                 case null:
                     // do nothing if the cell was made null

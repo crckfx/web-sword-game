@@ -1,6 +1,6 @@
 import { createDialogueTexture } from "./promptMenu.js";
 import { createInventoryBackground, createInventoryItemsTexture } from "./invMenu.js";
-import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../sprite.js";
+import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "./sprite.js";
 
 async function load_image_files(object, files) {
     for (const key in files) {
@@ -18,7 +18,6 @@ export async function load_image_resources(images, textures) {
             // self-made and/or silly things
             tree: 'images/tree_1.png',
             largeTree: 'images/large_tree_1.png',
-            largeTree_test: 'images/overlay_tree_test.png',
             // UI stuff
             inventory_border: 'images/inventory_slot.png',
             dialogue_background: 'images/dialogue_background_2.png',
@@ -28,7 +27,7 @@ export async function load_image_resources(images, textures) {
             fruitSheet: 'images/FruitsSheet16x16.png',
             shikashiTextures: 'images/shikashiV2_32px.png',
             schwarnhildTextures: "images/basic_tileset_and_assets_standard/assets_spritesheet_v2_free.png",
-            meshTree: "images/tree_mesher.png",
+            meshTree: "images/tree_mesher_2.png",
             schwarnhildTerrains: "images/basic_tileset_and_assets_standard/terrain_tiles_v2.png",
             schwarnhildDirtPaths: "images/basic_tileset_and_assets_standard/dirtpath_tiles.png",
             schwarnhildFences: "images/basic_tileset_and_assets_standard/fence_tiles.png",

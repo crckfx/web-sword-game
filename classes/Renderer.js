@@ -2,7 +2,6 @@ import { MIDDLE_CELL, CELL_PX, NUM_GRID, CAMERA_CELLS } from "../document.js";
 import { wrapText } from "../helper/promptMenu.js";
 import { cellCoords, gridCells } from "../helper/grid.js";
 import { player } from "../helper/world-loader.js";
-// import { images, textures } from "../sprite.js";
 import { Vector2 } from "./Vector2.js";
 import { Camera } from "./Camera.js";
 import { Entity } from "./objects/Entity.js";
@@ -79,7 +78,7 @@ export class Renderer {
                 if (this.grid[y] && this.grid[y][x]) {
                     const cell = this.grid[y][x];
                      
-                    if (cell.occupant instanceof GameObject) {
+                    if (cell.occupant instanceof Entity) {
                         this.drawEntity(cell.occupant, this.camera.pos.x, this.camera.pos.y)
                     } 
                 }

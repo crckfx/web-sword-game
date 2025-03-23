@@ -17,6 +17,8 @@ import { add_two_vectors } from "../helper/vectorHelper.js";
 import { get_dialogue_inventory, worldInteract_Entity, worldInteract_Item } from "../helper/gameHelpers.js";
 import { GameLevel } from "../levels/GameLevel.js";
 import { MapLayer } from "../levels/MapLayer.js";
+import { Trigger } from "./objects/Trigger.js";
+import { GameObject } from "./GameObject.js";
 
 export class Game {
     grid = null;
@@ -147,7 +149,7 @@ export class Game {
                 if (this.grid[interactCell.y] && this.grid[interactCell.y][interactCell.x]) {
                     const occupant = this.grid[interactCell.y][interactCell.x].occupant;
                     // if (typeof(cell.occupant) === "object") {
-                    if (occupant instanceof Item || occupant instanceof Entity) {
+                    if (occupant instanceof GameObject) {
                         player.interactTarget = occupant;
                     }
                 };
@@ -422,7 +424,13 @@ export class Game {
                 // interact with an item in the world (NOT inventory)
                 console.log(`Interacted with item ${t.name}`);
                 worldInteract_Item(this, t);
-
+            } else if (t instanceof Trigger) {
+                // implement me
+                console.log("trigger trigger trigger trigger !!!!!!!!")
+                console.log(t.message);
+                if (t.action) {
+                    t.action();
+                }
             } else {
                 console.log("not sure what you're interacting with", t);
             }

@@ -8,12 +8,13 @@ export class GameLevel {
     mapLayers = null;
     drawKit = null;
 
-    constructor({ gridX = 4, gridY = 4, map, images, entities }) {
+    constructor({ gridX = 4, gridY = 4, map, images, entities, triggers }) {
         this.numGrid = new Vector2(gridX, gridY);
         // let's try doing the grid y-first
         this.grid = this.createLevelGrid(gridX, gridY);
         this.entityData = { ...map.entityData }; // transfer the entity data here and now
 
+        this.triggers = triggers ?? null;
         this.loadMap(map, images, entities);
     }
 
