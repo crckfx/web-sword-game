@@ -3,7 +3,6 @@ export class PointerHandler {
         //
         this.controls = controls;
         this.dpadPointerId = null; // Track the active pointer ID
-        console.log(`hah controls is:`, this.controls)
 
         this.handlePointerUp = this.handlePointerUp.bind(this); // 1. maybe like this?
         this.handlePointerMove = this.handlePointerMove.bind(this); // 2. and this?

@@ -100,6 +100,9 @@ export async function load_image_resources(images, textures) {
         textures.grass = await extract_single_sprite(images.manyTextures, 3, 15, 16);
         // textures.grass = await extract_texture_modular(images.schwarnhildTerrains, 160, 160, 32, 32);
         textures.grass2 = await extract_single_sprite(images.manyTextures, 2, 15, 16);
+        images.grass2 = await extract_single_sprite(images.manyTextures, 2, 15, 16);
+
+
         textures.dirt = images.dirt;
         textures.water = [
             await extract_single_sprite(images.manyTextures, 11, 8),
@@ -107,6 +110,7 @@ export async function load_image_resources(images, textures) {
             await extract_single_sprite(images.manyTextures, 13, 8),
             await extract_single_sprite(images.manyTextures, 12, 8),
         ];
+        images.water = await extract_single_sprite(images.manyTextures, 11, 8);
         textures.sand = await extract_single_sprite(images.manyTextures, 1, 6);
     } catch (error) {
         console.error('error loading image resource', error);

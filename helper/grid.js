@@ -66,3 +66,15 @@ export function choose_tile_texture(grid, x, y, match, z) {
     };
 }
 
+
+export function removeOldOccupant(grid, x, y) {
+    // triple check a cell exists before accessing/removing from it
+    if (grid[y]) {
+        if (grid[y][x]) {
+            const oldCell = grid[y][x];
+            if (oldCell.occupant !== null) {
+                oldCell.occupant = null;
+            }
+        }
+    }
+}

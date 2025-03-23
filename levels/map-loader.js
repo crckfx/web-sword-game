@@ -7,8 +7,8 @@ import { Item } from "../classes/objects/Item.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID, CELL_PX } from "../document.js";
 import { choose_4x4_texture_coords, } from "../helper/autotile.js";
-import { choose_tile_texture, gridCells } from "../helper/grid.js";
-import { hackyTextureChooser, player } from "../helper/world-loader.js";
+import { choose_tile_texture, gridCells, removeOldOccupant } from "../helper/grid.js";
+import { player } from "../helper/world-loader.js";
 import { createDrawKit } from "./draw-kit.js";
 import { check_tree_cell } from "./load-helper.js";
 import { MapLayer } from "./MapLayer.js";
@@ -38,20 +38,13 @@ export const occupantMap = {
     'f': 'fence',
 };
 
-function removeOldOccupant(grid, x, y) {
-    // triple check a cell exists before accessing/removing from it
-    if (grid[y]) {
-        if (grid[y][x]) {
-            const oldCell = grid[y][x];
-            if (oldCell.occupant !== null) {
-                oldCell.occupant = null;
-            }
-        }
-    }
-}
 
-// take a (floor) layout as string and return a list of coords and types
-export function parseFloorLayout(floor) {
+// *******************************************************************************
+// ----- MAP PARSING -----
+// deals with parsing the string-based map layers into sets of coords
+// -------------------------------------------------------------------------------
+// take a (floor) layout as string and return a list of x+y+name+z
+function parseFloorLayout(floor) {
     const mapString = floor.layout;
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
@@ -63,13 +56,10 @@ export function parseFloorLayout(floor) {
         }
     }
     return parsedMap;
-
 }
 
-
-
 // take a layout (occupants) string and return an array full of list of coord/name objects
-export function parseOccupantLayout(mapString) {
+function parseOccupantLayout(mapString) {
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
     for (let y = 0; y < rows.length; y++) {
@@ -83,53 +73,8 @@ export function parseOccupantLayout(mapString) {
     return parsedMap;
 }
 
-
-// translate an occupant name into a game entity
-export function applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities) {
-    const grid = level.grid;
-    for (const { x, y, occupant } of parsedOccupantLayout) {
-        if (grid[y] && grid[y][x]) {
-            switch (occupant) {
-                case 'tree': case 'largeTree': case 'fence':
-                    grid[y][x].occupant = occupant;
-                    break;
-                case 'lachie':
-                    removeOldOccupant(grid, x, y)
-                    const cell = grid[y][x];
-                    level.playerInitCellPos.overwrite(x, y);
-                    level.entityData['player'].cellCoord.overwrite(x, y)
-                    cell.occupant = null;
-                    break;
-                case 'gary': case 'fred': case 'george': case 'harold':
-                    level.initialCellPositions[occupant].overwrite(x, y);
-                    level.entityData[occupant].cellCoord.overwrite(x, y)
-                    grid[y][x].occupant = entities[occupant];
-                    break;
-                case 'apple':
-                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple, textures.apple2);
-                    grid[y][x].occupant = newApple;
-                    break;
-                case 'miscItem':
-                    const newItem = new Item('miscItem', { x: gridCells(x), y: gridCells(y) }, null, images.questionMark);
-                    grid[y][x].occupant = newItem;
-                    break;
-                case null:
-                    // do nothing if the cell was made null
-                    break;
-                default:
-                    console.warn(`unknown occupant type named ${occupant}`);
-            }
-        }
-    }
-}
-
-
-
-
-
-
-// take a (floor) layout as string and return a list of coords and types
-export function parsePathLayout(mapString = null) {
+// CURRENTLY UNUSED - take a "paths" layout as string and return a list of coords and types
+function parsePathLayout(mapString = null) {
     if (mapString === null) return null;
     const rows = mapString.trim().split("\n");
     const parsedMap = [];
@@ -143,87 +88,63 @@ export function parsePathLayout(mapString = null) {
     }
     return parsedMap;
 }
+// *******************************************************************************
 
+// ***** experimental ****
+export async function get_map_layers(map, images) {
+    const mapLayers = []; // add the map layers here instead
 
+    for (let i = 0; i < map.floors.length; i++) {
+        const floor = map.floors[i];
 
-// function to create a background image as a canvas
-export async function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
-    // get the pixel sizes for the map
-
-    // Create an offscreen canvas for each sprite
-    const mapCanvas = document.createElement('canvas');
-    mapCanvas.width = mapWidthPx;
-    mapCanvas.height = mapHeightPx;
-    const mapCtx = mapCanvas.getContext('2d');
-    mapCtx.imageSmoothingEnabled = false;
-
-
-    for (const key in layer.floorLayout) {
-        const layoutEntry = layer.floorLayout[key];
-
-        const x = layoutEntry.x;
-        const y = layoutEntry.y
-
-        if (grid[y] && grid[y][x]) {
-            const cell = grid[y][x];
-            // console.log(layoutEntry, cell)
-            if (cell.floor === layer.match && cell.z === layer.z) {
-                if (!layer.auto) {
-                    mapCtx.drawImage(layer.image,
-                        x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX
-                    );
-                } else {
-                    const data = choose_tile_texture(grid, x, y, layer.match, cell.z)
-                    mapCtx.drawImage(layer.image,
-                        data.x, data.y, CELL_PX, CELL_PX,
-                        x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX
-                    )
-                }
-            }
+        if (!floor.imageName || !images[floor.imageName]) {
+            console.error(`no imageName provided for ${floor.match}`)
+            continue;
         }
+        // push a layer for each floor layer; assume the values are filled out for now
+        const layer = new MapLayer(
+            images[floor.imageName],
+            floor.match,
+            floor.auto,
+            floor.z
+        )
+        // add the parsed layout (it isn't a param yet lol)
+        layer.floorLayout = parseFloorLayout(floor);
+        // // apply the floorLayout data for this layer to the level grid
+        // applyFloorToGameGrid(level.grid, layer.floorLayout);
+        // // build the mini-drawKit for this layer
+        // layer.texture = getMapTexture(level.grid, layer, mapWidthPx, mapHeightPx);
+        // finally, push the build layer
+        mapLayers.push(layer);
     }
 
-    return {
-        // floorOnly: floorOnly,
-        canvas: mapCanvas,
-        ctx: mapCtx
-    }
-}
 
+    return mapLayers
+    
+} // **********************
 
-
-
-
-// take a grid and a layout list, and write to the grid's 
-export function applyFloorToGameGrid(grid, parsedFloorLayout) {
-    for (const { x, y, tile, z } of parsedFloorLayout) {
-        if (grid[y] && grid[y][x]) {
-            // if the position exists in the grid, write the floor name to it
-            grid[y][x].floor = tile;
-            grid[y][x].z = z;
-            // for water, insert an occupant too
-            if (tile === 'water') {
-                grid[y][x].occupant = 'water';
-            }
-        }
-    }
-}
-
-
-export async function load_map_floors(level, map) {
+export function load_map_floors(level, map, images) {
     const mapLayers = []; // add the map layers here instead
     const mapWidthPx = CELL_PX * level.numGrid.x;
     const mapHeightPx = CELL_PX * level.numGrid.y;
 
-    level.entityData = map.entityData;
 
     for (let i = 0; i < map.floors.length; i++) {
         const floor = map.floors[i];
-        console.log(i, hackyTextureChooser(i), floor.match);
+
+        if (floor.imageName) {
+            console.log(`imageName for floor ${floor.match} is ${floor.imageName}`)
+            if (images[floor.imageName]) {
+                console.log(`found image for ${floor.imageName}`);
+                console.log(images[floor.imageName])
+            } else {
+                console.warn(`no image for ${floor.imageName}`)
+            }
+        }
 
         // push a layer for each floor layer; assume the values are filled out for now
         const layer = new MapLayer(
-            hackyTextureChooser(i),
+            images[floor.imageName],
             floor.match,
             floor.auto,
             floor.z
@@ -233,7 +154,7 @@ export async function load_map_floors(level, map) {
         // apply the floorLayout data for this layer to the level grid
         applyFloorToGameGrid(level.grid, layer.floorLayout);
         // build the mini-drawKit for this layer
-        layer.texture = await getMapTexture(level.grid, layer, mapWidthPx, mapHeightPx);
+        layer.texture = getMapTexture(level.grid, layer, mapWidthPx, mapHeightPx);
         // finally, push the build layer
         mapLayers.push(layer);
     }
@@ -245,7 +166,7 @@ export async function load_map_floors(level, map) {
 export async function load_map_occupants(level, map, textures, images, entities) {
     // maybe begin building the occupants here too?
     const parsedOccupantLayout = parseOccupantLayout(map.occupants);
-    console.log(parsedOccupantLayout);
+    // console.log(parsedOccupantLayout);
     applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities);
 
 
@@ -358,3 +279,102 @@ function occupantSwitch(mapCtx, overlayCtx, grid, textures, images, i, j) {
 
 
 
+// function to create a background image as a canvas
+export function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
+    // Create an offscreen canvas for each sprite
+    const mapCanvas = document.createElement('canvas');
+    mapCanvas.width = mapWidthPx;
+    mapCanvas.height = mapHeightPx;
+    const mapCtx = mapCanvas.getContext('2d');
+    mapCtx.imageSmoothingEnabled = false;
+    
+    console.log(layer.match, layer.image)
+
+    for (const key in layer.floorLayout) {
+        const layoutEntry = layer.floorLayout[key];
+
+        const x = layoutEntry.x;
+        const y = layoutEntry.y
+
+        if (grid[y] && grid[y][x]) {
+            const cell = grid[y][x];
+            // console.log(layoutEntry, cell)
+
+
+            if (cell.floor === layer.match && cell.z === layer.z) {
+                if (!layer.auto) {
+                    mapCtx.drawImage(layer.image,
+                        x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX
+                    );
+                } else {
+                    const data = choose_tile_texture(grid, x, y, layer.match, cell.z)
+                    mapCtx.drawImage(layer.image,
+                        data.x, data.y, CELL_PX, CELL_PX,
+                        x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX
+                    )
+                }
+            }
+        }
+    }
+
+    return {
+        // floorOnly: floorOnly,
+        canvas: mapCanvas,
+        ctx: mapCtx
+    }
+}
+
+// take a grid and a layout list, and write to the grid's 
+function applyFloorToGameGrid(grid, parsedFloorLayout) {
+    for (const { x, y, tile, z } of parsedFloorLayout) {
+        if (grid[y] && grid[y][x]) {
+            // if the position exists in the grid, write the floor name to it
+            grid[y][x].floor = tile;
+            grid[y][x].z = z;
+            // for water, insert an occupant too
+            if (tile === 'water') {
+                grid[y][x].occupant = 'water';
+            }
+        }
+    }
+}
+
+
+// translate an occupant name into a game entity
+function applyOccupantsToLevel(level, parsedOccupantLayout, textures, images, entities) {
+    const grid = level.grid;
+    for (const { x, y, occupant } of parsedOccupantLayout) {
+        if (grid[y] && grid[y][x]) {
+            switch (occupant) {
+                case 'tree': case 'largeTree': case 'fence':
+                    grid[y][x].occupant = occupant;
+                    break;
+                case 'lachie':
+                    removeOldOccupant(grid, x, y)
+                    const cell = grid[y][x];
+                    // level.playerInitCellPos.overwrite(x, y);
+                    level.entityData['player'].cellCoord.overwrite(x, y)
+                    cell.occupant = null;
+                    break;
+                case 'gary': case 'fred': case 'george': case 'harold':
+                    // level.initialCellPositions[occupant].overwrite(x, y);
+                    level.entityData[occupant].cellCoord.overwrite(x, y)
+                    grid[y][x].occupant = entities[occupant];
+                    break;
+                case 'apple':
+                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, textures.apple, textures.apple2);
+                    grid[y][x].occupant = newApple;
+                    break;
+                case 'miscItem':
+                    const newItem = new Item('miscItem', { x: gridCells(x), y: gridCells(y) }, null, images.questionMark);
+                    grid[y][x].occupant = newItem;
+                    break;
+                case null:
+                    // do nothing if the cell was made null
+                    break;
+                default:
+                    console.warn(`unknown occupant type named ${occupant}`);
+            }
+        }
+    }
+}

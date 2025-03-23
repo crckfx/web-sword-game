@@ -65,12 +65,11 @@ export class Game {
                 if (this.controls.current_dpad_dir !== null) {
                     console.log(`dpad on bang is ${this.controls.current_dpad_dir}`);
                     const dirVec = direction_to_2D(this.controls.current_dpad_dir);
-                    // console.log()
                     c.x += dirVec.x;
                     c.y += dirVec.y
-                    
+
                 }
-                
+
 
             },
             bang_X: this.enterPlayerInventory.bind(this),
@@ -84,15 +83,8 @@ export class Game {
     bindLevel(level) {
         this.grid = level.grid;
 
-        this.renderer.bind(level.drawKit, level.grid);        
-        
-        // // update player
-        // player.position.x = gridCells(level.playerInitCellPos.x);
-        // player.position.y = gridCells(level.playerInitCellPos.y);
-        // player.destination.x = gridCells(level.playerInitCellPos.x);
-        // player.destination.y = gridCells(level.playerInitCellPos.y);
-        // const playerData = level.entityData['player'];
-        // if (playerData) player.isFacing = playerData.isFacing;
+        this.renderer.bind(level.drawKit, level.grid);
+
 
         for (const key in level.entityData) {
             if (key === 'player') {
@@ -104,32 +96,20 @@ export class Game {
                 player.position.y = posY;
                 player.destination.x = posX;
                 player.destination.y = posY;
-                console.log("~~~!!!! ~~PLAYER PLAYER PLAYEWR ~~~!!!!");
+                // console.log("~~~!!!! ~~PLAYER PLAYER PLAYEWR ~~~!!!!");
             } else {
                 const e = this.entities[key];
-                console.log(`~~~ ~~ ${key} ${key} ${key} ~~~!!!!`);
+                // console.log(`~~~ ~~ ${key} ${key} ${key} ~~~!!!!`);
                 const entityData = level.entityData[key];
-                const entityDataPos = entityData.cellCoord;  
+                const entityDataPos = entityData.cellCoord;
                 e.position.x = gridCells(entityDataPos.x);
                 e.position.y = gridCells(entityDataPos.y);
-                
+
 
             }
         }
 
-        // // update entity positions
-        // for (const key in level.initialCellPositions) {
-        //     const vec = level.initialCellPositions[key]
-        //     // console.log(key)
-        //     const e = this.entities[key]; // remember, we pass in the entities object as an argument
-        //     if (!vec || !e) {
-        //         console.warn('something must be missing here in bindLevel');
-        //         return;
-        //     }
-        //     e.position.x = gridCells(vec.x);
-        //     e.position.y = gridCells(vec.y);
 
-        // }
         this.currentLevel = level;
 
     }
@@ -141,7 +121,7 @@ export class Game {
         // // update entity positions
         // for (const key in level.initialCellPositions) {
         //     const e = this.entities[key]; // remember, we pass in the entities object as an argument
-            
+
         //     const entityData = level.entityData[key];
         //     if (entityData) {
         //         entityData.isFacing = e.isFacing;
@@ -149,7 +129,7 @@ export class Game {
 
         //     const vec = level.initialCellPositions[key]
         //     vec.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
-            
+
         // }
 
         for (const key in level.entityData) {
@@ -163,8 +143,8 @@ export class Game {
                 if (entityData) {
                     // entityData.isFacing = e.isFacing;
                     entityData.cellCoord.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
-                }                
-                
+                }
+
 
             }
         }
@@ -199,7 +179,6 @@ export class Game {
                     // if (typeof(cell.occupant) === "object") {
                     if (occupant instanceof Item || occupant instanceof Entity) {
                         player.interactTarget = occupant;
-                        // console.log(cell.occupant);
                     }
                 };
             }
@@ -349,7 +328,7 @@ export class Game {
     }
 
     // ---------
-    
+
     enterPlayerInventory() {
         if (!this.isPaused && !this.isInDialogue) {
             this.renderer.shouldDrawPlayerInventory = true;
@@ -361,9 +340,9 @@ export class Game {
         this.isInInventory = false;
         player.bagCursorIndex = 0;
     }
-    
+
     // ---------    
-    
+
     // function to execute player movement
     tryMove() {
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
@@ -425,25 +404,31 @@ export class Game {
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
         if (this.currentDialogueSet !== null) {
-            console.log("yes you interacted with a dialogue set's dialogue!!!~1!");
+            // interacted with a dialogue from a dialogueset
             if (this.currentDialogue.options === null) {
+                // this interact wasn't to a choice, so progress it
                 this.currentDialogue = this.currentDialogueSet.progress();
+                // exit if we got null after progressing
                 if (this.currentDialogue === null) {
                     this.exitDialogue();
                     return;
                 }
             } else {
+                // interaction was to a choice, so run the option
                 this.currentDialogue.options[this.promptIndex].action();
                 return;
             }
-            if (this.currentDialogue.options !== null)
-                this.promptIndex = 0;
+            // if we reach here, we have progressed to a new member of this set
+            // 1. reset the promptIndex if the new Dialogue has options
+            if (this.currentDialogue.options) this.promptIndex = 0;
+            // 2. and need to order a redraw
             this.renderer.modifyDialogueWithDialogueClass(this.currentDialogue, null, this.textures.sampleText);
         }
+        // if there's no current SetOfDialogues, we assume a detached single Dialogue,
+        // we can handle this by either 1. exiting, or 2. running a chosen option
         else if (this.currentDialogue.options === null)
             this.exitDialogue();
         else if (this.currentDialogue.options[this.promptIndex]) {
-            console.log(`interact with option ${this.promptIndex}`);
             this.currentDialogue.options[this.promptIndex].action();
         }
     }

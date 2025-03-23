@@ -61,7 +61,6 @@ function resize() {
     pauseMenu.style.width = `${finalWidth}px`;
     pauseMenu.style.height = `${finalHeight}px`;
 
-    // console.log(finalWidth, finalHeight)   
 }
 
 export function getHtmlControls() {

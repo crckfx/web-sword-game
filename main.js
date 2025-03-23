@@ -1,4 +1,4 @@
-import { hackyTextureChooser, load_entities, player, swordGame } from "./helper/world-loader.js";
+import { load_entities, player, swordGame } from "./helper/world-loader.js";
 import { Item } from "./classes/objects/Item.js";
 import { CELL_PX, NUM_GRID } from "./document.js";
 import { load_image_resources } from "./helper/resource-loader.js";
@@ -9,7 +9,7 @@ import { Vector2 } from "./classes/Vector2.js";
 import { Sprite } from "./classes/Sprite.js";
 import { map_5 } from "./maps/map_5.js";
 import { Entity } from "./classes/objects/Entity.js";
-import { load_map_floors, load_map_occupants } from "./levels/map-loader.js";
+import { get_map_layers, load_map_floors, load_map_occupants } from "./levels/map-loader.js";
 import { GameLevel } from "./levels/GameLevel.js";
 import { map_expedition } from "./maps/map_expedition.js";
 
@@ -25,8 +25,9 @@ async function dummy_init() {
     const testLevel = new GameLevel({
         gridX: NUM_GRID.x,
         gridY: NUM_GRID.y,
+        map : map_5,
     });
-    testLevel.drawKit = await load_map_floors(testLevel, map_5);
+    testLevel.drawKit = load_map_floors(testLevel, map_5, swordGame.images);
     await load_map_occupants(testLevel, map_5, swordGame.textures, swordGame.images, swordGame.entities);
 
 
@@ -34,8 +35,9 @@ async function dummy_init() {
     const destinationLevel = new GameLevel({
         gridX: 16,
         gridY: 12,
+        map: map_expedition,
     });
-    destinationLevel.drawKit = await load_map_floors(destinationLevel, map_expedition);
+    destinationLevel.drawKit = load_map_floors(destinationLevel, map_expedition, swordGame.images);
     await load_map_occupants(destinationLevel, map_expedition, swordGame.textures, swordGame.images, swordGame.entities);
 
     // bind the renderer to use the 'drawKit' generated from map_5
