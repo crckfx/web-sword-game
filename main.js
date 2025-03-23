@@ -42,7 +42,7 @@ async function dummy_init() {
     // swordGame.bindLevel(destinationLevel);
 
     player.texture = swordGame.textures.spriteDefault;
-    player.receiveItem(new Item('Egg', null, null, swordGame.textures.egg, "An egg."));
+    player.receiveItem(new Item('Egg', null, null, swordGame.images.egg, "An egg."));
     player.receiveItem(new Item('Badghetti', null, swordGame.images.ghetti_16, swordGame.images.ghetti_32, "Would have been sadghetti, but cook was too sad to make it."));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);

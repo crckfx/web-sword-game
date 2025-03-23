@@ -150,10 +150,16 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                 // otherwise, don't draw. we need a cell underneath this one to be a tree otherwise 
                 if (check_tree_cell(grid, i, j, 'largeTree')) {
                     // base map canvas gets bottom 2 cells (skip top 1 cell)
+
+                    if (grid[j][i-1] && grid[j][i-1].occupant === 'largeTree') {
+                        console.log(`there is another tree to the left of ${i},${j}`)
+                    } else {
+                        console.log(`no tree to the left of ${i},${j}`)
+                    }
+
                     mapCtx.drawImage(
                         images.tree_S_A,
-                        0, CELL_PX, // Crop from (x=0, y=32px) in the texture
-                        CELL_PX * 2, CELL_PX * 2, // Crop width and height (2x wide, 2x tall)
+                        0, CELL_PX, CELL_PX * 2, CELL_PX * 2, // crops
                         CELL_PX * (i) - CELL_PX / 2, // Destination X
                         CELL_PX * (j - 1), // Destination Y 
                         CELL_PX * 2, CELL_PX * 2 // Destination width and height

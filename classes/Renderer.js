@@ -110,7 +110,6 @@ export class Renderer {
         this.ctx.drawImage(
             entity.getEntitySprite(),
             // entity.texture[entity.frame],
-            // this.textures.sword,
             entity.position.x - camX,
             entity.position.y - 8 - camY,
             CELL_PX,
@@ -161,7 +160,7 @@ export class Renderer {
             this.invCellSize, this.invCellSize
         );
 
-        this.ctx.drawImage(this.textures.sword2, 0, 0, CELL_PX, CELL_PX);
+        this.ctx.drawImage(this.images.sword, 0, 0, CELL_PX, CELL_PX);
     }
 
 

@@ -9,10 +9,7 @@ import { get_standard_entity_animations } from "./walk.js";
 import { Player } from "../classes/objects/Player.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { gridCells } from "./grid.js";
-import { Animations } from "../classes/Animations.js";
-import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
-import { give_item_to } from "./interactions.js";
-import { modifyInventoryTexture } from "./invMenu.js";
+
 import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
 import { Dialogue } from "../classes/interactions/Dialogue.js";
 import { DialogueOption } from "../classes/interactions/DialogueOption.js";
@@ -87,17 +84,4 @@ export async function load_entities(entities, textures) {
             true
         )
     });
-}
-
-
-export function hackyTextureChooser(index) {
-    // let texture = null;
-    if (index > 6) return swordGame.images.dirtGrass;
-    if (index === 6) return swordGame.images.dirtGrass;
-    if (index === 5) return swordGame.images.stoneDirt;
-    if (index === 4) return swordGame.images.dirtGrass;
-    if (index === 3) return swordGame.images.sandGrass;
-    if (index === 2) return swordGame.images.grassDirt;
-    if (index === 1) return swordGame.textures.grass2;
-    if (index === 0) return swordGame.textures.water[0];
 }

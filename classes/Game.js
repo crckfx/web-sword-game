@@ -67,13 +67,9 @@ export class Game {
                     const dirVec = direction_to_2D(this.controls.current_dpad_dir);
                     c.x += dirVec.x;
                     c.y += dirVec.y
-
                 }
-
-
             },
             bang_X: this.enterPlayerInventory.bind(this),
-
             bang_pause: this.command_togglePause.bind(this),
             bang_resume: this.command_togglePause.bind(this),
         });
@@ -81,10 +77,9 @@ export class Game {
     }
 
     bindLevel(level) {
+        this.currentLevel = level;
         this.grid = level.grid;
-
         this.renderer.bind(level.drawKit, level.grid);
-
 
         for (const key in level.entityData) {
             if (key === 'player') {
@@ -96,41 +91,19 @@ export class Game {
                 player.position.y = posY;
                 player.destination.x = posX;
                 player.destination.y = posY;
-                // console.log("~~~!!!! ~~PLAYER PLAYER PLAYEWR ~~~!!!!");
             } else {
                 const e = this.entities[key];
-                // console.log(`~~~ ~~ ${key} ${key} ${key} ~~~!!!!`);
                 const entityData = level.entityData[key];
                 const entityDataPos = entityData.cellCoord;
                 e.position.x = gridCells(entityDataPos.x);
                 e.position.y = gridCells(entityDataPos.y);
-
-
             }
         }
-
-
-        this.currentLevel = level;
 
     }
 
     cacheLevel() {
         const level = this.currentLevel;
-        // level.playerInitCellPos.overwrite(cellCoords(player.position.x), cellCoords(player.position.y));
-        // level.entityData['player'].isFacing = player.isFacing;
-        // // update entity positions
-        // for (const key in level.initialCellPositions) {
-        //     const e = this.entities[key]; // remember, we pass in the entities object as an argument
-
-        //     const entityData = level.entityData[key];
-        //     if (entityData) {
-        //         entityData.isFacing = e.isFacing;
-        //     }
-
-        //     const vec = level.initialCellPositions[key]
-        //     vec.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
-
-        // }
 
         for (const key in level.entityData) {
             if (key === 'player') {
@@ -144,14 +117,11 @@ export class Game {
                     // entityData.isFacing = e.isFacing;
                     entityData.cellCoord.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
                 }
-
-
             }
         }
 
-
-
         this.currentLevel = null;
+        this.grid = null;
     }
 
     // MAIN UPDATE
