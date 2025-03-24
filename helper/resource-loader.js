@@ -32,6 +32,7 @@ export async function load_image_resources(images, textures) {
             schwarnhildDirtPaths: "images/basic_tileset_and_assets_standard/dirtpath_tiles.png",
             schwarnhildFences: "images/basic_tileset_and_assets_standard/fence_tiles.png",
             trees_oak: 'images/trees_winter_oak_modified.png',
+            boats: 'images/boat0001-sheet.png',
             // tileSheets
             grassDirt: "images/tiles/grass-dirt.png",
             grassSand: "images/tiles/grass-sand.png",
@@ -42,6 +43,7 @@ export async function load_image_resources(images, textures) {
             stoneDirt: "images/tiles/stone-dirt.png",
             stoneGrass: "images/tiles/stone-grass.png",
             dirt: 'images/tiles/dirt.png',
+            island: 'images/tiles/island.png',
             // misc
             cobblestone: 'images/cobblestone.png',
             crate: "images/Crates by Mikiz/Brown crates/Brown Crates 1.png",
@@ -49,6 +51,7 @@ export async function load_image_resources(images, textures) {
             ghetti_16: "images/ghetti_16.png",
             ghetti_32: "images/ghetti_32.png",
             grassTileBasic: "images/tiles/grass.png",
+
 
         });
 
@@ -61,6 +64,7 @@ export async function load_image_resources(images, textures) {
         images.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
         images.tree_S_B = await extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
         images.water = await extract_single_sprite(images.manyTextures, 11, 8);
+        images.boat = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
 
         // the dialogue and inventory textures
         textures.sampleText = await createDialogueTexture(images.dialogue_background);

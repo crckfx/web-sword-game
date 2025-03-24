@@ -21,6 +21,7 @@ export const tileMap = {
     'r': 'road',
     's': 'sand',
     'w': 'water',
+    'i': 'island',
 };
 // define occupant signifiers
 export const occupantMap = {
@@ -232,12 +233,16 @@ export function getMapTexture(grid, layer, mapWidthPx, mapHeightPx) {
 export function applyFloorToLevelLayer(grid, parsedFloorLayout) {
     for (const { x, y, tile, z } of parsedFloorLayout) {
         if (grid[y] && grid[y][x]) {
+            const cell = grid[y][x];
             // if the position exists in the grid, write the floor name to it
-            grid[y][x].floor = tile;
-            grid[y][x].z = z;
+            cell.floor = tile;
+            cell.z = z;
+            if (cell.occupant && cell.occupant === 'water') {
+                cell.occupant = null;
+            }
             // for water, insert an occupant too
             if (tile === 'water') {
-                grid[y][x].occupant = 'water';
+                cell.occupant = 'water';
             }
         }
     }
@@ -246,6 +251,7 @@ export function applyFloorToLevelLayer(grid, parsedFloorLayout) {
 
 // translate an occupant name into a game entity
 export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entities) {
+    let triggerCount = 0;
     const grid = level.grid;
     for (const { x, y, occupant } of parsedOccupantLayout) {
         if (grid[y] && grid[y][x]) {
@@ -256,12 +262,10 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                 case 'lachie':
                     removeOldOccupant(grid, x, y)
                     const cell = grid[y][x];
-                    // level.playerInitCellPos.overwrite(x, y);
                     level.entityData['player'].cellCoord.overwrite(x, y)
                     cell.occupant = null;
                     break;
                 case 'gary': case 'fred': case 'george': case 'harold':
-                    // level.initialCellPositions[occupant].overwrite(x, y);
                     level.entityData[occupant].cellCoord.overwrite(x, y)
                     grid[y][x].occupant = entities[occupant];
                     break;
@@ -274,8 +278,9 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     grid[y][x].occupant = newItem;
                     break;
                 case 'trigger':
-                    if (level.triggers[0]) {
-                        grid[y][x].occupant = level.triggers[0];
+                    if (level.triggers[triggerCount]) {
+                        grid[y][x].occupant = level.triggers[triggerCount];
+                        triggerCount++;
                     } else {
                         console.error(`you don't have a ${triggerCount}th trigger in your set?`)
                     }

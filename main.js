@@ -13,6 +13,7 @@ import { map_expedition } from "./maps/map_expedition.js";
 import { Trigger } from "./classes/objects/Trigger.js";
 import { get_dialogue_choice } from "./helper/gameHelpers.js";
 import { SetOfDialogues } from "./classes/interactions/SetOfDialogues.js";
+import { map_island } from "./maps/map_island.js";
 
 
 // the entry point
@@ -74,13 +75,22 @@ async function dummy_init() {
         ],
     });
 
+    const islandLevel = new GameLevel({
+        gridX: 16,
+        gridY: 12,
+        map: map_island,
+        images: swordGame.images,
+        entities: swordGame.entities,
+    });
+
     swordGame.levels = [
         testLevel,
-        destinationLevel
+        destinationLevel,
+        islandLevel
     ]
 
     // bind the renderer to use the 'drawKit' generated from map_5
-    swordGame.bindLevel(testLevel);
+    swordGame.bindLevel(islandLevel);
     // swordGame.bindLevel(destinationLevel);
 
     player.texture = swordGame.textures.spriteDefault;

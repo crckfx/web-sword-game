@@ -34,14 +34,14 @@ export const map_expedition = {
             layout:
                 `   wwwwwwwwwwwwwwww
                     wwwwwwwwwwwwwwww
-                    www..........www
-                    www..........www
-                    www..........www
-                    www..........www
-                    www..........www
-                    www..........www
-                    www..........www
-                    www..........www
+                    wwwwwwwwwwwwwwww
+                    wwwwwwwwwwwwwwww
+                    wwwwwwwwwwwwwwww
+                    wwwwwwwwwwwwwwww
+                    wwwwwwwwwwwwwwww
+                    wwwwwwwwwwwwwwww
+                    wwwwwwwwwwwwwwww
+                    wwwwwwwwwwwwwwww
                     wwwwwwwwwwwwwwww
                     wwwwwwwwwwwwwwww`,
         },
@@ -63,20 +63,6 @@ export const map_expedition = {
                     ................
                     ................
                     ................`,
-        },
-        {
-            match: null,
-            auto: false,
-            z: 0,
-            layout:
-                `.`,
-        },
-        {
-            match: null,
-            auto: false,
-            z: 0,
-            layout:
-                `.`,
         },
         {
             match: 'dirt',

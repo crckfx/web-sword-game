@@ -21,6 +21,8 @@ export function appleMission(game, entity) {
                 message: entity.message_satisfied,
             }),
         ],
+        // no heading, because the set specifies Dialogue-specific headings
+        canExit: false,
     });
 
     game.launch_set_of_dialogues(
@@ -39,6 +41,7 @@ export function appleMission(game, entity) {
                             console.log(`index is ${index}`)
                             const item = player.bag.slots[index];
                             if (give_item_to(game, item, entity)) {
+                                // update inventory texture
                                 modifyInventoryTexture(game.textures.inventoryItems);
                                 entity.isSatisfied = true;
                                 game.exitDialogue();

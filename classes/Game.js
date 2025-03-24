@@ -78,7 +78,7 @@ export class Game {
         // 
     }
 
-    bindLevel(level) {
+    bindLevel(level, customOptions) {
         this.currentLevel = level;
         this.grid = level.grid;
         this.renderer.bind(level.drawKit, level.grid);
@@ -99,8 +99,13 @@ export class Game {
                 const entityDataPos = entityData.cellCoord;
                 e.position.x = gridCells(entityDataPos.x);
                 e.position.y = gridCells(entityDataPos.y);
+                e.isFacing = entityData.isFacing;
             }
         }
+
+        // after the basic load stuff, implement custom options like: 
+        // - 'just got off boat'
+        // - 'thing on map is moved'
 
     }
 
@@ -442,12 +447,12 @@ export class Game {
     }
 
 
-    load_new_level(level) {
-        this.exitDialogue();
-        this.pause();
-        this.cacheLevel();
-        this.bindLevel(level);
-        this.resume();
+    load_new_level(level, options) {
+        this.exitDialogue();                    // exit any existing dialogues
+        this.pause();                           // ! pause the game loop during load (possibly optional, probably safe)
+        this.cacheLevel();                      // write relevant existing level data into game
+        this.bindLevel(level, options);         // load a new level
+        this.resume();                          // ! start the gameLoop again
     }
 
 }

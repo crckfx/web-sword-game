@@ -1,13 +1,28 @@
+import { loadImage } from "../helper/resource-loader.js";
+
+
+const images = {};
+const CELL_PX = 32;
+// the array for the textures we downloaded (https://opengameart.org/content/32x32-floor-tiles)
+const some_layout_array = [
+    28, 124, 112, 16, 247, 223, 125,
+    31, 255, 241, 17, 253, 127, 95,
+    7, 199, 193, 1, 93, 117, 245,
+    4, 68, 64, 0, 87, 213, 215,
+    23, 209, 116, 92, 20, 84, 80,
+    29, 113, 197, 71, 21, 85, 81,
+    null, null, 221, 119, 5, 69, 65
+];
+let count = 0;
 const canvas = document.getElementById('game_canv');
 canvas.width = 32 * 7;
 canvas.height = 32 * 7;
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'red';
+await loadStuff();
 
-let count = 0;
-const images = {};
-
-import { loadImage } from "../helper/resource-loader.js";
+// saveCanvasAsPNG(canvas);
+// --------------------------------------------------------------
 async function load_image_files(object, files) {
     for (const key in files) {
         object[key] = await loadImage(files[key]);
@@ -52,22 +67,6 @@ async function loadStuff() {
     console.log(count);
 }
 
-
-
-
-
-loadStuff();
-// the array for the textures we downloaded (https://opengameart.org/content/32x32-floor-tiles)
-const some_layout_array = [
-    28, 124, 112, 16, 247, 223, 125,
-    31, 255, 241, 17, 253, 127, 95,
-    7, 199, 193, 1, 93, 117, 245,
-    4, 68, 64, 0, 87, 213, 215,
-    23, 209, 116, 92, 20, 84, 80,
-    29, 113, 197, 71, 21, 85, 81,
-    null, null, 221, 119, 5, 69, 65
-];
-
 // turn an array index into XY coords (assuming 7x7 total)
 function indexToCoords(index) {
     return { x: index % 7, y: Math.floor(index / 7) };
@@ -78,7 +77,6 @@ function findValueCoords(value, table) {
     return index !== null ? indexToCoords(index) : null;
 }
 
-const CELL_PX = 32;
 
 function drawImageAtIndex(image, index) {
     console.log(`drawing ${index}`)
@@ -103,4 +101,12 @@ function drawImageRotatedAtIndex(image, index, angle) {
     ctx.rotate(angle * Math.PI / 180); // Rotate by the given angle
     ctx.drawImage(image, -halfSize, -halfSize, CELL_PX, CELL_PX); // Draw centered
     ctx.restore(); // Restore to original state
+}
+
+// for when an image is created and we want to save it
+export function saveCanvasAsPNG(canvas, filename = "canvas.png") {
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = filename;
+    link.click();
 }
