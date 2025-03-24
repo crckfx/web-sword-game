@@ -297,6 +297,7 @@ export class Game {
         this.promptIndex = null;
         this.renderer.shouldDrawDialogueBox = false;
         this.currentDialogueSet = null;
+        this.currentDialogue = null;
     }
 
     // ---------
@@ -425,16 +426,28 @@ export class Game {
                 console.log(`Interacted with item ${t.name}`);
                 worldInteract_Item(this, t);
             } else if (t instanceof Trigger) {
-                // implement me
-                console.log("trigger trigger trigger trigger !!!!!!!!")
-                console.log(t.message);
-                if (t.action) {
-                    t.action();
+                console.log(`Interacted with trigger ${t.name}`);
+                // console.log(t.message);
+                if (t.setOfDialogues) {
+                    console.log("the trigger has le dialogues")
+                    this.launch_set_of_dialogues(t.setOfDialogues);
                 }
+                // if (t.action) {
+                //     t.action();
+                // }
             } else {
                 console.log("not sure what you're interacting with", t);
             }
         }
+    }
+
+
+    load_new_level(level) {
+        this.exitDialogue();
+        this.pause();
+        this.cacheLevel();
+        this.bindLevel(level);
+        this.resume();
     }
 
 }

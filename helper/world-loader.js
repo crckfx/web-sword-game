@@ -35,22 +35,20 @@ export async function load_entities(entities, textures) {
     // after we have the textures prepared, we can init the entities without fuss
     entities.gary = new Entity({
         name: 'gary',
-        // isFacing: 'down',
         texture: textures.spriteRed,
         interactMessage: "hello my name a gary",
     });
 
     entities.fred = new Entity({
         name: 'fred',
-        isFacing: 'up',
         texture: textures.spriteYellow,
-        interactMessage: new SetOfDialogues(
-            [
+        interactMessage: new SetOfDialogues({
+            dialogues: [
                 "Have you seen my apple?",
                 "I think I left it somewhere around here."
             ],
-            'fred'
-        ),
+            heading: 'fred'
+        }),
         interactCondition: () => player.bag.findSlotByName('apple'),
         interactAction: () => appleMission(swordGame, entities.fred),
         message_satisfied: "Thank you I was very hungry",
@@ -61,27 +59,28 @@ export async function load_entities(entities, textures) {
         name: 'george',
         isFacing: 'right',
         texture: textures.spriteRed,
-        interactMessage: new SetOfDialogues(
-            [
-                "Not now",
-                "Not now! (2)",
-                "Not now!!!!!! (3)",
-                "NOT NOW. (4)"
-            ],
-            'george',
-            true
-        )
+        interactMessage: new SetOfDialogues({
+            dialogues:
+                [
+                    "Not now",
+                    "Not now! (2)",
+                    "Not now!!!!!! (3)",
+                    "NOT NOW. (4)"
+                ],
+            heading: 'george',
+            canExit: true
+        })
     });
     entities.harold = new Entity({
         name: 'harold',
         texture: textures.spriteYellow,
-        interactMessage: new SetOfDialogues(
-            [
+        interactMessage: new SetOfDialogues({
+            dialogues: [
                 "You there...Ogre!",
                 "Somebody once told me the world was gonna roll me."
             ],
-            'harold',
-            true
-        )
+            heading: 'harold',
+            canExit: true,
+        })
     });
 }

@@ -11,37 +11,12 @@ import { Entity } from "./classes/objects/Entity.js";
 import { GameLevel } from "./levels/GameLevel.js";
 import { map_expedition } from "./maps/map_expedition.js";
 import { Trigger } from "./classes/objects/Trigger.js";
+import { get_dialogue_choice } from "./helper/gameHelpers.js";
+import { SetOfDialogues } from "./classes/interactions/SetOfDialogues.js";
 
 
 // the entry point
 async function dummy_init() {
-
-    swordGame.triggers = [];
-    swordGame.triggers.push(
-        new Trigger({
-            name: 'some trigger',
-            message: 'some defined trigger message',
-            action: () => {
-                swordGame.pause();
-                swordGame.cacheLevel();
-                swordGame.bindLevel(swordGame.levels[1]);
-                swordGame.resume();
-            }
-        })
-    );
-    swordGame.triggers.push(
-        new Trigger({
-            name: 'return home trigger',
-            message: 'to return back to the first map',
-            action: () => {
-                swordGame.pause();
-                swordGame.cacheLevel();
-                swordGame.bindLevel(swordGame.levels[0]);
-                swordGame.resume();
-            }
-        })
-    );
-
 
     // async class load
     // swordGame.init_game(NUM_GRID.x, NUM_GRID.y);    
@@ -58,14 +33,19 @@ async function dummy_init() {
         entities: swordGame.entities,
         triggers: [
             new Trigger({
-                name: 'some trigger',
-                message: 'some defined trigger message',
-                action: () => {
-                    swordGame.pause();
-                    swordGame.cacheLevel();
-                    swordGame.bindLevel(swordGame.levels[1]);
-                    swordGame.resume();
-                }
+                name: 'travel trigger',
+                setOfDialogues: new SetOfDialogues({
+                    // heading: 'boat?? maybe?',
+                    dialogues: [
+                        get_dialogue_choice(
+                            "Travel to level 2?",
+                            () => swordGame.load_new_level(swordGame.levels[1]),
+                            () => swordGame.exitDialogue(),
+                            'boat?? maybe?'
+                        ),
+                    ]
+                }),
+
             }),
         ],
     });
@@ -80,12 +60,16 @@ async function dummy_init() {
             new Trigger({
                 name: 'return home trigger',
                 message: 'to return back to the first map',
-                action: () => {
-                    swordGame.pause();
-                    swordGame.cacheLevel();
-                    swordGame.bindLevel(swordGame.levels[0]);
-                    swordGame.resume();
-                }
+                setOfDialogues: new SetOfDialogues({
+                    dialogues: [
+                        get_dialogue_choice(
+                            "Return to level 1?",
+                            () => swordGame.load_new_level(swordGame.levels[0]),
+                            () => swordGame.exitDialogue(),
+                            'boat'
+                        ),
+                    ]
+                })
             }),
         ],
     });
