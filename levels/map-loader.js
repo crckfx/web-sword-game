@@ -3,6 +3,7 @@
 // it seems cool to store a map as a text file. 
 // we don't fetch a text file or anything here - just pass map strings in
 
+import { Doodad } from "../classes/objects/Doodad.js";
 import { Item } from "../classes/objects/Item.js";
 import { Trigger } from "../classes/objects/Trigger.js";
 import { Vector2 } from "../classes/Vector2.js";
@@ -38,6 +39,7 @@ export const occupantMap = {
     'i': 'miscItem',
     'f': 'fence',
     'X': 'trigger',
+    'B': 'boat',
 };
 
 
@@ -270,20 +272,29 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     grid[y][x].occupant = entities[occupant];
                     break;
                 case 'apple':
-                    const newApple = new Item({name: 'apple', position: { x: gridCells(x), y: gridCells(y) }, texture: images.apple, invTexture: images.apple2, description: 'An apple.'});
+                    const newApple = new Item({ name: 'apple', position: { x: gridCells(x), y: gridCells(y) }, texture: images.apple, invTexture: images.apple2, description: 'An apple.' });
                     grid[y][x].occupant = newApple;
                     break;
                 case 'miscItem':
-                    const newItem = new Item({name: 'miscItem', position: { x: gridCells(x), y: gridCells(y) }, invTexture: images.questionMark});
+                    const newItem = new Item({ name: 'miscItem', position: { x: gridCells(x), y: gridCells(y) }, invTexture: images.questionMark });
                     grid[y][x].occupant = newItem;
                     break;
                 case 'trigger':
-                    if (level.triggers[triggerCount]) {
-                        grid[y][x].occupant = level.triggers[triggerCount];
-                        triggerCount++;
-                    } else {
-                        console.error(`you don't have a ${triggerCount}th trigger in your set?`)
-                    }
+                    // if (level.triggers[triggerCount]) {
+                    //     const trigger = level.triggers[triggerCount];
+                    //     const position = new Vector2(gridCells(x), gridCells(y));
+                    //     const doodad = new Doodad({name: 'boat', position: position, texture: images.boat_southEast, trigger: trigger})
+                    //     grid[y][x].occupant = doodad;
+                    //     triggerCount++;
+                    // } else {
+                    //     console.error(`you don't have a ${triggerCount}th trigger in your set?`)
+                    // }
+                    break;
+                case 'boat':
+                    const doodad = level.doodads.boat;
+                    doodad.position.x = gridCells(x);
+                    doodad.position.y = gridCells(y);
+                    grid[y][x].occupant = doodad;
                     break;
                 case null:
                     // do nothing if the cell was made null

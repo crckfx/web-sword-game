@@ -85,7 +85,7 @@ export function appleMission(game, entity) {
                             // 3. the 'no' function
                             function () {
                                 game.exitDialogue();
-                                game.launch_a_dialogue(new Dialogue({
+                                game.launch_single_dialogue(new Dialogue({
                                     heading: name,
                                     message: "Come on man, let me hold something!"
                                 }));

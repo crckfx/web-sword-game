@@ -1,6 +1,7 @@
 import { createDialogueTexture } from "./promptMenu.js";
 import { createInventoryBackground, createInventoryItemsTexture } from "./invMenu.js";
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "./sprite.js";
+import { saveCanvasAsPNG } from "./random.js";
 
 async function load_image_files(object, files) {
     for (const key in files) {
@@ -64,8 +65,10 @@ export async function load_image_resources(images, textures) {
         images.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
         images.tree_S_B = await extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
         images.water = await extract_single_sprite(images.manyTextures, 11, 8);
-        images.boat = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
-
+        // images.boat = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
+        images.boat_down = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
+        images.boat_southEast = await extract_texture_modular(images.boats, 64*4, 64*2, 64, 64);
+        // saveCanvasAsPNG(images.boat);
 
         // reserving the "textures" names for alternate data structures (ie. not just an img or canvas)
         // the dialogue and inventory textures

@@ -1,3 +1,4 @@
+import { saveCanvasAsPNG } from "../helper/random.js";
 import { loadImage } from "../helper/resource-loader.js";
 
 
@@ -103,10 +104,3 @@ function drawImageRotatedAtIndex(image, index, angle) {
     ctx.restore(); // Restore to original state
 }
 
-// for when an image is created and we want to save it
-export function saveCanvasAsPNG(canvas, filename = "canvas.png") {
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = filename;
-    link.click();
-}

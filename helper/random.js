@@ -20,3 +20,11 @@ export function log_relevant_inventory() {
     }
     return t.bag.getContentsAsString();
 }
+
+// for when an image is created and we want to save it
+export function saveCanvasAsPNG(canvas, filename = "canvas.png") {
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = filename;
+    link.click();
+}

@@ -6,11 +6,13 @@ export class Dialogue {
         message,
         options,
         onFinish,
+        canExit,
     }) {
         this.heading = heading ?? "???";
         this.message = message;
         this.options = options ?? null
         this.onFinish = onFinish ?? null;
+        this.canExit = canExit ?? false;
     }
 
 }

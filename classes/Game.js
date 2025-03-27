@@ -19,6 +19,8 @@ import { GameLevel } from "../levels/GameLevel.js";
 import { MapLayer } from "../levels/MapLayer.js";
 import { Trigger } from "./objects/Trigger.js";
 import { GameObject } from "./GameObject.js";
+import { Doodad } from "./objects/Doodad.js";
+import { saveCanvasAsPNG } from "../helper/random.js";
 
 export class Game {
     grid = null;
@@ -264,7 +266,7 @@ export class Game {
 
 
     // launch a SINGLE dialogue (hopefully make me obsolete)
-    launch_a_dialogue(dialogue, object) {
+    launch_single_dialogue(dialogue, object) {
         if (dialogue.options) {
             this.promptIndex = 0;
         }
@@ -404,7 +406,7 @@ export class Game {
                     console.log('previous dialogue had an onFinish!');
                     onFinish();
                 }
-                
+
                 if (exit) return;
             }
             // if we reach here, we have progressed to a new member of this set
@@ -427,7 +429,7 @@ export class Game {
         if (player.bag.slots[player.bagCursorIndex] === null) return;
         const index = player.bagCursorIndex;
         const item = player.bag.slots[index];
-        this.launch_a_dialogue(get_dialogue_inventory(this, item));
+        this.launch_single_dialogue(get_dialogue_inventory(this, item));
     }
 
     // press 'A' on 'WORLD' 
@@ -442,28 +444,15 @@ export class Game {
                 console.log(`Interacted with item ${t.name}`);
                 worldInteract_Item(this, t);
             } else if (t instanceof Trigger) {
-                console.log(`Interacted with trigger ${t.name}`);
-                // console.log(t.message);
-                if (t.action_RUN !== null) {
-                    console.log("the trigger has le dialogues")
-                    if (t.condition) {
-                        if (t.condition()) {
-                            // this.launch_set_of_dialogues(t.setOfDialogues);
-                            t.action_RUN();
-                        } else {
-                            // this.launch_set_of_dialogues(t.rejectDialogues);
-                            t.action_REJECT();
-                        }
-                        // if condition, there must be a corresponding reject dialogue(s)
-                    } else {
-                        // if no condition, just launch the advance set
-                        // this.launch_set_of_dialogues(t.setOfDialogues);
-                        t.action_RUN();
-                    }
+                t.tryRun(); 
+            } else if (t instanceof Doodad) {
+                console.log(`interacted with doodad ${t.name}`)
+                if (t.trigger) {
+                    t.trigger.tryRun();
                 }
-                // if (t.action) {
-                //     t.action();
-                // }
+                if (t.texture !== null) {
+                    // saveCanvasAsPNG(t.texture)
+                }
             } else {
                 console.log("not sure what you're interacting with", t);
             }
@@ -472,11 +461,11 @@ export class Game {
 
 
     load_new_level(level, options) {
-        this.exitDialogue();                    // exit any existing dialogues
-        this.pause();                           // ! pause the game loop during load (possibly optional, probably safe)
-        this.cacheLevel();                      // write relevant existing level data into game
-        this.bindLevel(level, options);         // load a new level
-        this.resume();                          // ! start the gameLoop again
+        this.exitDialogue();                // exit any existing dialogues
+        this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
+        this.cacheLevel();                  // write relevant existing level data into game
+        this.bindLevel(level, options);     // load a new level
+        this.resume();                      // ! start the gameLoop again
     }
 
 }

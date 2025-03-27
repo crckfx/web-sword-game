@@ -68,7 +68,7 @@ export function worldInteract_Item(game, t) {
         if (give_item_to(game, t, player)) {
             modifyInventoryTexture(game.textures.inventoryItems);
             player.interactTarget = null;
-            game.launch_a_dialogue(get_dialogue_pickup(t), t);
+            game.launch_single_dialogue(get_dialogue_pickup(t), t);
         };
     }
 
@@ -93,7 +93,7 @@ export function worldInteract_Entity(game, t) {
     const d = get_dialogue_entity(t);
     // display the dialogue box
     if (d instanceof Dialogue) {
-        game.launch_a_dialogue(d, t)
+        game.launch_single_dialogue(d, t)
 
     } else if (d instanceof SetOfDialogues) {
         game.launch_set_of_dialogues(d);

@@ -7,6 +7,7 @@ import { Camera } from "./Camera.js";
 import { Entity } from "./objects/Entity.js";
 import { Player } from "./objects/Player.js";
 import { GameObject } from "./GameObject.js";
+import { Doodad } from "./objects/Doodad.js";
 
 export class Renderer {
     shouldDrawPlayerInventory = false;
@@ -77,10 +78,11 @@ export class Renderer {
                 // console.log(x, y);
                 if (this.grid[y] && this.grid[y][x]) {
                     const cell = this.grid[y][x];
-                     
                     if (cell.occupant instanceof Entity) {
                         this.drawEntity(cell.occupant, this.camera.pos.x, this.camera.pos.y)
-                    } 
+                    } else if (cell.occupant instanceof Doodad) {
+                        this.drawDoodad(cell.occupant, this.camera.pos.x, this.camera.pos.y)
+                    }
                 }
             }
         }
@@ -121,6 +123,18 @@ export class Renderer {
                 "red"
             );
         }
+    }
+
+    drawDoodad(d, camX, camY) {
+        this.ctx.drawImage(
+            d.texture,
+            0, 0, 64, 64,
+            // entity.texture[entity.frame],
+            d.position.x - 16 - camX,
+            d.position.y - 16 - camY,
+            CELL_PX * 2,
+            CELL_PX * 2
+        );
     }
 
     // helper to draw a border on the main canvas
