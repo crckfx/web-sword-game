@@ -57,7 +57,7 @@ async function loadStuff() {
     
     const imageFiles = {};
     tileIndices.forEach(n => {
-        imageFiles[n] = `../images/island/${n}.gif`;
+        imageFiles[n] = `../images/island2/${n}.png`;
     });
     
     await load_image_files(images, imageFiles);

@@ -5,10 +5,12 @@ export class Dialogue {
         heading,
         message,
         options,
+        onFinish,
     }) {
         this.heading = heading ?? "???";
         this.message = message;
         this.options = options ?? null
+        this.onFinish = onFinish ?? null;
     }
 
 }

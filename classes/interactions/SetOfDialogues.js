@@ -3,8 +3,10 @@ import { Dialogue } from "./Dialogue.js";
 export class SetOfDialogues {
     dialogues = []; // an array we (the constructor) will push stuff into 
     count = 0; // it's like 'promptIndex', but local?
-    constructor({dialogues, heading, canExit }) {
+    constructor({dialogues, heading, canExit, onFinish }) {
         this.canExit = canExit ?? false;
+        this.onFinish = onFinish ?? null;
+
         // unify Dialogues with (presumably) Strings by checking for 'instanceof Dialogue'
         if (dialogues !== null) {
             for (let i = 0; i < dialogues.length; i++) {

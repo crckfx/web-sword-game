@@ -278,7 +278,7 @@ export class Game {
     // launch a SET of dialogues
     launch_set_of_dialogues(DS) {
         if (DS instanceof SetOfDialogues) {
-            console.log('launching dialogue set !~!!!!!');
+            // console.log('launching dialogue set !~!!!!!');
             this.currentDialogueSet = DS;
             DS.launch();
 
@@ -383,18 +383,29 @@ export class Game {
     handleDialogueInteract() {
         if (this.currentDialogueSet !== null) {
             // interacted with a dialogue from a dialogueset
-            if (this.currentDialogue.options === null) {
-                // this interact wasn't to a choice, so progress it
-                this.currentDialogue = this.currentDialogueSet.progress();
-                // exit if we got null after progressing
-                if (this.currentDialogue === null) {
-                    this.exitDialogue();
-                    return;
-                }
-            } else {
+            if (this.currentDialogue.options !== null) {
                 // interaction was to a choice, so run the option
                 this.currentDialogue.options[this.promptIndex].action();
                 return;
+            } else {
+                // this interact wasn't to a choice, so progress it
+                let exit = false;
+                // store the 
+                const onFinish = this.currentDialogue.onFinish;
+                this.currentDialogue = this.currentDialogueSet.progress();
+                // exit if we got null after progressing
+                if (this.currentDialogue === null) {
+                    // const DS = this.currentDialogueSet;
+                    this.exitDialogue();
+                    // return;
+                    exit = true;
+                }
+                if (onFinish !== null) {
+                    console.log('previous dialogue had an onFinish!');
+                    onFinish();
+                }
+                
+                if (exit) return;
             }
             // if we reach here, we have progressed to a new member of this set
             // 1. reset the promptIndex if the new Dialogue has options
@@ -435,7 +446,17 @@ export class Game {
                 // console.log(t.message);
                 if (t.setOfDialogues) {
                     console.log("the trigger has le dialogues")
-                    this.launch_set_of_dialogues(t.setOfDialogues);
+                    if (t.condition) {
+                        if (t.condition()) {
+                            this.launch_set_of_dialogues(t.setOfDialogues);
+                        } else {
+                            this.launch_set_of_dialogues(t.rejectDialogues);
+                        }
+                        // if condition, there must be a corresponding reject dialogue(s)
+                    } else {
+                        // if no condition, just launch the advance set
+                        this.launch_set_of_dialogues(t.setOfDialogues);
+                    }
                 }
                 // if (t.action) {
                 //     t.action();

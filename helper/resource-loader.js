@@ -43,7 +43,7 @@ export async function load_image_resources(images, textures) {
             stoneDirt: "images/tiles/stone-dirt.png",
             stoneGrass: "images/tiles/stone-grass.png",
             dirt: 'images/tiles/dirt.png',
-            island: 'images/tiles/island.png',
+            island: 'images/tiles/island2.png',
             // misc
             cobblestone: 'images/cobblestone.png',
             crate: "images/Crates by Mikiz/Brown crates/Brown Crates 1.png",
@@ -66,6 +66,8 @@ export async function load_image_resources(images, textures) {
         images.water = await extract_single_sprite(images.manyTextures, 11, 8);
         images.boat = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
 
+
+        // reserving the "textures" names for alternate data structures (ie. not just an img or canvas)
         // the dialogue and inventory textures
         textures.sampleText = await createDialogueTexture(images.dialogue_background);
         textures.inventoryBg = await createInventoryBackground(images.inventory_border);

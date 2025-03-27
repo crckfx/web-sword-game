@@ -14,6 +14,7 @@ import { Trigger } from "./classes/objects/Trigger.js";
 import { get_dialogue_choice } from "./helper/gameHelpers.js";
 import { SetOfDialogues } from "./classes/interactions/SetOfDialogues.js";
 import { map_island } from "./maps/map_island.js";
+import { Dialogue } from "./classes/interactions/Dialogue.js";
 
 
 // the entry point
@@ -35,6 +36,12 @@ async function dummy_init() {
         triggers: [
             new Trigger({
                 name: 'travel trigger',
+                condition: function () {
+                    // swordGame.player.bag.
+                    const index = player.bag.findSlotByName('ticket');
+                    if (index > -1) return true;
+                    return false;
+                },
                 setOfDialogues: new SetOfDialogues({
                     // heading: 'boat?? maybe?',
                     dialogues: [
@@ -44,6 +51,15 @@ async function dummy_init() {
                             () => swordGame.exitDialogue(),
                             'boat?? maybe?'
                         ),
+                    ]
+                }),
+                rejectDialogues: new SetOfDialogues({
+                    // heading: 'boat?? maybe?',
+                    dialogues: [
+                        new Dialogue({
+                            heading: 'no boat for you',
+                            message: 'You need a ticket to board the boat.',
+                        })
                     ]
                 }),
 
@@ -70,7 +86,7 @@ async function dummy_init() {
                             'boat'
                         ),
                     ]
-                })
+                }),
             }),
         ],
     });
@@ -90,12 +106,12 @@ async function dummy_init() {
     ]
 
     // bind the renderer to use the 'drawKit' generated from map_5
-    swordGame.bindLevel(islandLevel);
+    swordGame.bindLevel(testLevel);
     // swordGame.bindLevel(destinationLevel);
 
     player.texture = swordGame.textures.spriteDefault;
-    player.receiveItem(new Item('Egg', null, null, swordGame.images.egg, "An egg."));
-    player.receiveItem(new Item('Badghetti', null, swordGame.images.ghetti_16, swordGame.images.ghetti_32, "Would have been sadghetti, but cook was too sad to make it."));
+    player.receiveItem(new Item({name: 'Egg', invTexture: swordGame.images.egg, description: "An egg."}));
+    player.receiveItem(new Item({name: 'Badghetti', texture: swordGame.images.ghetti_16, invTexture: swordGame.images.ghetti_32, description: "Would have been sadghetti, but cook was too sad to make it."}));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;

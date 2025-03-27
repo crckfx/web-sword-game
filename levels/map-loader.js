@@ -270,11 +270,11 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     grid[y][x].occupant = entities[occupant];
                     break;
                 case 'apple':
-                    const newApple = new Item('apple', { x: gridCells(x), y: gridCells(y) }, images.apple, images.apple2);
+                    const newApple = new Item({name: 'apple', position: { x: gridCells(x), y: gridCells(y) }, texture: images.apple, invTexture: images.apple2, description: 'An apple.'});
                     grid[y][x].occupant = newApple;
                     break;
                 case 'miscItem':
-                    const newItem = new Item('miscItem', { x: gridCells(x), y: gridCells(y) }, null, images.questionMark);
+                    const newItem = new Item({name: 'miscItem', position: { x: gridCells(x), y: gridCells(y) }, invTexture: images.questionMark});
                     grid[y][x].occupant = newItem;
                     break;
                 case 'trigger':

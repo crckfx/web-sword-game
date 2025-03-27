@@ -17,7 +17,6 @@ import { appleMission } from "../experimental/missions.js";
 import { NUM_GRID } from "../document.js";
 
 
-
 export const player = new Player({
     name: 'lachie',
     position: new Vector2(gridCells(1), gridCells(1)),
