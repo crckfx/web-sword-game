@@ -37,32 +37,38 @@ async function dummy_init() {
             new Trigger({
                 name: 'travel trigger',
                 condition: function () {
-                    // swordGame.player.bag.
                     const index = player.bag.findSlotByName('ticket');
                     if (index > -1) return true;
                     return false;
                 },
-                setOfDialogues: new SetOfDialogues({
-                    // heading: 'boat?? maybe?',
-                    dialogues: [
-                        get_dialogue_choice(
-                            "Travel to level 2?",
-                            () => swordGame.load_new_level(swordGame.levels[1]),
-                            () => swordGame.exitDialogue(),
-                            'boat?? maybe?'
-                        ),
-                    ]
-                }),
-                rejectDialogues: new SetOfDialogues({
-                    // heading: 'boat?? maybe?',
-                    dialogues: [
-                        new Dialogue({
-                            heading: 'no boat for you',
-                            message: 'You need a ticket to board the boat.',
-                        })
-                    ]
-                }),
 
+                action_RUN: function () {
+                    swordGame.launch_set_of_dialogues(new SetOfDialogues({
+                        // heading: 'boat?? maybe?',
+                        dialogues: [
+                            get_dialogue_choice(
+                                "Travel to level 2?",
+                                () => swordGame.load_new_level(swordGame.levels[1]),
+                                () => swordGame.exitDialogue(),
+                                'boat?? maybe?'
+                            ),
+                        ]
+                    }))
+                },
+
+                action_REJECT: function () {
+                    swordGame.launch_set_of_dialogues(
+                        new SetOfDialogues({
+                            // heading: 'boat?? maybe?',
+                            dialogues: [
+                                new Dialogue({
+                                    heading: 'no boat for you',
+                                    message: 'You need a ticket to board the boat.',
+                                })
+                            ]
+                        }),
+                    )
+                },
             }),
         ],
     });
@@ -77,16 +83,22 @@ async function dummy_init() {
             new Trigger({
                 name: 'return home trigger',
                 message: 'to return back to the first map',
-                setOfDialogues: new SetOfDialogues({
-                    dialogues: [
-                        get_dialogue_choice(
-                            "Return to level 1?",
-                            () => swordGame.load_new_level(swordGame.levels[0]),
-                            () => swordGame.exitDialogue(),
-                            'boat'
-                        ),
-                    ]
-                }),
+                action_RUN: function () {
+                    swordGame.launch_set_of_dialogues(
+                        new SetOfDialogues({
+                            dialogues: [
+                                get_dialogue_choice(
+                                    "Return to level 1?",
+                                    () => swordGame.load_new_level(swordGame.levels[0]),
+                                    () => swordGame.exitDialogue(),
+                                    'boat'
+                                ),
+                            ]
+                        }),
+
+                    )
+                },
+
             }),
         ],
     });
@@ -110,8 +122,8 @@ async function dummy_init() {
     // swordGame.bindLevel(destinationLevel);
 
     player.texture = swordGame.textures.spriteDefault;
-    player.receiveItem(new Item({name: 'Egg', invTexture: swordGame.images.egg, description: "An egg."}));
-    player.receiveItem(new Item({name: 'Badghetti', texture: swordGame.images.ghetti_16, invTexture: swordGame.images.ghetti_32, description: "Would have been sadghetti, but cook was too sad to make it."}));
+    player.receiveItem(new Item({ name: 'Egg', invTexture: swordGame.images.egg, description: "An egg." }));
+    player.receiveItem(new Item({ name: 'Badghetti', texture: swordGame.images.ghetti_16, invTexture: swordGame.images.ghetti_32, description: "Would have been sadghetti, but cook was too sad to make it." }));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;

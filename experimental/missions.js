@@ -7,57 +7,14 @@ import { modifyInventoryTexture } from "../helper/invMenu.js";
 import { player } from "../helper/world-loader.js";
 
 
-function ticketToPlayer(game, entity) {
+// not yet a mission/objective class, but still a cool example of passing in an entity and getting all sides of an objective as dialogues
+export function appleMission(game, entity) {
     const item = new Item({
-        name: 'ticket', 
-        invTexture: game.images.questionMark, 
+        name: 'ticket',
+        invTexture: game.images.questionMark,
         description: 'A ticket to go on a boat.'
     })
 
-    const dialogue_ticket = new SetOfDialogues({
-        dialogues: [
-            new Dialogue({
-                heading: entity.name,
-                message: "You should have this ticket to a boat hehe",
-                onFinish: function () {
-                    give_item_to(game, item, player)
-                    modifyInventoryTexture(game.textures.inventoryItems);
-                }
-            }),
-            new Dialogue({
-                heading: "Inventory",
-                message: `received "ticket" from ${entity.name}.`,
-            }),
-            new Dialogue({
-                heading: entity.name,
-                message: "You can use this to travel to the next level.",
-                onFinish: function () {
-                    console.log('piss and fard');
-                }
-
-            }),
-        ],
-        // no heading, because the set specifies Dialogue-specific headings
-        canExit: false,
-    });
-
-
-
-    // const newSlot = player.bag.findFirstAvailableSlot();
-
-
-    // if (give_item_to(game, item, player)) {
-    console.log(game.currentDialogue)
-    // game.exitDialogue();
-    game.launch_set_of_dialogues(dialogue_ticket)
-    console.log(game.currentDialogue)
-    // console.log(game.currentDialogue)
-    // }
-
-}
-
-// not yet a mission/objective class, but still a cool example of passing in an entity and getting all sides of an objective as dialogues
-export function appleMission(game, entity) {
     const name = entity.name;
     const dialogues_finished = new SetOfDialogues({
         dialogues: [
@@ -68,9 +25,28 @@ export function appleMission(game, entity) {
             new Dialogue({
                 heading: name,
                 message: entity.message_satisfied,
+                // onFinish: function () {
+                //     game.exitDialogue();
+                //     ticketToPlayer(game, entity)
+                // }
+            }),
+            new Dialogue({
+                heading: entity.name,
+                message: "Here, take this ticket for a boat ride.",
                 onFinish: function () {
-                    game.exitDialogue();
-                    ticketToPlayer(game, entity)
+                    give_item_to(game, item, player)
+                    modifyInventoryTexture(game.textures.inventoryItems);
+                }
+            }),
+            new Dialogue({
+                heading: "Inventory",
+                message: `Received "ticket" from ${entity.name}.`,
+            }),
+            new Dialogue({
+                heading: entity.name,
+                message: "You can use this to travel to the next level.",
+                onFinish: function () {
+                    console.log('successfully ran an onfinished at the END of a SetOfDialogues');
                 }
             }),
         ],

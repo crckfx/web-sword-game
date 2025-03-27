@@ -444,18 +444,21 @@ export class Game {
             } else if (t instanceof Trigger) {
                 console.log(`Interacted with trigger ${t.name}`);
                 // console.log(t.message);
-                if (t.setOfDialogues) {
+                if (t.action_RUN !== null) {
                     console.log("the trigger has le dialogues")
                     if (t.condition) {
                         if (t.condition()) {
-                            this.launch_set_of_dialogues(t.setOfDialogues);
+                            // this.launch_set_of_dialogues(t.setOfDialogues);
+                            t.action_RUN();
                         } else {
-                            this.launch_set_of_dialogues(t.rejectDialogues);
+                            // this.launch_set_of_dialogues(t.rejectDialogues);
+                            t.action_REJECT();
                         }
                         // if condition, there must be a corresponding reject dialogue(s)
                     } else {
                         // if no condition, just launch the advance set
-                        this.launch_set_of_dialogues(t.setOfDialogues);
+                        // this.launch_set_of_dialogues(t.setOfDialogues);
+                        t.action_RUN();
                     }
                 }
                 // if (t.action) {
