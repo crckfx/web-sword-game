@@ -66,14 +66,8 @@ export class Game {
             bang_A: this.command_interact.bind(this),
             bang_B: this.command_back.bind(this),
             bang_Y: () => {
-                // const c = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
-                // if (this.controls.current_dpad_dir !== null) {
-                //     console.log(`dpad on bang is ${this.controls.current_dpad_dir}`);
-                //     const dirVec = direction_to_2D(this.controls.current_dpad_dir);
-                //     c.x += dirVec.x;
-                //     c.y += dirVec.y
-                // }
-                console.log(this.renderer.camera.pos)
+
+                console.log(cellCoords(this.renderer.camera.pos.x), cellCoords(this.renderer.camera.pos.y), cellCoords(player.position.x), cellCoords(player.position.y))
             },
             bang_X: this.enterPlayerInventory.bind(this),
             bang_pause: this.command_togglePause.bind(this),
@@ -116,7 +110,7 @@ export class Game {
             if (customOptions.initOverride) {
                 console.log('should override with this scene')
                 this.controlsBlocked = true;
-                this.currentSceneOverride = customOptions.initOverride;
+                this.currentSceneOverride = customOptions.initOverride.launch();
             }
             if (customOptions.player) {
                 player.position.x = customOptions.player.position.x;
@@ -126,8 +120,9 @@ export class Game {
                 if (customOptions.player.isFacing !== null) {
                     console.log(`setting player to face ${customOptions.player.isFacing}`)
                     player.isFacing = customOptions.player.isFacing;
-                    player.animations.play('standUp');
                 }
+                const facingString = `stand${player.isFacing}`
+                player.animations.play('standUp');
             }
             if (customOptions.boat) {
                 level.doodads.boat.position.x = customOptions.boat.position.x;

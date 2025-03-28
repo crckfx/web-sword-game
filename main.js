@@ -16,7 +16,7 @@ import { SetOfDialogues } from "./classes/interactions/SetOfDialogues.js";
 import { map_island } from "./maps/map_island.js";
 import { Dialogue } from "./classes/interactions/Dialogue.js";
 import { Doodad } from "./classes/objects/Doodad.js";
-import { OVERRIDE_BOAT_LEVEL_1_EXIT } from "./experimental/overrides.js";
+import { OVERRIDE_BOAT_LEVEL_1_EXIT, OVERRIDE_BOAT_LEVEL_2_EXIT } from "./experimental/overrides.js";
 
 
 
@@ -63,10 +63,7 @@ async function dummy_init() {
                                     () => {
                                         swordGame.exitDialogue();
                                         swordGame.controlsBlocked = true;
-                                        swordGame.currentSceneOverride = OVERRIDE_BOAT_LEVEL_1_EXIT;
-                                        const t = player.interactTarget.position.duplicate();
-                                        player.destination.overwrite(t.x, t.y);
-                                        player.position.overwrite(t.x, t.y)
+                                        swordGame.currentSceneOverride = OVERRIDE_BOAT_LEVEL_1_EXIT.launch();
                                     },
                                     () => swordGame.exitDialogue(),
                                     'boat?? maybe?'
@@ -114,7 +111,12 @@ async function dummy_init() {
                                 dialogues: [
                                     get_dialogue_choice(
                                         "Return to level 1?",
-                                        () => swordGame.load_new_level(swordGame.levels[0]),
+                                        () => {
+                                            // swordGame.load_new_level(swordGame.levels[0]);
+                                            swordGame.exitDialogue();
+                                            swordGame.controlsBlocked = true;
+                                            swordGame.currentSceneOverride = OVERRIDE_BOAT_LEVEL_2_EXIT.launch();                                            
+                                        },
                                         () => swordGame.exitDialogue(),
                                         'boat'
                                     ),
@@ -150,7 +152,7 @@ async function dummy_init() {
     player.receiveItem(new Item({ name: 'Egg', invTexture: swordGame.images.egg, description: "An egg." }));
     player.receiveItem(new Item({ name: 'Badghetti', texture: swordGame.images.ghetti_16, invTexture: swordGame.images.ghetti_32, description: "Would have been sadghetti, but cook was too sad to make it." }));
 
-    // player.receiveItem(new Item({ name: 'ticket', invTexture: swordGame.images.ticket, description: "Ticket to some boat ride." }));
+    player.receiveItem(new Item({ name: 'ticket', invTexture: swordGame.images.ticket, description: "Ticket to some boat ride." }));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
 
