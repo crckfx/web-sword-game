@@ -16,7 +16,6 @@ import { SetOfDialogues } from "./classes/interactions/SetOfDialogues.js";
 import { map_island } from "./maps/map_island.js";
 import { Dialogue } from "./classes/interactions/Dialogue.js";
 import { Doodad } from "./classes/objects/Doodad.js";
-import { SceneOverride } from "./experimental/sceneOverride.js";
 import { OVERRIDE_BOAT_LEVEL_1_EXIT } from "./experimental/overrides.js";
 
 
