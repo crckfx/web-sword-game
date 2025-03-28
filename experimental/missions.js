@@ -11,7 +11,7 @@ import { player } from "../helper/world-loader.js";
 export function appleMission(game, entity) {
     const item = new Item({
         name: 'ticket',
-        invTexture: game.images.questionMark,
+        invTexture: game.images.ticket,
         description: 'A ticket to go on a boat.'
     })
 
@@ -25,10 +25,6 @@ export function appleMission(game, entity) {
             new Dialogue({
                 heading: name,
                 message: entity.message_satisfied,
-                // onFinish: function () {
-                //     game.exitDialogue();
-                //     ticketToPlayer(game, entity)
-                // }
             }),
             new Dialogue({
                 heading: entity.name,

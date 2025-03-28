@@ -16,6 +16,12 @@ import { SetOfDialogues } from "./classes/interactions/SetOfDialogues.js";
 import { map_island } from "./maps/map_island.js";
 import { Dialogue } from "./classes/interactions/Dialogue.js";
 import { Doodad } from "./classes/objects/Doodad.js";
+import { SceneOverride } from "./experimental/sceneOverride.js";
+import { OVERRIDE_BOAT_LEVEL_1_EXIT } from "./experimental/overrides.js";
+
+
+
+
 
 
 // the entry point
@@ -25,62 +31,6 @@ async function dummy_init() {
     // swordGame.init_game(NUM_GRID.x, NUM_GRID.y);    
     await load_image_resources(swordGame.images, swordGame.textures);
     await load_entities(swordGame.entities, swordGame.textures);
-
-
-    const levelOneToLevelTwo = new Trigger({
-        name: 'travel trigger 1 --> 2',
-        texture: swordGame.images.boat,
-        condition: function () {
-            const index = player.bag.findSlotByName('ticket');
-            return index > -1
-        },
-
-        action_RUN: function () {
-            swordGame.launch_set_of_dialogues(new SetOfDialogues({
-                // heading: 'boat?? maybe?',
-                dialogues: [
-                    get_dialogue_choice(
-                        "Travel to level 2?",
-                        () => swordGame.load_new_level(swordGame.levels[1]),
-                        () => swordGame.exitDialogue(),
-                        'boat?? maybe?'
-                    ),
-                ]
-            }))
-        },
-
-        action_REJECT: function () {
-            swordGame.launch_single_dialogue(
-                new Dialogue({
-                    heading: 'no boat for you',
-                    message: 'You need a ticket to board the boat.',
-                    // canExit: true
-                })
-            )
-        },
-    });
-
-    const levelTwoToLevelOne = new Trigger({
-        name: 'return home trigger',
-        message: 'to return back to the first map',
-        action_RUN: function () {
-            swordGame.launch_set_of_dialogues(
-                new SetOfDialogues({
-                    dialogues: [
-                        get_dialogue_choice(
-                            "Return to level 1?",
-                            () => swordGame.load_new_level(swordGame.levels[0]),
-                            () => swordGame.exitDialogue(),
-                            'boat'
-                        ),
-                    ]
-                }),
-
-            )
-        },
-
-    });
-
 
     // this is where we start messing with LEVEL loading
     const testLevel = new GameLevel({
@@ -95,36 +45,87 @@ async function dummy_init() {
                 name: 'boat',
                 position: null,
                 texture: swordGame.images.boat_down,
-                trigger: levelOneToLevelTwo
+                trigger: new Trigger({
+                    name: 'travel trigger 1 --> 2',
+                    // texture: swordGame.images.boat,
+                    condition: function () {
+                        const index = player.bag.findSlotByName('ticket');
+                        return index > -1
+                    },
+
+                    action_RUN: function () {
+                        swordGame.launch_set_of_dialogues(new SetOfDialogues({
+                            // heading: 'boat?? maybe?',
+                            dialogues: [
+                                get_dialogue_choice(
+                                    "Travel to level 2?",
+                                    // () => swordGame.load_new_level(swordGame.levels[1]),
+                                    () => {
+                                        swordGame.exitDialogue();
+                                        swordGame.controlsBlocked = true;
+                                        swordGame.currentSceneOverride = OVERRIDE_BOAT_LEVEL_1_EXIT;
+                                        const t = player.interactTarget.position.duplicate();
+                                        player.destination.overwrite(t.x, t.y);
+                                        player.position.overwrite(t.x, t.y)
+                                    },
+                                    () => swordGame.exitDialogue(),
+                                    'boat?? maybe?'
+                                ),
+                            ]
+                        }))
+                    },
+
+                    action_REJECT: function () {
+                        swordGame.launch_single_dialogue(
+                            new Dialogue({
+                                heading: 'no boat for you',
+                                message: 'You need a ticket to board the boat.',
+                                // canExit: true
+                            })
+                        )
+                    },
+                }),
             })
 
         },
 
-        triggers: [
-            levelOneToLevelTwo
-        ],
     });
 
     const destinationLevel = new GameLevel({
-        gridX: 16,
-        gridY: 12,
+        gridX: 19,
+        gridY: 15,
         map: map_expedition,
         images: swordGame.images,
         entities: swordGame.entities,
 
-        triggers: [
-            levelTwoToLevelOne
-        ],
 
         doodads: {
             boat: new Doodad({
                 name: 'boat',
                 position: null,
-                texture: swordGame.images.boat_down,
-                trigger: levelTwoToLevelOne
-            })
+                texture: swordGame.images.boat_up,
+                trigger: new Trigger({
+                    name: 'return home trigger',
+                    // texture: swordGame.images.boat_up,
+                    message: 'to return back to the first map',
+                    action_RUN: function () {
+                        swordGame.launch_set_of_dialogues(
+                            new SetOfDialogues({
+                                dialogues: [
+                                    get_dialogue_choice(
+                                        "Return to level 1?",
+                                        () => swordGame.load_new_level(swordGame.levels[0]),
+                                        () => swordGame.exitDialogue(),
+                                        'boat'
+                                    ),
+                                ]
+                            }),
 
-        },        
+                        )
+                    },
+                }),
+            })
+        },
     });
 
     const islandLevel = new GameLevel({
@@ -148,6 +149,8 @@ async function dummy_init() {
     player.texture = swordGame.textures.spriteDefault;
     player.receiveItem(new Item({ name: 'Egg', invTexture: swordGame.images.egg, description: "An egg." }));
     player.receiveItem(new Item({ name: 'Badghetti', texture: swordGame.images.ghetti_16, invTexture: swordGame.images.ghetti_32, description: "Would have been sadghetti, but cook was too sad to make it." }));
+
+    // player.receiveItem(new Item({ name: 'ticket', invTexture: swordGame.images.ticket, description: "Ticket to some boat ride." }));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
     // swordGame.entities.harold.hasAlert = true;

@@ -41,6 +41,7 @@ export class Renderer {
 
         this.drawKit = null;
         this.grid = null;
+        this.camera.size.overwrite(canvas.width, canvas.height);
     }
 
     bind(drawKit, grid) {
@@ -50,8 +51,9 @@ export class Renderer {
 
     // A.K.A. "render_entire_grid"
     draw() {
-        this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
-        this.camera.size.overwrite(this.canvas.width, this.canvas.height);
+        if (!this.game.controlsBlocked) {
+            this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
+        }
         // // for boundary checks eg. entities
 
         // ok now ready to draw
@@ -91,7 +93,7 @@ export class Renderer {
         this.ctx.drawImage(
             // player.texture[index],
             player.texture[player.frame],
-            MIDDLE_CELL.x, MIDDLE_CELL.y - 8,
+            player.position.x - this.camera.pos.x, player.position.y - 8 - this.camera.pos.y,
             CELL_PX, CELL_PX
         );
 

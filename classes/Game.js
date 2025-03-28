@@ -41,6 +41,11 @@ export class Game {
 
     levels = null;
     currentLevel = null;
+    
+    controlsBlocked = false;
+
+    sceneOverrides = [];
+    currentSceneOverride = null;
 
 
     constructor() {
@@ -65,13 +70,14 @@ export class Game {
             bang_A: this.command_interact.bind(this),
             bang_B: this.command_back.bind(this),
             bang_Y: () => {
-                const c = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
-                if (this.controls.current_dpad_dir !== null) {
-                    console.log(`dpad on bang is ${this.controls.current_dpad_dir}`);
-                    const dirVec = direction_to_2D(this.controls.current_dpad_dir);
-                    c.x += dirVec.x;
-                    c.y += dirVec.y
-                }
+                // const c = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
+                // if (this.controls.current_dpad_dir !== null) {
+                //     console.log(`dpad on bang is ${this.controls.current_dpad_dir}`);
+                //     const dirVec = direction_to_2D(this.controls.current_dpad_dir);
+                //     c.x += dirVec.x;
+                //     c.y += dirVec.y
+                // }
+                console.log(this.renderer.camera.pos)
             },
             bang_X: this.enterPlayerInventory.bind(this),
             bang_pause: this.command_togglePause.bind(this),
@@ -85,6 +91,8 @@ export class Game {
         this.grid = level.grid;
         this.renderer.bind(level.drawKit, level.grid);
 
+        this.renderer.camera.pos.overwrite(0,0);
+        
         for (const key in level.entityData) {
             if (key === 'player') {
                 const playerData = level.entityData[key];
@@ -108,6 +116,34 @@ export class Game {
         // after the basic load stuff, implement custom options like: 
         // - 'just got off boat'
         // - 'thing on map is moved'
+        if (customOptions) {
+            if (customOptions.initOverride) {
+                console.log('should override with this scene')
+                this.controlsBlocked = true;
+                this.currentSceneOverride = customOptions.initOverride;
+            }
+            if (customOptions.player) {
+                player.position.x = customOptions.player.position.x;
+                player.position.y = customOptions.player.position.y;
+                player.destination.x = customOptions.player.position.x;
+                player.destination.y = customOptions.player.position.y;
+                if (customOptions.player.isFacing !== null) {
+                    console.log(`setting player to face ${customOptions.player.isFacing}`)
+                    player.isFacing = customOptions.player.isFacing;
+                    player.animations.play('standUp');
+                }
+            }
+            if (customOptions.boat) {
+                level.doodads.boat.position.x = customOptions.boat.position.x;
+                level.doodads.boat.position.y = customOptions.boat.position.y;
+            }
+            if (customOptions.camera) {
+                this.renderer.camera.pos.x = customOptions.camera.pos.x;
+                this.renderer.camera.pos.y = customOptions.camera.pos.y;
+                
+            }
+        }
+
 
     }
 
@@ -139,13 +175,10 @@ export class Game {
         const distance = moveTowards(player, player.destination, player.speed);
         const hasArrived = distance < 1;
 
-        if (hasArrived) {
-
+        
+        if (hasArrived && !this.currentSceneOverride) {
             this.tryMove();
-
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
-
-
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
             // (but only if we don't have one set already)
@@ -163,7 +196,13 @@ export class Game {
             }
 
         }
+
         player.step(delta);
+
+        // scene override
+        if (this.currentSceneOverride) {
+            this.currentSceneOverride.step();
+        }
     }
 
     // -------------------------------------------------------------------
@@ -256,6 +295,7 @@ export class Game {
                 this.exitDialogue();
             }
         } else if (this.isInInventory) {
+            this.controls.release_dpad();
             this.exitPlayerInventory();
         }
     }
@@ -311,6 +351,8 @@ export class Game {
 
     enterPlayerInventory() {
         if (!this.isPaused && !this.isInDialogue) {
+            this.controls.release_dpad();
+
             this.renderer.shouldDrawPlayerInventory = true;
             this.isInInventory = true;
         }
@@ -318,6 +360,7 @@ export class Game {
     exitPlayerInventory() {
         this.renderer.shouldDrawPlayerInventory = false;
         this.isInInventory = false;
+        // this.controls.current_dpad_dir = null;
         player.bagCursorIndex = 0;
     }
 
@@ -426,6 +469,7 @@ export class Game {
 
     // press 'A' on 'PLAYER INVENTORY'
     handleInventoryInteract() {
+
         if (player.bag.slots[player.bagCursorIndex] === null) return;
         const index = player.bagCursorIndex;
         const item = player.bag.slots[index];
@@ -434,6 +478,8 @@ export class Game {
 
     // press 'A' on 'WORLD' 
     handleWorldInteract() {
+        if (this.controlsBlocked) return;
+
         const t = player.interactTarget;
         if (t !== null) {
             if (t instanceof Entity) {
@@ -463,7 +509,8 @@ export class Game {
     load_new_level(level, options) {
         this.exitDialogue();                // exit any existing dialogues
         this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
-        this.cacheLevel();                  // write relevant existing level data into game
+        if (this.currentLevel) this.cacheLevel();                  // write relevant existing level data into game
+        this.controlsBlocked = false;
         this.bindLevel(level, options);     // load a new level
         this.resume();                      // ! start the gameLoop again
     }

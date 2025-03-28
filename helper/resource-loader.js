@@ -43,9 +43,14 @@ export async function load_image_resources(images, textures) {
             dirtGrass: "images/tiles/dirt-grass.png",
             stoneDirt: "images/tiles/stone-dirt.png",
             stoneGrass: "images/tiles/stone-grass.png",
-            dirt: 'images/tiles/dirt.png',
+            // self made sheets
+            stonePure: "images/tiles/stone-pure.png",
+            grassPure: "images/tiles/grass-pure.png",
+            sandPure: "images/tiles/sand-pure.png",
+            // dirtPure: "images/tiles/dirt-pure.png",
             island: 'images/tiles/island2.png',
             // misc
+            dirt: 'images/tiles/dirt.png',
             cobblestone: 'images/cobblestone.png',
             crate: "images/Crates by Mikiz/Brown crates/Brown Crates 1.png",
             crateShadow: "images/crate_experiments_4.png",
@@ -62,11 +67,13 @@ export async function load_image_resources(images, textures) {
         images.grass2 = await extract_single_sprite(images.manyTextures, 2, 15, 16);
         images.potPlant3 = await extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
         images.sword = await extract_sized_single_texture(images.shikashiTextures, 1, 5, 32, 32);
+        images.ticket = await extract_sized_single_texture(images.shikashiTextures, 9, 13, 32, 32);
         images.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
         images.tree_S_B = await extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
         images.water = await extract_single_sprite(images.manyTextures, 11, 8);
         // images.boat = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
         images.boat_down = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
+        images.boat_up = await extract_texture_modular(images.boats, 0,0, 64, 64);
         images.boat_southEast = await extract_texture_modular(images.boats, 64*4, 64*2, 64, 64);
         // saveCanvasAsPNG(images.boat);
 
