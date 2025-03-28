@@ -10,17 +10,13 @@ import { player } from "../helper/world-loader.js";
 import { tryPromptMove } from "../helper/promptMenu.js";
 import { tryInventoryMove } from "../helper/invMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
-import { Dialogue } from "./interactions/Dialogue.js";
-import { DialogueOption } from "./interactions/DialogueOption.js";
+
 import { SetOfDialogues } from "./interactions/SetOfDialogues.js";
 import { add_two_vectors } from "../helper/vectorHelper.js";
 import { get_dialogue_inventory, worldInteract_Entity, worldInteract_Item } from "../helper/gameHelpers.js";
-import { GameLevel } from "../levels/GameLevel.js";
-import { MapLayer } from "../levels/MapLayer.js";
 import { Trigger } from "./objects/Trigger.js";
 import { GameObject } from "./GameObject.js";
 import { Doodad } from "./objects/Doodad.js";
-import { saveCanvasAsPNG } from "../helper/random.js";
 
 export class Game {
     grid = null;
@@ -41,7 +37,7 @@ export class Game {
 
     levels = null;
     currentLevel = null;
-    
+
     controlsBlocked = false;
 
     sceneOverrides = [];
@@ -91,8 +87,8 @@ export class Game {
         this.grid = level.grid;
         this.renderer.bind(level.drawKit, level.grid);
 
-        this.renderer.camera.pos.overwrite(0,0);
-        
+        this.renderer.camera.pos.overwrite(0, 0);
+
         for (const key in level.entityData) {
             if (key === 'player') {
                 const playerData = level.entityData[key];
@@ -140,7 +136,7 @@ export class Game {
             if (customOptions.camera) {
                 this.renderer.camera.pos.x = customOptions.camera.pos.x;
                 this.renderer.camera.pos.y = customOptions.camera.pos.y;
-                
+
             }
         }
 
@@ -175,7 +171,7 @@ export class Game {
         const distance = moveTowards(player, player.destination, player.speed);
         const hasArrived = distance < 1;
 
-        
+
         if (hasArrived && !this.currentSceneOverride) {
             this.tryMove();
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
@@ -490,14 +486,11 @@ export class Game {
                 console.log(`Interacted with item ${t.name}`);
                 worldInteract_Item(this, t);
             } else if (t instanceof Trigger) {
-                t.tryRun(); 
+                t.tryRun();
             } else if (t instanceof Doodad) {
                 console.log(`interacted with doodad ${t.name}`)
                 if (t.trigger) {
                     t.trigger.tryRun();
-                }
-                if (t.texture !== null) {
-                    // saveCanvasAsPNG(t.texture)
                 }
             } else {
                 console.log("not sure what you're interacting with", t);
