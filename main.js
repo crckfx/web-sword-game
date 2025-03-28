@@ -25,6 +25,7 @@ import { OVERRIDE_BOAT_LEVEL_1_EXIT } from "./experimental/overrides.js";
 
 // the entry point
 async function dummy_init() {
+    const startTime = performance.now();
 
     // async class load
     // swordGame.init_game(NUM_GRID.x, NUM_GRID.y);    
@@ -171,6 +172,8 @@ async function dummy_init() {
 
 
     swordGame.controls.bind();
+    const loadTime = performance.now() - startTime;
+    console.log(`starting loop. load time was ${loadTime}`)
     swordGame.gameLoop.start();
 
 }

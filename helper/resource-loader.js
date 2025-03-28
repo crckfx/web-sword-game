@@ -3,15 +3,19 @@ import { createInventoryBackground, createInventoryItemsTexture } from "./invMen
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "./sprite.js";
 import { saveCanvasAsPNG } from "./random.js";
 
-async function load_image_files(object, files) {
-    for (const key in files) {
-        object[key] = await loadImage(files[key]);
-    }
+export async function loadImage(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img); // resolves when image is loaded
+        img.onerror = reject; // rejects on error
+        img.src = url;
+    });
 }
+
 
 export async function load_image_resources(images, textures) {
     try {
-        await load_image_files(images, {
+        const imageKeys = {
             // entities
             spriteDefault: 'images/sprites_transparent.png',
             spriteRed: 'images/sprites_transparent_red.png',
@@ -58,8 +62,17 @@ export async function load_image_resources(images, textures) {
             ghetti_32: "images/ghetti_32.png",
             grassTileBasic: "images/tiles/grass.png",
 
+        };
 
-        });
+        // Load all images in parallel
+        const loadedImages = await Promise.all(
+            Object.entries(imageKeys).map(([key, src]) => 
+                loadImage(src).then(img => [key, img])
+            )
+        );
+        // Populate images object
+        loadedImages.forEach(([key, img]) => images[key] = img);
+
 
         images.apple = await extract_sized_single_texture(images.fruitSheet, 0, 0, 16, 16)
         images.apple2 = await extract_sized_single_texture(images.shikashiTextures, 0, 14, 32, 32);
@@ -97,16 +110,8 @@ export async function load_image_resources(images, textures) {
             await extract_single_sprite(images.manyTextures, 13, 8),
             await extract_single_sprite(images.manyTextures, 12, 8),
         ];
-    } catch (error) {
-        console.error('error loading image resource', error);
-    }
-}
 
-export async function loadImage(url) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img); // resolves when image is loaded
-        img.onerror = reject; // rejects on error
-        img.src = url;
-    });
+    } catch (error) {
+        console.error('Error loading image resource', error);
+    }
 }
