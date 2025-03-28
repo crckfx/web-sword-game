@@ -5,23 +5,23 @@ export const map_expedition = {
     entityData: {
         player: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'up',
+            isFacing: 'Up',
         },
         gary: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'up',
+            isFacing: 'Up',
         },
         fred: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'up',
+            isFacing: 'Up',
         },
         george: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'up',
+            isFacing: 'Up',
         },
         harold: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'up',
+            isFacing: 'Up',
         },
     },
 

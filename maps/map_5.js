@@ -4,23 +4,23 @@ export const map_5 = {
     entityData: {
         player: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'right',
+            isFacing: 'Right',
         },
         gary: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'down',
+            isFacing: 'Down',
         },
         fred: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'down',
+            isFacing: 'Down',
         },
         george: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'right',
+            isFacing: 'Right',
         },
         harold: {
             cellCoord: new Vector2(null, null),
-            isFacing: 'down',
+            isFacing: 'Down',
         },
     },
     occupants:

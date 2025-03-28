@@ -17,7 +17,7 @@ export class Player extends GameObject {
 
         this.name = name ?? 'unnamed player';
         this.destination = position.duplicate();
-        this.isFacing = isFacing ?? 'down';
+        this.isFacing = isFacing ?? 'Down';
         this.animations = animations ?? null;
         this.texture = texture;
         this.speed = speed ?? 1;
@@ -34,10 +34,10 @@ export class Player extends GameObject {
 
     getSpriteIndex() {
         switch (this.isFacing) {
-            case 'down': return 0;
-            case 'left': return 8;
-            case 'up': return 16;
-            case 'right': return 24;
+            case 'Down': return 0;
+            case 'Left': return 8;
+            case 'Up': return 16;
+            case 'Right': return 24;
         }
     }
 

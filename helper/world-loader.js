@@ -20,7 +20,7 @@ import { NUM_GRID } from "../document.js";
 export const player = new Player({
     name: 'lachie',
     position: new Vector2(gridCells(1), gridCells(1)),
-    isFacing: 'up',
+    isFacing: 'Up',
     animations: get_standard_entity_animations(),
     speed: 2,
 
@@ -56,7 +56,7 @@ export async function load_entities(entities, textures) {
 
     entities.george = new Entity({
         name: 'george',
-        isFacing: 'right',
+        isFacing: 'Right',
         texture: textures.spriteRed,
         interactMessage: new SetOfDialogues({
             dialogues:

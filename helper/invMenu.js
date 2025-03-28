@@ -68,18 +68,18 @@ export function createInventoryBackground(slotBorder) {
 export function tryInventoryMove(direction) {
     let target = 0;
     switch (direction) {
-        case 'left':
+        case 'Left':
             if (player.bagCursorIndex !== 6)
                 target = -1;
             break;
-        case 'right':
+        case 'Right':
             if (player.bagCursorIndex !== 5)
                 target = 1;
             break;
-        case 'up':
+        case 'Up':
             target = -6
             break;
-        case 'down':
+        case 'Down':
             target = 6;
             break;
         default:

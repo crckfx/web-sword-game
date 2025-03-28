@@ -26,7 +26,7 @@ export class Entity extends GameObject {
 
         // this.position = position ?? new Vector2(gridCells(0), gridCells(0));
         this.destination = this.position.duplicate();
-        this.isFacing = isFacing ?? 'down';
+        this.isFacing = isFacing ?? 'Down';
         this.animations = animations ?? null;
         this.texture = texture ?? null;
         this.interactMessage = interactMessage;
@@ -50,10 +50,10 @@ export class Entity extends GameObject {
         switch (this.isFacing) {
             // the number is an index for an array of sprites (an unpacked spritesheet) 
             // this number serves as a base, and is offset by animations
-            case 'down': return 0;
-            case 'left': return 8;
-            case 'up': return 16;
-            case 'right': return 24;
+            case 'Down': return 0;
+            case 'Left': return 8;
+            case 'Up': return 16;
+            case 'Right': return 24;
         }
     }
 

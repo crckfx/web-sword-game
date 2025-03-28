@@ -19,10 +19,10 @@ export class KeyboardHandler {
         escape: false,
     };
     keyAliases = {
-        arrowleft: 'left',
-        arrowup: 'up',
-        arrowright: 'right',
-        arrowdown: 'down',
+        arrowleft: 'Left',
+        arrowup: 'Up',
+        arrowright: 'Right',
+        arrowdown: 'Down',
         z: 'A',
         x: 'B',
         a: 'X',

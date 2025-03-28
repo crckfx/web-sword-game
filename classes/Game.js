@@ -117,12 +117,12 @@ export class Game {
                 player.position.y = customOptions.player.position.y;
                 player.destination.x = customOptions.player.position.x;
                 player.destination.y = customOptions.player.position.y;
-                if (customOptions.player.isFacing !== null) {
+                if (customOptions.player.isFacing) {
                     console.log(`setting player to face ${customOptions.player.isFacing}`)
                     player.isFacing = customOptions.player.isFacing;
                 }
                 const facingString = `stand${player.isFacing}`
-                player.animations.play('standUp');
+                player.animations.play(facingString);
             }
             if (customOptions.boat) {
                 level.doodads.boat.position.x = customOptions.boat.position.x;
@@ -361,16 +361,16 @@ export class Game {
     tryMove() {
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
             switch (player.isFacing) {
-                case 'left':
+                case 'Left':
                     player.animations.play('standLeft');
                     break;
-                case 'right':
+                case 'Right':
                     player.animations.play('standRight');
                     break;
-                case 'up':
+                case 'Up':
                     player.animations.play('standUp');
                     break;
-                case 'down':
+                case 'Down':
                     player.animations.play('standDown');
                     break;
             }
@@ -382,19 +382,19 @@ export class Game {
 
         player.isFacing = this.controls.current_dpad_dir;
         switch (player.isFacing) {
-            case 'left':
+            case 'Left':
                 nextX -= CELL_PX;
                 player.animations.play('walkLeft');
                 break;
-            case 'right':
+            case 'Right':
                 player.animations.play('walkRight');
                 nextX += CELL_PX;
                 break;
-            case 'up':
+            case 'Up':
                 player.animations.play('walkUp');
                 nextY -= CELL_PX;
                 break;
-            case 'down':
+            case 'Down':
                 player.animations.play('walkDown');
                 nextY += CELL_PX;
                 break;

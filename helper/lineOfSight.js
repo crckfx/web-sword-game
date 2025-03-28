@@ -4,19 +4,19 @@ function get_line_of_sight(entity) {
     let orientation = null;
     let range = null;
     switch (entity.isFacing) {
-        case 'up':
+        case 'Up':
             orientation = 'vertical';
             range = -entity.sightRange;
             break;
-        case 'down':
+        case 'Down':
             orientation = 'vertical';
             range = entity.sightRange;
             break;
-        case 'left':
+        case 'Left':
             orientation = 'horizontal';
             range = -entity.sightRange;
             break;
-        case 'right':
+        case 'Right':
             orientation = 'horizontal';
             range = entity.sightRange;
             break;

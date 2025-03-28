@@ -40,10 +40,10 @@ export class GameControls {
     fire_control_event(name, on) {
         switch (name) {
             // handle the dpad cases
-            case 'left':
-            case 'up':
-            case 'right':
-            case 'down':
+            case 'Left':
+            case 'Up':
+            case 'Right':
+            case 'Down':
                 if (on) {
                     this.press_dpad(name);
                 } else {

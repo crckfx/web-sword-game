@@ -66,10 +66,10 @@ function resize() {
 export function getHtmlControls() {
     const HTMLcontrols = {
         dpad: {
-            left: document.getElementById('dpad_left'),
-            up: document.getElementById('dpad_up'),
-            right: document.getElementById('dpad_right'),
-            down: document.getElementById('dpad_down'),
+            Left: document.getElementById('dpad_left'),
+            Up: document.getElementById('dpad_up'),
+            Right: document.getElementById('dpad_right'),
+            Down: document.getElementById('dpad_down'),
         },
         buttons: {
             A: document.getElementById('control_A'),

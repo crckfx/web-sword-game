@@ -40,10 +40,10 @@ export function moveTowards(person, destinationPosition, speed) {
 
 export function compare_two_vec2(vecA, vecB) {
     // "on what side of vecB is vecA situated?"
-    if (vecA.x > vecB.x) return 'right';
-    if (vecA.x < vecB.x) return 'left';
-    if (vecA.y < vecB.y) return 'up';
-    if (vecA.y > vecB.y) return 'down';
+    if (vecA.x > vecB.x) return 'Right';
+    if (vecA.x < vecB.x) return 'Left';
+    if (vecA.y < vecB.y) return 'Up';
+    if (vecA.y > vecB.y) return 'Down';
     console.error('uhh the 2 vectors seem to have the same position?')
     return;
 }
