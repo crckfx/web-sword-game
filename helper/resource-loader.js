@@ -1,7 +1,6 @@
 import { createDialogueTexture } from "./promptMenu.js";
 import { createInventoryBackground, createInventoryItemsTexture } from "./invMenu.js";
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "./sprite.js";
-import { saveCanvasAsPNG } from "./random.js";
 
 export async function loadImage(url) {
     return new Promise((resolve, reject) => {
@@ -64,51 +63,51 @@ export async function load_image_resources(images, textures) {
 
         };
 
-        // Load all images in parallel
+        // use a 'Promise.all' to load all images in parallel
         const loadedImages = await Promise.all(
             Object.entries(imageKeys).map(([key, src]) => 
                 loadImage(src).then(img => [key, img])
             )
         );
-        // Populate images object
+        // populate the images object
         loadedImages.forEach(([key, img]) => images[key] = img);
 
 
-        images.apple = await extract_sized_single_texture(images.fruitSheet, 0, 0, 16, 16)
-        images.apple2 = await extract_sized_single_texture(images.shikashiTextures, 0, 14, 32, 32);
-        images.egg = await extract_sized_single_texture(images.shikashiTextures, 6, 15, 32, 32);
-        images.grass2 = await extract_single_sprite(images.manyTextures, 2, 15, 16);
-        images.potPlant3 = await extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
-        images.sword = await extract_sized_single_texture(images.shikashiTextures, 1, 5, 32, 32);
-        images.ticket = await extract_sized_single_texture(images.shikashiTextures, 9, 13, 32, 32);
-        images.tree_S_A = await extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
-        images.tree_S_B = await extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
-        images.water = await extract_single_sprite(images.manyTextures, 11, 8);
-        // images.boat = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
-        images.boat_down = await extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
-        images.boat_up = await extract_texture_modular(images.boats, 0,0, 64, 64);
-        images.boat_southEast = await extract_texture_modular(images.boats, 64*4, 64*2, 64, 64);
+        images.apple = extract_sized_single_texture(images.fruitSheet, 0, 0, 16, 16)
+        images.apple2 = extract_sized_single_texture(images.shikashiTextures, 0, 14, 32, 32);
+        images.egg = extract_sized_single_texture(images.shikashiTextures, 6, 15, 32, 32);
+        images.grass2 = extract_single_sprite(images.manyTextures, 2, 15, 16);
+        images.potPlant3 = extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
+        images.sword = extract_sized_single_texture(images.shikashiTextures, 1, 5, 32, 32);
+        images.ticket = extract_sized_single_texture(images.shikashiTextures, 9, 13, 32, 32);
+        images.tree_S_A = extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
+        images.tree_S_B = extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
+        images.water = extract_single_sprite(images.manyTextures, 11, 8);
+        // images.boat = extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
+        images.boat_down = extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
+        images.boat_up = extract_texture_modular(images.boats, 0,0, 64, 64);
+        images.boat_southEast = extract_texture_modular(images.boats, 64*4, 64*2, 64, 64);
         // saveCanvasAsPNG(images.boat);
 
         // reserving the "textures" names for alternate data structures (ie. not just an img or canvas)
         // the dialogue and inventory textures
-        textures.sampleText = await createDialogueTexture(images.dialogue_background);
-        textures.inventoryBg = await createInventoryBackground(images.inventory_border);
-        textures.inventoryItems = await createInventoryItemsTexture();
+        textures.sampleText = createDialogueTexture(images.dialogue_background);
+        textures.inventoryBg = createInventoryBackground(images.inventory_border);
+        textures.inventoryItems = createInventoryItemsTexture();
         // ^^^^ these are all SPECIAL textures (contain a canvas and a ctx for redraws)
 
         // unpack the texture resources
-        textures.spriteDefault = await extractSprites(images.spriteDefault);
-        textures.spriteRed = await extractSprites(images.spriteRed);
-        textures.spriteYellow = await extractSprites(images.spriteYellow);
+        textures.spriteDefault = extractSprites(images.spriteDefault);
+        textures.spriteRed = extractSprites(images.spriteRed);
+        textures.spriteYellow = extractSprites(images.spriteYellow);
         // sprite textures are now loaded
 
 
         textures.water = [
-            await extract_single_sprite(images.manyTextures, 11, 8),
-            await extract_single_sprite(images.manyTextures, 12, 8),
-            await extract_single_sprite(images.manyTextures, 13, 8),
-            await extract_single_sprite(images.manyTextures, 12, 8),
+            extract_single_sprite(images.manyTextures, 11, 8),
+            extract_single_sprite(images.manyTextures, 12, 8),
+            extract_single_sprite(images.manyTextures, 13, 8),
+            extract_single_sprite(images.manyTextures, 12, 8),
         ];
 
     } catch (error) {

@@ -22,7 +22,7 @@ export function wrapText(input, charLimit = 25) {
 
 
 // function to create the base dialogue layout
-export async function createDialogueTexture(backgroundImage) {
+export function createDialogueTexture(backgroundImage) {
    // get the pixel sizes for the texture (relative to the main pixel base) 
     const widthPx = CELL_PX * 10;     // 10 game cells wide
     const heightPx = CELL_PX * 3;     // 3 game cells tall

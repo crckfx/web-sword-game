@@ -1,10 +1,9 @@
 import { CELL_PX } from "../document.js";
-import { player } from "./world-loader.js";
-import { swordGame } from "./world-loader.js";
+import { swordGame, player } from "./world-loader.js";
 
 
 // function to create the inventory items layout
-export async function createInventoryItemsTexture() {
+export function createInventoryItemsTexture() {
     const slotPx = CELL_PX + 8;
     // get the pixel sizes for the map
     const widthPx = slotPx * 6;
@@ -24,7 +23,7 @@ export async function createInventoryItemsTexture() {
 }
 
 // function to create the inventory background layout
-export async function createInventoryBackground(slotBorder) {
+export function createInventoryBackground(slotBorder) {
     const slotPx = CELL_PX + 8;
     // get the pixel sizes for the map
     const widthPx = slotPx * 6;

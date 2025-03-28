@@ -3,7 +3,7 @@ const SPRITES_PER_ROW = 4;
 const SPRITE_COUNT = 8 * SPRITES_PER_ROW; // Total number of sprites (4 columns, 8 rows)
 
 
-export async function extractSprites(spriteSheet) {
+export function extractSprites(spriteSheet) {
     // Cache for storing sprite textures
     const spriteTextures = [];
     for (let i = 0; i < SPRITE_COUNT; i++) {
@@ -30,7 +30,7 @@ export async function extractSprites(spriteSheet) {
 }
 
 
-export async function extract_single_sprite(spriteSheet, x, y, spriteSize = 16) {
+export function extract_single_sprite(spriteSheet, x, y, spriteSize = 16) {
     const sx = x * spriteSize;
     const sy = y * spriteSize;
 
@@ -53,7 +53,7 @@ export async function extract_single_sprite(spriteSheet, x, y, spriteSize = 16) 
 }
 
 // here we input an index "pos", not a 
-export async function extract_sized_single_texture(image, posX = 0, posY = 0, sizeX = 16, sizeY = 16) {
+export function extract_sized_single_texture(image, posX = 0, posY = 0, sizeX = 16, sizeY = 16) {
     // note: takes in x and y as INDEX positions 
     const sx = posX * sizeX;
     const sy = posY * sizeY;
@@ -76,7 +76,7 @@ export async function extract_sized_single_texture(image, posX = 0, posY = 0, si
     return spriteCanvas;
 }
 
-export async function extract_texture_modular(image, pixelX = 0, pixelY = 0, width = 32, height = 32) {
+export function extract_texture_modular(image, pixelX = 0, pixelY = 0, width = 32, height = 32) {
     // create a canvas for the texture    
     const spriteCanvas = document.createElement('canvas');
     spriteCanvas.width = width;

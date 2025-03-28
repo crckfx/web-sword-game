@@ -153,10 +153,9 @@ async function dummy_init() {
     // player.receiveItem(new Item({ name: 'ticket', invTexture: swordGame.images.ticket, description: "Ticket to some boat ride." }));
 
     modifyInventoryTexture(swordGame.textures.inventoryItems);
-    // swordGame.entities.harold.hasAlert = true;
 
 
-    // temporary (untriggered) map change controllers
+    // (for debugging) map change buttons on the pauseMenu
     swordGame.controls.HtmlControls.pauseMenu.load_main_map_btn.onclick = () => {
         swordGame.pause();
         swordGame.cacheLevel();
