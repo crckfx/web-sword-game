@@ -35,6 +35,7 @@ export const occupantMap = {
     '1': 'fred',
     '2': 'george',
     '3': 'harold',
+    '4': 'steve',
     'a': 'apple',
     'i': 'miscItem',
     'f': 'fence',
@@ -267,7 +268,7 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     level.entityData['player'].cellCoord.overwrite(x, y)
                     cell.occupant = null;
                     break;
-                case 'gary': case 'fred': case 'george': case 'harold':
+                case 'gary': case 'fred': case 'george': case 'harold': case 'steve':
                     level.entityData[occupant].cellCoord.overwrite(x, y)
                     grid[y][x].occupant = entities[occupant];
                     break;

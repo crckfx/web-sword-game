@@ -23,14 +23,13 @@ export const player = new Player({
     isFacing: 'Up',
     animations: get_standard_entity_animations(),
     speed: 2,
-
 });
 
 
 export const swordGame = new Game();
 
 
-export async function load_entities(entities, textures) {
+export function load_entities(entities, textures) {
     // after we have the textures prepared, we can init the entities without fuss
     entities.gary = new Entity({
         name: 'gary',

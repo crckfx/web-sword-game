@@ -1,7 +1,7 @@
-import { Vector2 } from "../classes/Vector2.js";
-import { direction_to_2D } from "../helper/directions.js";
-import { cellCoords, gridCells, moveTowards } from "../helper/grid.js";
-import { player, swordGame } from "../helper/world-loader.js";
+import { Vector2 } from "../Vector2.js";
+import { direction_to_2D } from "../../helper/directions.js";
+import { cellCoords, gridCells, moveTowards } from "../../helper/grid.js";
+import { player, swordGame } from "../../helper/world-loader.js";
 import { CutScene } from "./CutScene.js";
 
 export function get_game_cutScenes() {
@@ -51,9 +51,8 @@ export function get_game_cutScenes() {
 
 function create_entry_boat_cutscene(level, texture, boatStart, boatTarget, dismountDirection, travelDirection) {
     const boat = level.doodads.boat;
-
     return new CutScene({
-
+        // entry scenes launch off screen; just prepare everything and go
         launch: function () {
             // make sure to center the camera to the dismount cell
             const dismountVec = direction_to_2D(dismountDirection);
@@ -63,6 +62,7 @@ function create_entry_boat_cutscene(level, texture, boatStart, boatTarget, dismo
             );
             boat.texture = texture;
             this.boat = boat;
+            this.boat = texture;
             boat.position.overwrite(boatStart.x, boatStart.y);
             player.isFacing = travelDirection;
             player.animations.play(`stand${travelDirection}`)
@@ -130,7 +130,6 @@ function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boat
             player.position.overwrite(boat.position.x, boat.position.y);
             player.destination.overwrite(boat.position.x, boat.position.y);
             const hasArrived = distance < 1;
-
             if (hasArrived) {
                 this.finish()
             }

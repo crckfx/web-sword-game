@@ -35,12 +35,11 @@ export class Game {
     currentDialogueSet = null
     promptIndex = null;
 
-    levels = null;
+    levels = [];
     currentLevel = null;
 
     controlsBlocked = false;
     currentCutScene = null;
-
 
     constructor() {
         // create the game grid for a level instead though
@@ -421,7 +420,6 @@ export class Game {
         this.exitDialogue();                // exit any existing dialogues
         this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
         if (this.currentLevel) this.cacheLevel();                  // write relevant existing level data into game
-        this.controlsBlocked = false;
         this.bindLevel(level, options);     // load a new level
         this.resume();                      // ! start the gameLoop again
     }

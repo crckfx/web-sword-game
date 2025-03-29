@@ -1,6 +1,4 @@
-export class CutScene {
-    
-    
+export class CutScene {   
     constructor({game, step, launch, finish, load}) {
         //
         // this.game = game ?? null;
@@ -9,6 +7,8 @@ export class CutScene {
         this.load = load ?? null;
         this.launch = launch ?? null;
         this.finish = finish ?? null;
+
+
     }
     
 
