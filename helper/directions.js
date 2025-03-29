@@ -1,12 +1,13 @@
 import { Vector2 } from "../classes/Vector2.js";
 
 export function direction_to_1D(direction) {
-    if (direction === 'Left' || direction === 'Up') {
-        return -1;
-    } else if (direction === 'Right' || direction === 'Down') {
-        return 1;
-    } else {
-        return 0;
+    switch (direction) {
+        case 'Left': case 'Up':
+            return -1;
+        case 'Right': case 'Down':
+            return 1;
+        default:
+            return 0;
     }
 }
 

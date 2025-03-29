@@ -1,8 +1,9 @@
 import { Vector2 } from "../classes/Vector2.js";
 import { direction_to_2D } from "../helper/directions.js";
-import { cellCoords, gridCells, moveTowards } from "../helper/grid.js";
+import { gridCells, moveTowards } from "../helper/grid.js";
 import { player, swordGame } from "./world-loader.js";
 import { CutScene } from "../classes/CutScene.js";
+import { BoatCutScene } from "../classes/sceneTemplate/BoatCutScene.js";
 
 export function get_game_cutScenes() {
 
@@ -51,6 +52,7 @@ export function get_game_cutScenes() {
 
 function create_entry_boat_cutscene(level, texture, boatStart, boatTarget, dismountDirection, travelDirection) {
     const boat = level.doodads.boat;
+
     return new CutScene({
         // entry scenes launch off screen; just prepare everything and go
         launch: function () {

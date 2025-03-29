@@ -1,5 +1,5 @@
-export class CutScene {   
-    constructor({game, step, launch, finish, load}) {
+export class CutScene {
+    constructor({ game, step, launch, finish, load }) {
         //
         // this.game = game ?? null;
         this.step = step ?? null;
@@ -10,7 +10,10 @@ export class CutScene {
 
 
     }
-    
+
+    sceneStep() {
+        console.log('step scener');
+    }
 
 }
 
