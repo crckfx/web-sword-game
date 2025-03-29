@@ -1,4 +1,4 @@
-import { GameObject } from "../GameObject.js";
+import { GameObject } from "./GameObject.js";
 import { Vector2 } from "../Vector2.js";
 
 export class Doodad extends GameObject {

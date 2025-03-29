@@ -1,12 +1,12 @@
 import { MIDDLE_CELL, CELL_PX, NUM_GRID, CAMERA_CELLS } from "../document.js";
 import { wrapText } from "../helper/promptMenu.js";
 import { cellCoords, gridCells } from "../helper/grid.js";
-import { player } from "../helper/world-loader.js";
+import { player } from "../loader/world-loader.js";
 import { Vector2 } from "./Vector2.js";
 import { Camera } from "./Camera.js";
 import { Entity } from "./objects/Entity.js";
 import { Player } from "./objects/Player.js";
-import { GameObject } from "./GameObject.js";
+import { GameObject } from "./objects/GameObject.js";
 import { Doodad } from "./objects/Doodad.js";
 
 export class Renderer {

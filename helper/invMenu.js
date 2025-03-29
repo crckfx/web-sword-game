@@ -1,5 +1,5 @@
 import { CELL_PX } from "../document.js";
-import { swordGame, player } from "./world-loader.js";
+import { swordGame, player } from "../loader/world-loader.js";
 
 
 // function to create the inventory items layout

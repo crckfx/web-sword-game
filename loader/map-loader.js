@@ -3,16 +3,11 @@
 // it seems cool to store a map as a text file. 
 // we don't fetch a text file or anything here - just pass map strings in
 
-import { Doodad } from "../classes/objects/Doodad.js";
 import { Item } from "../classes/objects/Item.js";
-import { Trigger } from "../classes/objects/Trigger.js";
-import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
 import { choose_4x4_texture_coords, } from "../helper/autotile.js";
 import { choose_tile_texture, gridCells, removeOldOccupant } from "../helper/grid.js";
-import { player, swordGame } from "../helper/world-loader.js";
-import { check_tree_cell } from "./load-helper.js";
-import { MapLayer } from "./MapLayer.js";
+import { check_tree_cell } from "../helper/random.js";
 
 // define floor signifiers
 export const tileMap = {

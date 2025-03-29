@@ -2,17 +2,17 @@ import { Entity } from "../classes/objects/Entity.js";
 
 import { Game } from "../classes/Game.js";
 import { Item } from "../classes/objects/Item.js";
-import { wrapText } from "./promptMenu.js";
+import { wrapText } from "../helper/promptMenu.js";
 
 
-import { get_standard_entity_animations } from "./walk.js";
+import { get_standard_entity_animations } from "../helper/walk.js";
 import { Player } from "../classes/objects/Player.js";
 import { Vector2 } from "../classes/Vector2.js";
-import { gridCells } from "./grid.js";
+import { gridCells } from "../helper/grid.js";
 
-import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
-import { Dialogue } from "../classes/interactions/Dialogue.js";
-import { DialogueOption } from "../classes/interactions/DialogueOption.js";
+import { SetOfDialogues } from "../classes/dialogue/SetOfDialogues.js";
+import { Dialogue } from "../classes/dialogue/Dialogue.js";
+import { DialogueOption } from "../classes/dialogue/DialogueOption.js";
 import { appleMission } from "../experimental/missions.js";
 import { NUM_GRID } from "../document.js";
 

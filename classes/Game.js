@@ -6,16 +6,16 @@ import { GameLoop } from "./GameLoop.js";
 import { cellCoords, gridCells, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./objects/Entity.js";
-import { player } from "../helper/world-loader.js";
+import { player } from "../loader/world-loader.js";
 import { tryPromptMove } from "../helper/promptMenu.js";
 import { tryInventoryMove } from "../helper/invMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
 
-import { SetOfDialogues } from "./interactions/SetOfDialogues.js";
+import { SetOfDialogues } from "./dialogue/SetOfDialogues.js";
 import { add_two_vectors } from "../helper/vectorHelper.js";
 import { get_dialogue_inventory, worldInteract_Entity, worldInteract_Item } from "../helper/gameHelpers.js";
 import { Trigger } from "./objects/Trigger.js";
-import { GameObject } from "./GameObject.js";
+import { GameObject } from "./objects/GameObject.js";
 import { Doodad } from "./objects/Doodad.js";
 
 export class Game {

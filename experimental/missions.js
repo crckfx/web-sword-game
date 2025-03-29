@@ -1,10 +1,10 @@
-import { Dialogue } from "../classes/interactions/Dialogue.js";
-import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
+import { Dialogue } from "../classes/dialogue/Dialogue.js";
+import { SetOfDialogues } from "../classes/dialogue/SetOfDialogues.js";
 import { Item } from "../classes/objects/Item.js";
 import { get_dialogue_choice } from "../helper/gameHelpers.js";
 import { give_item_to } from "../helper/interactions.js";
 import { modifyInventoryTexture } from "../helper/invMenu.js";
-import { player } from "../helper/world-loader.js";
+import { player } from "../loader/world-loader.js";
 
 
 // not yet a mission/objective class, but still a cool example of passing in an entity and getting all sides of an objective as dialogues

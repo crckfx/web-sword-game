@@ -1,6 +1,6 @@
-import { createDialogueTexture } from "./promptMenu.js";
-import { createInventoryBackground, createInventoryItemsTexture } from "./invMenu.js";
-import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "./sprite.js";
+import { createDialogueTexture } from "../helper/promptMenu.js";
+import { createInventoryBackground, createInventoryItemsTexture } from "../helper/invMenu.js";
+import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../helper/sprite.js";
 
 export async function loadImage(url) {
     return new Promise((resolve, reject) => {

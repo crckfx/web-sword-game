@@ -2,7 +2,7 @@ import { gridCells } from "../../helper/grid.js";
 import { Item } from "./Item.js";
 import { Vector2 } from "../Vector2.js";
 import { Inventory } from "../Inventory.js";
-import { GameObject } from "../GameObject.js";
+import { GameObject } from "./GameObject.js";
 
 export class Player extends GameObject {
     bagCursorIndex = 0;

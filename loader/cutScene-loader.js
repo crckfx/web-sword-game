@@ -1,8 +1,8 @@
-import { Vector2 } from "../Vector2.js";
-import { direction_to_2D } from "../../helper/directions.js";
-import { cellCoords, gridCells, moveTowards } from "../../helper/grid.js";
-import { player, swordGame } from "../../helper/world-loader.js";
-import { CutScene } from "./CutScene.js";
+import { Vector2 } from "../classes/Vector2.js";
+import { direction_to_2D } from "../helper/directions.js";
+import { cellCoords, gridCells, moveTowards } from "../helper/grid.js";
+import { player, swordGame } from "./world-loader.js";
+import { CutScene } from "../classes/CutScene.js";
 
 export function get_game_cutScenes() {
 

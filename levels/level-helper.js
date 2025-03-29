@@ -1,10 +1,10 @@
-import { Dialogue } from "../classes/interactions/Dialogue.js";
-import { SetOfDialogues } from "../classes/interactions/SetOfDialogues.js";
+import { Dialogue } from "../classes/dialogue/Dialogue.js";
+import { SetOfDialogues } from "../classes/dialogue/SetOfDialogues.js";
 import { Doodad } from "../classes/objects/Doodad.js";
 import { Trigger } from "../classes/objects/Trigger.js";
 import { NUM_GRID } from "../document.js";
 import { get_dialogue_choice } from "../helper/gameHelpers.js";
-import { player, swordGame } from "../helper/world-loader.js";
+import { player, swordGame } from "../loader/world-loader.js";
 import { map_5 } from "../maps/map_5.js";
 import { map_expedition } from "../maps/map_expedition.js";
 import { map_island } from "../maps/map_island.js";

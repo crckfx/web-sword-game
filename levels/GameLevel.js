@@ -1,7 +1,7 @@
 import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
 import { createDrawKit } from "./draw-kit.js";
-import { applyFloorToLevelLayer, applyOccupantsToLevel, getMapTexture, occupantSwitch, parseFloorLayout, parseOccupantLayout } from "./map-loader.js";
+import { applyFloorToLevelLayer, applyOccupantsToLevel, getMapTexture, occupantSwitch, parseFloorLayout, parseOccupantLayout } from "../loader/map-loader.js";
 import { MapLayer } from "./MapLayer.js";
 
 export class GameLevel {
