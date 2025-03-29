@@ -76,90 +76,6 @@ export class Game {
         // 
     }
 
-    bindLevel(level, customOptions) {
-        this.currentLevel = level;
-        this.grid = level.grid;
-        this.renderer.bind(level.drawKit, level.grid);
-
-        this.renderer.camera.pos.overwrite(0, 0);
-
-        for (const key in level.entityData) {
-            if (key === 'player') {
-                const playerData = level.entityData[key];
-                const posX = gridCells(playerData.cellCoord.x);
-                const posY = gridCells(playerData.cellCoord.y);
-                player.isFacing = playerData.isFacing;
-                player.position.x = posX;
-                player.position.y = posY;
-                player.destination.x = posX;
-                player.destination.y = posY;
-            } else {
-                const e = this.entities[key];
-                const entityData = level.entityData[key];
-                const entityDataPos = entityData.cellCoord;
-                e.position.x = gridCells(entityDataPos.x);
-                e.position.y = gridCells(entityDataPos.y);
-                e.isFacing = entityData.isFacing;
-            }
-        }
-
-        // after the basic load stuff, implement custom options like: 
-        // - 'just got off boat'
-        // - 'thing on map is moved'
-        if (customOptions) {
-            if (customOptions.initOverride) {
-                console.log('should override with this scene')
-                this.controlsBlocked = true;
-                this.currentSceneOverride = customOptions.initOverride.launch();
-            }
-            if (customOptions.player) {
-                player.position.x = customOptions.player.position.x;
-                player.position.y = customOptions.player.position.y;
-                player.destination.x = customOptions.player.position.x;
-                player.destination.y = customOptions.player.position.y;
-                if (customOptions.player.isFacing) {
-                    console.log(`setting player to face ${customOptions.player.isFacing}`)
-                    player.isFacing = customOptions.player.isFacing;
-                }
-                const facingString = `stand${player.isFacing}`
-                player.animations.play(facingString);
-            }
-            if (customOptions.boat) {
-                level.doodads.boat.position.x = customOptions.boat.position.x;
-                level.doodads.boat.position.y = customOptions.boat.position.y;
-            }
-            if (customOptions.camera) {
-                this.renderer.camera.pos.x = customOptions.camera.pos.x;
-                this.renderer.camera.pos.y = customOptions.camera.pos.y;
-
-            }
-        }
-
-
-    }
-
-    cacheLevel() {
-        const level = this.currentLevel;
-
-        for (const key in level.entityData) {
-            if (key === 'player') {
-                const playerData = level.entityData[key];
-                playerData.isFacing = player.isFacing;
-                playerData.cellCoord.overwrite(cellCoords(player.position.x), cellCoords(player.position.y));
-            } else {
-                const e = this.entities[key];
-                const entityData = level.entityData[key];
-                if (entityData) {
-                    // entityData.isFacing = e.isFacing;
-                    entityData.cellCoord.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
-                }
-            }
-        }
-
-        this.currentLevel = null;
-        this.grid = null;
-    }
-
     // MAIN UPDATE
     // -------------------------------------------------------------------
     update(delta) {
@@ -381,6 +297,7 @@ export class Game {
         let nextY = player.destination.y;
 
         player.isFacing = this.controls.current_dpad_dir;
+
         switch (player.isFacing) {
             case 'Left':
                 nextX -= CELL_PX;
@@ -414,12 +331,15 @@ export class Game {
     }
 
 
-
+    // **********************************************************************************
+    // ----- INTERACT BUTTON (pressing 'A') -----
+    // ---------------------------------------------------------------------------------
+    
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
-        if (this.currentDialogueSet !== null) {
+        if (this.currentDialogueSet) {
             // interacted with a dialogue from a dialogueset
-            if (this.currentDialogue.options !== null) {
+            if (this.currentDialogue.options) {
                 // interaction was to a choice, so run the option
                 this.currentDialogue.options[this.promptIndex].action();
                 return;
@@ -436,7 +356,7 @@ export class Game {
                     // return;
                     exit = true;
                 }
-                if (onFinish !== null) {
+                if (onFinish) {
                     console.log('previous dialogue had an onFinish!');
                     onFinish();
                 }
@@ -460,7 +380,6 @@ export class Game {
 
     // press 'A' on 'PLAYER INVENTORY'
     handleInventoryInteract() {
-
         if (player.bag.slots[player.bagCursorIndex] === null) return;
         const index = player.bagCursorIndex;
         const item = player.bag.slots[index];
@@ -492,8 +411,14 @@ export class Game {
             }
         }
     }
+    // ---------------------------------------------------------------------------------
 
 
+    // **********************************************************************************
+    // ----- LEVELS -----
+    // ---------------------------------------------------------------------------------
+    
+    // function to halt the game loop and unload level and load new level 
     load_new_level(level, options) {
         this.exitDialogue();                // exit any existing dialogues
         this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
@@ -502,5 +427,86 @@ export class Game {
         this.bindLevel(level, options);     // load a new level
         this.resume();                      // ! start the gameLoop again
     }
+
+    // function to 
+    bindLevel(level, customOptions) {
+        this.currentLevel = level;
+        this.grid = level.grid;
+        this.renderer.bind(level.drawKit, level.grid);
+
+        this.renderer.camera.pos.overwrite(0, 0);
+
+        for (const key in level.entityData) {
+            if (key === 'player') {
+                const playerData = level.entityData[key];
+                const posX = gridCells(playerData.cellCoord.x);
+                const posY = gridCells(playerData.cellCoord.y);
+                player.isFacing = playerData.isFacing;
+                player.position.x = posX;
+                player.position.y = posY;
+                player.destination.x = posX;
+                player.destination.y = posY;
+            } else {
+                const e = this.entities[key];
+                const entityData = level.entityData[key];
+                const entityDataPos = entityData.cellCoord;
+                e.position.x = gridCells(entityDataPos.x);
+                e.position.y = gridCells(entityDataPos.y);
+                e.isFacing = entityData.isFacing;
+            }
+        }
+
+        // after the basic load stuff, implement custom options like: 
+        // - 'just got off boat'
+        // - 'thing on map is moved'
+        if (customOptions) {
+            if (customOptions.cutScene) {
+                console.log('should override with this scene')
+                this.controlsBlocked = true;
+                this.currentSceneOverride = customOptions.cutScene.launch();
+            }
+            if (customOptions.player) {
+                player.position.x = customOptions.player.position.x;
+                player.position.y = customOptions.player.position.y;
+                player.destination.x = customOptions.player.position.x;
+                player.destination.y = customOptions.player.position.y;
+                if (customOptions.player.isFacing) {
+                    console.log(`setting player to face ${customOptions.player.isFacing}`)
+                    player.isFacing = customOptions.player.isFacing;
+                }
+                const facingString = `stand${player.isFacing}`
+                player.animations.play(facingString);
+            }
+            if (customOptions.boat) {
+                level.doodads.boat.position.x = customOptions.boat.position.x;
+                level.doodads.boat.position.y = customOptions.boat.position.y;
+            }
+            if (customOptions.camera) {
+                this.renderer.camera.pos.x = customOptions.camera.pos.x;
+                this.renderer.camera.pos.y = customOptions.camera.pos.y;
+            }
+        }
+    }
+
+    cacheLevel() {
+        const level = this.currentLevel;
+        for (const key in level.entityData) {
+            if (key === 'player') {
+                const playerData = level.entityData[key];
+                playerData.isFacing = player.isFacing;
+                playerData.cellCoord.overwrite(cellCoords(player.position.x), cellCoords(player.position.y));
+            } else {
+                const e = this.entities[key];
+                const entityData = level.entityData[key];
+                if (entityData) {
+                    // entityData.isFacing = e.isFacing;
+                    entityData.cellCoord.overwrite(cellCoords(e.position.x), cellCoords(e.position.y));
+                }
+            }
+        }
+        this.currentLevel = null;
+        this.grid = null;
+    }
+    // ---------------------------------------------------------------------------------
 
 }

@@ -82,4 +82,5 @@ export async function load_entities(entities, textures) {
             canExit: true,
         })
     });
+
 }

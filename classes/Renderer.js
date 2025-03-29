@@ -52,13 +52,10 @@ export class Renderer {
     // A.K.A. "render_entire_grid"
     draw() {
         if (!this.game.controlsBlocked) {
-            this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
+            // this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
+            this.camera.centreOn(player.position.x, player.position.y);
         }
-        // // for boundary checks eg. entities
 
-        // ok now ready to draw
-
-        
         // clear it
         this.ctx.clearRect(0, 0, this.camera.size.x, this.camera.size.y);
         // draw black first

@@ -16,11 +16,7 @@ import { SetOfDialogues } from "./classes/interactions/SetOfDialogues.js";
 import { map_island } from "./maps/map_island.js";
 import { Dialogue } from "./classes/interactions/Dialogue.js";
 import { Doodad } from "./classes/objects/Doodad.js";
-import { OVERRIDE_BOAT_LEVEL_1_EXIT, OVERRIDE_BOAT_LEVEL_2_EXIT } from "./experimental/overrides.js";
-
-
-
-
+import { get_game_cutScenes } from "./experimental/overrides.js";
 
 
 // the entry point
@@ -63,7 +59,7 @@ async function dummy_init() {
                                     () => {
                                         swordGame.exitDialogue();
                                         swordGame.controlsBlocked = true;
-                                        swordGame.currentSceneOverride = OVERRIDE_BOAT_LEVEL_1_EXIT.launch();
+                                        swordGame.currentSceneOverride = swordGame.cutScenes.level_1_exit.launch();
                                     },
                                     () => swordGame.exitDialogue(),
                                     'boat?? maybe?'
@@ -112,10 +108,10 @@ async function dummy_init() {
                                     get_dialogue_choice(
                                         "Return to level 1?",
                                         () => {
-                                            // swordGame.load_new_level(swordGame.levels[0]);
                                             swordGame.exitDialogue();
                                             swordGame.controlsBlocked = true;
-                                            swordGame.currentSceneOverride = OVERRIDE_BOAT_LEVEL_2_EXIT.launch();                                            
+                                            // swordGame.currentSceneOverride = OVERRIDE_BOAT_LEVEL_2_EXIT.launch();
+                                            swordGame.currentSceneOverride = swordGame.cutScenes.level_2_exit.launch();
                                         },
                                         () => swordGame.exitDialogue(),
                                         'boat'
@@ -142,7 +138,9 @@ async function dummy_init() {
         testLevel,
         destinationLevel,
         islandLevel
-    ]
+    ];
+
+    swordGame.cutScenes = get_game_cutScenes();
 
     // bind the renderer to use the 'drawKit' generated from map_5
     swordGame.bindLevel(testLevel);

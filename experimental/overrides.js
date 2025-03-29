@@ -1,176 +1,154 @@
 import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
+import { direction_to_2D } from "../helper/directions.js";
+import { cellCoords, gridCells, moveTowards } from "../helper/grid.js";
 import { player, swordGame } from "../helper/world-loader.js";
 import { SceneOverride } from "./SceneOverride.js";
 
-export const OVERRIDE_BOAT_LEVEL_1_ENTRY = new SceneOverride({
-    launch: function () {
-        this.boat = swordGame.levels[0].doodads.boat;
-        this.boat.texture = swordGame.images.boat_up;
-        this.targetY = 30 * CELL_PX;
-        const t = this.boat.position.duplicate();
-        player.destination.overwrite(t.x, t.y);
-        player.position.overwrite(t.x, t.y);
-        return this;
-    },
+export function get_game_cutScenes() {
 
-    step: function () {
-        const newY = this.boat.position.y -= 1;
-        if (newY <= this.targetY) {
-            console.log(swordGame.renderer.camera.pos)
-            this.finish()
-        } else {
-            // console.log(swordGame.renderer.camera.pos)
-            this.boat.position.y = newY;
-            player.position.y = newY;
-            player.destination.y = newY;
-        }
-    },
+    const level_1_entrance = create_entry_boat_cutscene(
+        swordGame.levels[0],
+        swordGame.images.boat_up,
+        new Vector2(gridCells(12), gridCells(33)),
+        new Vector2(gridCells(12), gridCells(30)),
+        'Up',
+        'Up',
+    );
 
-    finish: function () {
-        this.boat.position.y = this.targetY;
-        player.isFacing = 'Up';
-        player.position.y = this.targetY - CELL_PX;
-        player.destination.y = this.targetY - CELL_PX;
-        swordGame.currentSceneOverride = null;
-        swordGame.controlsBlocked = false;
+    const level_2_entrance = create_entry_boat_cutscene(
+        swordGame.levels[1],
+        swordGame.images.boat_up,
+        new Vector2(gridCells(5), gridCells(15)),
+        new Vector2(gridCells(5), gridCells(9)),
+        'Right',
+        'Up',
+    );
+
+    return {
+        level_1_entrance: level_1_entrance,
+
+        level_2_entrance: level_2_entrance,
+
+
+
+        level_1_exit: create_exit_boat_cutscene(
+            swordGame.levels[0],
+            swordGame.levels[1],
+            level_2_entrance,
+            swordGame.images.boat_down,
+            new Vector2(gridCells(12), gridCells(33)),
+            'Down',
+        ),
+        level_2_exit: create_exit_boat_cutscene(
+            swordGame.levels[1],
+            swordGame.levels[0],
+            level_1_entrance,
+            swordGame.images.boat_down,
+            new Vector2(gridCells(5), gridCells(15)),
+            'Down',
+        ),
     }
+}
 
-})
+function create_entry_boat_cutscene(level, texture, boatStart, boatTarget, dismountDirection, travelDirection) {
+    const boat = level.doodads.boat;
 
-export const OVERRIDE_BOAT_LEVEL_1_EXIT = new SceneOverride({
+    return new SceneOverride({
+        launch: function () {
+            // make sure to center the camera to the dismount cell
+            const dismountVec = direction_to_2D(dismountDirection);
+            // you can centre the camera to this cell?
+            swordGame.renderer.camera.centreOn(
+                boatTarget.x + gridCells(dismountVec.x),
+                boatTarget.y + gridCells(dismountVec.y)
+            );
+            boat.texture = texture;
+            this.boat = boat;
+            boat.position.overwrite(boatStart.x, boatStart.y);
+            player.isFacing = travelDirection;
+            player.animations.play(`stand${travelDirection}`)
+            player.position.overwrite(boatStart.x, boatStart.y);
+            player.destination.overwrite(boatStart.x, boatStart.y);
+            return this;
+        },
 
-    launch: function () {
-        this.boat = swordGame.levels[0].doodads.boat;
-        this.boat.texture = swordGame.images.boat_down;
-        const t = this.boat.position.duplicate();
-        player.destination.overwrite(t.x, t.y);
-        player.position.overwrite(t.x, t.y);
-        return this;
-    },
+        step: function () {
+            // move boat toward its target
+            const distance = moveTowards(boat, boatTarget, 2);
+            // update the player to track the boat
+            player.position.overwrite(boat.position.x, boat.position.y);
+            player.destination.overwrite(boat.position.x, boat.position.y);
+            // 
+            const hasArrived = distance < 1;
+            if (hasArrived) {
+                this.finish()
+            }
 
-    step: function () {
-        // const boat = swordGame.levels[0].doodads.boat;
-        const newY = this.boat.position.y += 1;
-        if (newY > swordGame.renderer.camera.pos.y + swordGame.renderer.camera.size.y + CELL_PX + 8) {
-            // console.log("finished yo")
-            this.finish();
-        } else {
-            this.boat.position.y = newY;
-            player.position.y = newY;
-            player.destination.y = newY;
+
+        },
+
+        finish: function () {
+            //
+            boat.position.overwrite(boatTarget.x, boatTarget.y);
+            player.position.overwrite(boatTarget.x, boatTarget.y);
+            player.destination.overwrite(boatTarget.x, boatTarget.y);
+
+            player.isFacing = dismountDirection;
+
+            const dismountVec = direction_to_2D(dismountDirection);
+            const newX = boatTarget.x + gridCells(dismountVec.x);
+            const newY = boatTarget.y + gridCells(dismountVec.y);
+
+            player.destination.overwrite(newX, newY)
+            player.position.overwrite(newX, newY)
+
+            swordGame.currentSceneOverride = null;
+            swordGame.controlsBlocked = false;
         }
-    },
+    })
+}
 
-    finish: function () {
-        swordGame.currentSceneOverride = null;
-        swordGame.controlsBlocked = false;
-        const positionVector = new Vector2(5 * CELL_PX, 16 * CELL_PX);
+// exit scene on a boat
+function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boatTarget, travelDirection) {
+    const boat = level.doodads.boat;
 
-        swordGame.load_new_level(swordGame.levels[1], {
-            player: {
-                isFacing: 'Up',
-                position: positionVector.duplicate(),
-            },
-            boat: {
-                position: positionVector.duplicate(),
-            },
-            camera: {
-                pos: new Vector2(CELL_PX, 5 * CELL_PX),
-            },
-            initOverride: OVERRIDE_BOAT_LEVEL_2_ENTRY,
+    return new SceneOverride({
+        launch: function () {
+            boat.texture = texture;
+            this.boat = boat;
+            const boatStart = boat.position.duplicate();
+            // boat.position.overwrite(boatStart.x, boatStart.y);
+            player.isFacing = travelDirection;
+            player.animations.play(`stand${travelDirection}`);
+            player.position.overwrite(boatStart.x, boatStart.y);
+            player.destination.overwrite(boatStart.x, boatStart.y);
+            return this;
+        },
 
-        });
-    }
-});
+        step: function () {
+            //
+            const distance = moveTowards(boat, boatTarget, 2);
+            player.position.overwrite(boat.position.x, boat.position.y);
+            player.destination.overwrite(boat.position.x, boat.position.y);
+            const hasArrived = distance < 1;
 
-export const OVERRIDE_BOAT_LEVEL_2_ENTRY = new SceneOverride({
-    game: swordGame,
+            if (hasArrived) {
+                this.finish()
+            }
 
-    launch: function () {
-        this.boat = swordGame.levels[1].doodads.boat;
-        this.targetY = 9 * CELL_PX;
-        const t = this.boat.position.duplicate();
-        player.destination.overwrite(t.x, t.y);
-        player.position.overwrite(t.x, t.y);
-        return this;
-    },
 
-    step: function () {
-        const newY = this.boat.position.y -= 1;
-        if (newY <= this.targetY) {
-            console.log(swordGame.renderer.camera.pos)
-            this.finish()
-        } else {
-            // console.log(swordGame.renderer.camera.pos)
-            this.boat.position.y = newY;
-            player.position.y = newY;
-            player.destination.y = newY;
+        },
+
+        finish: function () {
+            // being an exit, no need to snap the positions (we should be off-screen)
+            swordGame.currentSceneOverride = null;
+            swordGame.controlsBlocked = false;
+
+            swordGame.load_new_level(nextLevel, {
+                cutScene: nextCutScene,
+
+            });
         }
-    },
-
-    finish: function () {
-        this.boat.position.y = this.targetY;
-        player.position.y = this.targetY;
-        player.destination.y = this.targetY;
-
-        player.isFacing = 'Right';
-        player.destination.x += CELL_PX
-        player.position.x += CELL_PX
-
-        // console.log("finished yo")
-        swordGame.currentSceneOverride = null;
-        swordGame.controlsBlocked = false;
-    }
-});
-
-export const OVERRIDE_BOAT_LEVEL_2_EXIT = new SceneOverride({
-    launch: function () {
-        this.boat = swordGame.levels[1].doodads.boat; // level 2's instance of boat
-        this.boat.texture = swordGame.images.boat_down;
-        this.targetY = this.boat.position.y + 6 * CELL_PX;   
-        const t = this.boat.position.duplicate();
-        player.destination.overwrite(t.x, t.y);
-        player.position.overwrite(t.x, t.y);
-        player.isFacing = 'Down';
-        player.animations.play(`stand${player.isFacing}`);
-        return this;
-    },
-
-    step: function () {
-        const newY = this.boat.position.y += 1;
-        if (newY >= this.targetY) {
-            this.finish();
-        } else {
-            // console.log(swordGame.renderer.camera.pos)
-            this.boat.position.y = newY;
-            player.position.y = newY;
-            player.destination.y = newY;
-        }
-    },
-
-    finish: function () {
-        console.log(swordGame.renderer.camera.pos)
-        this.boat.position.y = this.targetY;
-        player.position.y = this.targetY;
-        player.destination.y = this.targetY;
-
-        const positionVector = new Vector2(12 * CELL_PX, 33 * CELL_PX);
-        // swordGame.load_new_level(swordGame.levels[0]);
-        swordGame.load_new_level(swordGame.levels[0], {
-            player: {
-                isFacing: 'Up',
-                position: positionVector.duplicate(),
-            },
-            boat: {
-                position: positionVector.duplicate(),
-            },
-            camera: {
-                pos: new Vector2(7 * CELL_PX, 25 * CELL_PX),
-            },
-            initOverride: OVERRIDE_BOAT_LEVEL_1_ENTRY,
-
-        });
-
-    },
-});
+    })
+}
