@@ -83,4 +83,15 @@ export async function load_entities(entities, textures) {
         })
     });
 
+    entities.steve = new Entity({
+        name: 'steve',
+        texture: textures.spriteYellow,
+        interactMessage: new SetOfDialogues({
+            heading: 'Steve',
+            dialogues: [
+                "I... am STEVE.",
+            ],
+            canExit: true,
+        })
+    });
 }

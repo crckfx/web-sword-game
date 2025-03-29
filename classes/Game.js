@@ -39,9 +39,7 @@ export class Game {
     currentLevel = null;
 
     controlsBlocked = false;
-
-    sceneOverrides = [];
-    currentSceneOverride = null;
+    currentCutScene = null;
 
 
     constructor() {
@@ -83,7 +81,7 @@ export class Game {
         const hasArrived = distance < 1;
 
 
-        if (hasArrived && !this.currentSceneOverride) {
+        if (hasArrived && !this.controlsBlocked) {
             this.tryMove();
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
             player.interactTarget = null;
@@ -107,8 +105,8 @@ export class Game {
         player.step(delta);
 
         // scene override
-        if (this.currentSceneOverride) {
-            this.currentSceneOverride.step();
+        if (this.currentCutScene) {
+            this.currentCutScene.step();
         }
     }
 
@@ -334,7 +332,7 @@ export class Game {
     // **********************************************************************************
     // ----- INTERACT BUTTON (pressing 'A') -----
     // ---------------------------------------------------------------------------------
-    
+
     // press 'A' on a PROMPT OPTION
     handleDialogueInteract() {
         if (this.currentDialogueSet) {
@@ -417,7 +415,7 @@ export class Game {
     // **********************************************************************************
     // ----- LEVELS -----
     // ---------------------------------------------------------------------------------
-    
+
     // function to halt the game loop and unload level and load new level 
     load_new_level(level, options) {
         this.exitDialogue();                // exit any existing dialogues
@@ -463,27 +461,7 @@ export class Game {
             if (customOptions.cutScene) {
                 console.log('should override with this scene')
                 this.controlsBlocked = true;
-                this.currentSceneOverride = customOptions.cutScene.launch();
-            }
-            if (customOptions.player) {
-                player.position.x = customOptions.player.position.x;
-                player.position.y = customOptions.player.position.y;
-                player.destination.x = customOptions.player.position.x;
-                player.destination.y = customOptions.player.position.y;
-                if (customOptions.player.isFacing) {
-                    console.log(`setting player to face ${customOptions.player.isFacing}`)
-                    player.isFacing = customOptions.player.isFacing;
-                }
-                const facingString = `stand${player.isFacing}`
-                player.animations.play(facingString);
-            }
-            if (customOptions.boat) {
-                level.doodads.boat.position.x = customOptions.boat.position.x;
-                level.doodads.boat.position.y = customOptions.boat.position.y;
-            }
-            if (customOptions.camera) {
-                this.renderer.camera.pos.x = customOptions.camera.pos.x;
-                this.renderer.camera.pos.y = customOptions.camera.pos.y;
+                this.currentCutScene = customOptions.cutScene.launch();
             }
         }
     }

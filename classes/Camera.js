@@ -12,13 +12,6 @@ export class Camera {
         )
     }
 
-    // updateSize(w, h) {
-    //     this.size.overwrite(w, h);
-    // }
-
-    // updatePos(x,y) {
-    //     this.pos.overwrite(x,y);
-    // }
     getRect() {
         return this.pos.x, this.pos.y, this.size.x, this.size.y
     }

@@ -28,3 +28,4 @@ export function saveCanvasAsPNG(canvas, filename = "canvas.png") {
     link.download = filename;
     link.click();
 }
+
