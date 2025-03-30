@@ -72,18 +72,19 @@ export class GameControls {
     // the dpad
     press_dpad(direction) {
         // remove any old if exists
-        if (this.current_dpad_dir !== null)
+        if (this.current_dpad_dir !== null) {
             this.HtmlControls.dpad[this.current_dpad_dir].classList.remove('active');
-        // update various methods
+        }
         this.current_dpad_dir = direction;
         this.HtmlControls.dpad[this.current_dpad_dir].classList.add('active');
-        this.bang_dpad();
+        this.bang_dpad(direction);
     }
 
     release_dpad() {
         if (this.current_dpad_dir !== null) {
             this.HtmlControls.dpad[this.current_dpad_dir].classList.remove('active');
             this.current_dpad_dir = null;
+            this.bang_dpad(null);
         }
     }
     // --------------------------------------------

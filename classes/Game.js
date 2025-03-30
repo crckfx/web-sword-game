@@ -41,6 +41,7 @@ export class Game {
     controlsBlocked = false;
     currentCutScene = null;
 
+
     constructor() {
         // create the game grid for a level instead though
 
@@ -103,6 +104,8 @@ export class Game {
 
         player.step(delta);
 
+        if (this.controls.current_dpad_dir !== null) this.dpadTime += delta;
+
         // scene override
         if (this.currentCutScene) {
             this.currentCutScene.step();
@@ -152,33 +155,42 @@ export class Game {
 
 
     // function to try a mov whenever dpad gets pressed (in case dpad);
-    command_dpad() {
+    command_dpad(direction) {
+        if (direction === null) {
+            this.dpadTime = 0;
+            return;
+        }
         // check and trigger inventory move if game is in inventory?
         if (this.isInInventory) {
             // console.log('yes ! in inventory and pressing a dpad on');
             if (this.isInDialogue) {
                 if (this.currentDialogue.options !== null) {
                     this.promptIndex = tryPromptMove(
-                        this.controls.current_dpad_dir,
+                        direction,
                         this.currentDialogue.options.length,
                         this.promptIndex
                     );
                 }
                 return;
             } else {
-                tryInventoryMove(this.controls.current_dpad_dir);
+                tryInventoryMove(direction);
                 return;
             }
         } else if (this.isInDialogue) {
             if (this.currentDialogue.options !== null) {
                 this.promptIndex = tryPromptMove(
-                    this.controls.current_dpad_dir,
+                    direction,
                     this.currentDialogue.options.length,
                     this.promptIndex
                 );
             }
             return;
+        } else {
+            // regular world case
+            if (player.isFacing === direction) this.dpadTime += 150;
         }
+
+
     }
 
     // function to handle press on the BACK (B) button
@@ -272,60 +284,57 @@ export class Game {
 
     // function to execute player movement
     tryMove() {
+
         if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
-            switch (player.isFacing) {
-                case 'Left':
-                    player.animations.play('standLeft');
-                    break;
-                case 'Right':
-                    player.animations.play('standRight');
-                    break;
-                case 'Up':
-                    player.animations.play('standUp');
-                    break;
-                case 'Down':
-                    player.animations.play('standDown');
-                    break;
-            }
+            player.animations.play(`stand${player.isFacing}`);
+            // swit
             return;
         }
+
+
 
         let nextX = player.destination.x;
         let nextY = player.destination.y;
 
         player.isFacing = this.controls.current_dpad_dir;
 
-        switch (player.isFacing) {
-            case 'Left':
-                nextX -= CELL_PX;
-                player.animations.play('walkLeft');
-                break;
-            case 'Right':
-                player.animations.play('walkRight');
-                nextX += CELL_PX;
-                break;
-            case 'Up':
-                player.animations.play('walkUp');
-                nextY -= CELL_PX;
-                break;
-            case 'Down':
-                player.animations.play('walkDown');
-                nextY += CELL_PX;
-                break;
-        }
+        if (this.dpadTime < 150) {
+            player.animations.play(`stand${player.isFacing}`);
+        } else {
 
-        const x = nextX / CELL_PX;
-        const y = nextY / CELL_PX;
 
-        if (this.grid[y] && this.grid[y][x]) {
-            const occupant = this.grid[y][x].occupant;
-            // only move if no occupant here
-            if (occupant === null) {
-                player.destination.x = nextX;
-                player.destination.y = nextY;
-            } else if (occupant instanceof Trigger) {
-                if (occupant.walkable) {
-                    occupant.tryRun();
+            switch (player.isFacing) {
+                case 'Left':
+                    nextX -= CELL_PX;
+                    player.animations.play('walkLeft');
+                    break;
+                case 'Right':
+                    player.animations.play('walkRight');
+                    nextX += CELL_PX;
+                    break;
+                case 'Up':
+                    player.animations.play('walkUp');
+                    nextY -= CELL_PX;
+                    break;
+                case 'Down':
+                    player.animations.play('walkDown');
+                    nextY += CELL_PX;
+                    break;
+            }
+
+            const x = nextX / CELL_PX;
+            const y = nextY / CELL_PX;
+
+            if (this.grid[y] && this.grid[y][x]) {
+                const occupant = this.grid[y][x].occupant;
+                // only move if no occupant here
+                if (occupant === null) {
+                    player.destination.x = nextX;
+                    player.destination.y = nextY;
+                } else if (occupant instanceof Trigger) {
+                    if (occupant.walkable) {
+                        occupant.tryRun();
+                    }
                 }
             }
         }

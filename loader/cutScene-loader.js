@@ -44,8 +44,6 @@ export function get_game_cutScenes() {
         'Down',
     );
 
-    // const L2_door_arrive_indoors = create_door_arrive_cutScene(swordGame.levels[3].triggers.door, 'Up');
-    // const L2_door_arrive_outdoors = create_door_arrive_cutScene(swordGame.levels[1].triggers.houseDoor, 'Down');
     const L2_door_transition = create_door_transition(swordGame.levels[1].triggers.houseDoor, swordGame.levels[3].triggers.door, swordGame.levels[3], 'Up');
     const L2_transition_into_house = create_door_transition(swordGame.levels[3].triggers.door, swordGame.levels[1].triggers.houseDoor, swordGame.levels[1], 'Down');
 
@@ -54,9 +52,7 @@ export function get_game_cutScenes() {
         level_2_entrance: level_2_entrance,
         level_1_exit: level_1_exit,
         level_2_exit: level_2_exit,
-        //
-        // L2_door_arrive_indoors: L2_door_arrive_indoors,
-        // L2_door_arrive_outdoors: L2_door_arrive_outdoors,
+
         L2_door_transition: L2_door_transition,
         L2_transition_into_house: L2_transition_into_house,
         //
