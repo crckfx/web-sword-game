@@ -42,6 +42,7 @@ export const occupantMap = {
     'B': 'boat',
     'h': 'house',
     'H': 'houseDoor',
+    'D': 'door',
 };
 
 
@@ -119,25 +120,23 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
         } else if (cell.occupant instanceof Trigger) {
             if (cell.occupant.name === 'doorTrigger') {
                 console.log(`this doooooodad is a door`)
-                // overlayCtx.drawImage(images.house,
-                //     0, 0, 144, 176,
-                //     gridCells(i - 1) - 8, gridCells(j-5) + 8,
-                //     144, 176,)
-                // mapCtx.drawImage(images.house,
-                //     0, 176, 144, 32,
-                //     gridCells(i - 1) - 8, gridCells(j) + 8,
-                //     144, 32,
-                // )
                 cell.occupant.position = new Vector2(gridCells(i), gridCells(j));
                 mapCtx.drawImage(images.house,
                     0, 0, 144, 208,
-                    gridCells(i - 1) - 6, gridCells(j-5),
+                    gridCells(i - 1) - 8, gridCells(j - 5),
                     144, 208,
                 )
                 overlayCtx.drawImage(images.house,
                     0, 0, 144, 168,
-                    gridCells(i - 1) - 6, gridCells(j-5),
+                    gridCells(i - 1) - 8, gridCells(j - 5),
                     144, 168,
+                )
+            } else if (cell.occupant.name === 'door') {
+                cell.occupant.position = new Vector2(gridCells(i), gridCells(j));
+                mapCtx.drawImage(
+                    images.questionMark,
+                    cell.occupant.position.x, cell.occupant.position.y,
+                    CELL_PX, CELL_PX
                 )
             }
         }
@@ -338,6 +337,12 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     grid[y][x].occupant = level.triggers.houseDoor;
                     grid[y][x].occupant.position = new Vector2(gridCells(x), gridCells(y));
 
+                    break;
+                case 'door':
+
+                    grid[y][x].occupant = level.triggers.door;
+                    // grid[y][x].occupant = level.doodads.house;
+                    // grid[y][x].occupant = 'door';
                     break;
                 case null:
                     // do nothing if the cell was made null

@@ -37,7 +37,6 @@ export function moveTowards(person, destinationPosition, speed) {
 
 
 
-
 export function compare_two_vec2(vecA, vecB) {
     // "on what side of vecB is vecA situated?"
     if (vecA.x > vecB.x) return 'Right';

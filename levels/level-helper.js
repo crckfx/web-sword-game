@@ -8,6 +8,7 @@ import { get_dialogue_choice } from "../helper/gameHelpers.js";
 import { player, swordGame } from "../loader/world-loader.js";
 import { map_5 } from "../maps/map_5.js";
 import { map_expedition } from "../maps/map_expedition.js";
+import { map_indoors } from "../maps/map_indoors.js";
 import { map_island } from "../maps/map_island.js";
 import { GameLevel } from "./GameLevel.js";
 
@@ -85,20 +86,12 @@ export function load_levels() {
                 message: 'to go into da house',
                 position: new Vector2(0,0),
                 action_RUN: function () {
-                    // swordGame.launch_single_dialogue(
-                    //     new Dialogue({
-                    //         heading: 'house',
-                    //         message: 'tryna get into da house'
-                    //     })
-                    // )
-                    console.log('something');
-
-                    // swordGame.controlsBlocked = true;
-                    // setTimeout(function () {
-                    //     swordGame.controlsBlocked = false;
-                    //     // player.destination.x = this.position.x;
-                    //     // player.destination.y = this.position.y;
-                    // }, 500)
+                    player.destination.overwrite(player.position.x, player.position.y);
+                    swordGame.controlsBlocked = true;
+                    player.animations.play('standUp')
+                    setTimeout(() => {
+                        swordGame.currentCutScene = swordGame.cutScenes.L2_door_transition.launch();
+                    }, 200);
                 },
                 walkable: true,
             })
@@ -157,10 +150,36 @@ export function load_levels() {
         entities: swordGame.entities,
     });
 
+    const indoorsLevel = new GameLevel({
+        gridX: 9,
+        gridY: 7,
+        map: map_indoors,
+        images: swordGame.images,
+        entities: swordGame.entities,
+
+        triggers: {
+            door: new Trigger({
+                name: 'door',
+                message: 'to go back outta da house',
+                position: new Vector2(null, null),
+                action_RUN: function () {
+                    swordGame.controlsBlocked = true;
+                    player.animations.play('standDown')
+                    setTimeout(() => {
+                        swordGame.currentCutScene = swordGame.cutScenes.L2_transition_into_house.launch();
+                    }, 200);                    
+                },
+                walkable: true,
+            })
+        },
+
+    })
+
     return [
         testLevel,
         destinationLevel,
-        islandLevel
+        islandLevel,
+        indoorsLevel,
     ];
 
 }

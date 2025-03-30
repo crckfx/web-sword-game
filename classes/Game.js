@@ -423,10 +423,11 @@ export class Game {
     // function to halt the game loop and unload level and load new level 
     load_new_level(level, options) {
         this.exitDialogue();                // exit any existing dialogues
-        this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
+        // this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
+        this.gameLoop.stop();
         if (this.currentLevel) this.cacheLevel();                  // write relevant existing level data into game
         this.bindLevel(level, options);     // load a new level
-        this.resume();                      // ! start the gameLoop again
+        this.gameLoop.start();            // ! start the gameLoop again
     }
 
     // function to 
