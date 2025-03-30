@@ -3,11 +3,15 @@
 // it seems cool to store a map as a text file. 
 // we don't fetch a text file or anything here - just pass map strings in
 
+import { Doodad } from "../classes/objects/Doodad.js";
+import { GameObject } from "../classes/objects/GameObject.js";
 import { Item } from "../classes/objects/Item.js";
+import { Trigger } from "../classes/objects/Trigger.js";
+import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
 import { choose_4x4_texture_coords, } from "../helper/autotile.js";
 import { choose_tile_texture, gridCells, removeOldOccupant } from "../helper/grid.js";
-import { check_tree_cell } from "../helper/random.js";
+import { check_house_cell, check_tree_cell } from "../helper/random.js";
 
 // define floor signifiers
 export const tileMap = {
@@ -36,6 +40,8 @@ export const occupantMap = {
     'f': 'fence',
     'X': 'trigger',
     'B': 'boat',
+    'h': 'house',
+    'H': 'houseDoor',
 };
 
 
@@ -93,21 +99,47 @@ function parsePathLayout(mapString = null) {
 
 export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
     const cell = grid[j][i];
-    if (cell.occupant instanceof Item) {
-        if (cell.occupant.name === 'apple') {
-            mapCtx.drawImage(
-                cell.occupant.texture,
-                (CELL_PX * (i)) + (CELL_PX * 0.25),
-                (CELL_PX * (j)) + (CELL_PX * 0.25) - 4,
-                CELL_PX * 0.5, CELL_PX * 0.5,
-            );
-        } else {
-            // 'crate' for generic item
-            mapCtx.drawImage(
-                images.crateShadow,
-                (CELL_PX * (i)),
-                (CELL_PX * (j) - 4),
-            );
+    if (cell.occupant instanceof GameObject) {
+        if (cell.occupant instanceof Item) {
+            if (cell.occupant.name === 'apple') {
+                mapCtx.drawImage(
+                    cell.occupant.texture,
+                    (CELL_PX * (i)) + (CELL_PX * 0.25),
+                    (CELL_PX * (j)) + (CELL_PX * 0.25) - 4,
+                    CELL_PX * 0.5, CELL_PX * 0.5,
+                );
+            } else {
+                // 'crate' for generic item
+                mapCtx.drawImage(
+                    images.crateShadow,
+                    (CELL_PX * (i)),
+                    (CELL_PX * (j) - 4),
+                );
+            }
+        } else if (cell.occupant instanceof Trigger) {
+            if (cell.occupant.name === 'doorTrigger') {
+                console.log(`this doooooodad is a door`)
+                // overlayCtx.drawImage(images.house,
+                //     0, 0, 144, 176,
+                //     gridCells(i - 1) - 8, gridCells(j-5) + 8,
+                //     144, 176,)
+                // mapCtx.drawImage(images.house,
+                //     0, 176, 144, 32,
+                //     gridCells(i - 1) - 8, gridCells(j) + 8,
+                //     144, 32,
+                // )
+                cell.occupant.position = new Vector2(gridCells(i), gridCells(j));
+                mapCtx.drawImage(images.house,
+                    0, 0, 144, 208,
+                    gridCells(i - 1) - 6, gridCells(j-5),
+                    144, 208,
+                )
+                overlayCtx.drawImage(images.house,
+                    0, 0, 144, 168,
+                    gridCells(i - 1) - 6, gridCells(j-5),
+                    144, 168,
+                )
+            }
         }
     } else {
         switch (cell.occupant) {
@@ -183,6 +215,7 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                 }
                 break;
 
+
         }
     }
 }
@@ -251,6 +284,7 @@ export function applyFloorToLevelLayer(grid, parsedFloorLayout) {
 export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entities) {
     let triggerCount = 0;
     const grid = level.grid;
+
     for (const { x, y, occupant } of parsedOccupantLayout) {
         if (grid[y] && grid[y][x]) {
             switch (occupant) {
@@ -288,9 +322,22 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     break;
                 case 'boat':
                     const doodad = level.doodads.boat;
-                    doodad.position.x = gridCells(x);
-                    doodad.position.y = gridCells(y);
+                    doodad.position = new Vector2(gridCells(x), gridCells(y));
                     grid[y][x].occupant = doodad;
+                    break;
+                case 'house':
+                    // doodad.position.x = gridCells(x);
+                    // doodad.position.y = gridCells(y);
+
+                    // grid[y][x].occupant = level.doodads.house;
+                    grid[y][x].occupant = 'house';
+                    break;
+                case 'houseDoor':
+                    // doodad.position.x = gridCells(x);
+                    // doodad.position.y = gridCells(y);
+                    grid[y][x].occupant = level.triggers.houseDoor;
+                    grid[y][x].occupant.position = new Vector2(gridCells(x), gridCells(y));
+
                     break;
                 case null:
                     // do nothing if the cell was made null

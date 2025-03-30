@@ -80,6 +80,7 @@ export async function load_image_resources(images, textures) {
         images.potPlant3 = extract_sized_single_texture(images.shikashiTextures, 5, 12, 32, 32);
         images.sword = extract_sized_single_texture(images.shikashiTextures, 1, 5, 32, 32);
         images.ticket = extract_sized_single_texture(images.shikashiTextures, 9, 13, 32, 32);
+        images.house = extract_texture_modular(images.schwarnhildTextures, 240, 0, 144, 208);
         images.tree_S_A = extract_texture_modular(images.schwarnhildTextures, 0, 0, 64, 96);
         images.tree_S_B = extract_texture_modular(images.schwarnhildTextures, 64, 0, 64, 96);
         images.water = extract_single_sprite(images.manyTextures, 11, 8);

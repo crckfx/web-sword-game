@@ -2,11 +2,12 @@ import { GameObject } from "./GameObject.js";
 import { Vector2 } from "../Vector2.js";
 
 export class Trigger extends GameObject {
-    constructor({ name, position, message, condition, action_RUN, action_REJECT }) {
+    constructor({ name, position, message, condition, action_RUN, action_REJECT, walkable }) {
         super({
             position: position ?? new Vector2(0, 0),
         });
 
+        this.walkable = walkable ?? false;
         this.name = name ?? "unnamed trigger";
         this.message = message ?? "undefined trigger event message";
         

@@ -318,10 +318,15 @@ export class Game {
         const y = nextY / CELL_PX;
 
         if (this.grid[y] && this.grid[y][x]) {
+            const occupant = this.grid[y][x].occupant;
             // only move if no occupant here
-            if (this.grid[y][x].occupant === null) {
+            if (occupant === null) {
                 player.destination.x = nextX;
                 player.destination.y = nextY;
+            } else if (occupant instanceof Trigger) {
+                if (occupant.walkable) {
+                    occupant.tryRun();
+                }
             }
         }
 

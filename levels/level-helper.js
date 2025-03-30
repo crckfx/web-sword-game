@@ -2,6 +2,7 @@ import { Dialogue } from "../classes/dialogue/Dialogue.js";
 import { SetOfDialogues } from "../classes/dialogue/SetOfDialogues.js";
 import { Doodad } from "../classes/objects/Doodad.js";
 import { Trigger } from "../classes/objects/Trigger.js";
+import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID } from "../document.js";
 import { get_dialogue_choice } from "../helper/gameHelpers.js";
 import { player, swordGame } from "../loader/world-loader.js";
@@ -78,8 +79,39 @@ export function load_levels() {
         images: swordGame.images,
         entities: swordGame.entities,
 
+        triggers: {
+            houseDoor: new Trigger({
+                name: 'doorTrigger',
+                message: 'to go into da house',
+                position: new Vector2(0,0),
+                action_RUN: function () {
+                    // swordGame.launch_single_dialogue(
+                    //     new Dialogue({
+                    //         heading: 'house',
+                    //         message: 'tryna get into da house'
+                    //     })
+                    // )
+                    console.log('something');
+
+                    // swordGame.controlsBlocked = true;
+                    // setTimeout(function () {
+                    //     swordGame.controlsBlocked = false;
+                    //     // player.destination.x = this.position.x;
+                    //     // player.destination.y = this.position.y;
+                    // }, 500)
+                },
+                walkable: true,
+            })
+        },
+
 
         doodads: {
+            house: new Doodad({
+                name: 'house',
+                position: null,
+                texture: swordGame.images.house
+            }),
+
             boat: new Doodad({
                 name: 'boat',
                 position: null,
