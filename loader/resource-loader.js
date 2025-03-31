@@ -1,4 +1,4 @@
-import { createDialogueTexture } from "../helper/promptMenu.js";
+import { createDialogueDrawKit } from "../helper/promptMenu.js";
 import { createInventoryBackground, createInventoryItemsTexture } from "../helper/invMenu.js";
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../helper/extract-helper.js";
 
@@ -60,7 +60,6 @@ export async function load_image_resources(images, textures) {
             ghetti_16: "images/ghetti_16.png",
             ghetti_32: "images/ghetti_32.png",
             grassTileBasic: "images/tiles/grass.png",
-
         };
 
         // use a 'Promise.all' to load all images in parallel
@@ -92,7 +91,7 @@ export async function load_image_resources(images, textures) {
 
         // reserving the "textures" names for alternate data structures (ie. not just an img or canvas)
         // the dialogue and inventory textures
-        textures.sampleText = createDialogueTexture(images.dialogue_background);
+        textures.sampleText = createDialogueDrawKit(images.dialogue_background);
         textures.inventoryBg = createInventoryBackground(images.inventory_border);
         textures.inventoryItems = createInventoryItemsTexture();
         // ^^^^ these are all SPECIAL textures (contain a canvas and a ctx for redraws)

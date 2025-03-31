@@ -11,7 +11,7 @@ import { Vector2 } from "../classes/Vector2.js";
 import { CELL_PX } from "../document.js";
 import { choose_4x4_texture_coords, } from "../helper/autotile.js";
 import { choose_tile_texture, gridCells, removeOldOccupant } from "../helper/grid.js";
-import { check_house_cell, check_tree_cell } from "../helper/random.js";
+import { check_tree_cell } from "../helper/random.js";
 
 // define floor signifiers
 export const tileMap = {
@@ -142,6 +142,7 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
         }
     } else {
         switch (cell.occupant) {
+
             case 'fence':
                 const fenceData = choose_4x4_texture_coords(grid, i, j, 'fence');
                 overlayCtx.drawImage(

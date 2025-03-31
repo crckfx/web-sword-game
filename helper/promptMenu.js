@@ -22,7 +22,7 @@ export function wrapText(input, charLimit = 25) {
 
 
 // function to create the base dialogue layout
-export function createDialogueTexture(backgroundImage) {
+export function createDialogueDrawKit(backgroundImage) {
    // get the pixel sizes for the texture (relative to the main pixel base) 
     const widthPx = CELL_PX * 10;     // 10 game cells wide
     const heightPx = CELL_PX * 3;     // 3 game cells tall
@@ -43,7 +43,7 @@ export function createDialogueTexture(backgroundImage) {
 }
 
 
-
+// function to move among 'prompt' options (CHOICES)
 export function tryPromptMove(direction, length, index) {
     let target = 0;
     if (index !== null) target = index;

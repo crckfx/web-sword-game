@@ -1,11 +1,7 @@
 import { Animations } from "../classes/Animations.js";
 import { FrameIndexPattern } from "../classes/FrameIndexPattern.js";
 
-const NUM_FRAMES_WALK = 4;
-const NUM_FRAMES_STAND = 1;
-const DURATION_WALK = 600;
-const DURATION_STAND = 600;
-
+// this is a function for creating a generic frames
 function createFrames(duration, numFrames, rootFrame = 0, offset = 0) {
     // duration: total cycle length (ms). 
     // numFrames: number of states to cycle through
@@ -25,6 +21,14 @@ function createFrames(duration, numFrames, rootFrame = 0, offset = 0) {
         frames: frames
     }
 }
+
+// *********************************************************************
+// ----- STANDARD ENTITY ANIMATIONS -----
+// -------------------------------------------------------------------
+const NUM_FRAMES_WALK = 4;
+const NUM_FRAMES_STAND = 1;
+const DURATION_WALK = 600;
+const DURATION_STAND = 600;
 
 export const WALK_DOWN = createFrames(DURATION_WALK, NUM_FRAMES_WALK, 0, 1);
 export const WALK_LEFT = createFrames(DURATION_WALK, NUM_FRAMES_WALK, 8, 1);
@@ -50,4 +54,13 @@ export function get_standard_entity_animations() {
         standDown: new FrameIndexPattern(STAND_DOWN),
         standRight: new FrameIndexPattern(STAND_RIGHT),
     });
+}
+// -------------------------------------------------------------------
+
+
+export function get_standard_water_animation() {
+    const WATER_FRAMES = createFrames(1200, 3, 0, 0);
+    return new Animations({
+        primary: new FrameIndexPattern(WATER_FRAMES)
+    })
 }

@@ -3,7 +3,6 @@ import { direction_to_2D } from "../helper/directions.js";
 import { gridCells, moveTowards } from "../helper/grid.js";
 import { player, swordGame } from "./world-loader.js";
 import { CutScene } from "../classes/CutScene.js";
-import { BoatCutScene } from "../classes/sceneTemplate/BoatCutScene.js";
 import { CELL_PX } from "../document.js";
 import { add_two_vectors } from "../helper/vectorHelper.js";
 

@@ -17,6 +17,7 @@ import { get_dialogue_inventory, worldInteract_Entity, worldInteract_Item } from
 import { Trigger } from "./objects/Trigger.js";
 import { GameObject } from "./objects/GameObject.js";
 import { Doodad } from "./objects/Doodad.js";
+import { get_standard_water_animation } from "../helper/walk.js";
 
 export class Game {
     grid = null;
@@ -72,6 +73,8 @@ export class Game {
             bang_resume: this.command_togglePause.bind(this),
         });
         // 
+        // this.waterAnimations = get_standard_water_animation();
+        // this.waterAnimations.play('primary')
     }
 
     // MAIN UPDATE
@@ -102,6 +105,7 @@ export class Game {
 
         }
 
+        // this.waterAnimations.step(delta);
         player.step(delta);
 
         if (this.controls.current_dpad_dir !== null) this.dpadTime += delta;
@@ -434,8 +438,12 @@ export class Game {
         this.exitDialogue();                // exit any existing dialogues
         // this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
         this.gameLoop.stop();
+        this.pauseTimestamp = performance.now();
         if (this.currentLevel) this.cacheLevel();                  // write relevant existing level data into game
         this.bindLevel(level, options);     // load a new level
+        const pauseDuration = performance.now() - this.pauseTimestamp;
+        this.gameLoop.lastFrameTime += pauseDuration;
+        this.pauseTimestamp = null;        
         this.gameLoop.start();            // ! start the gameLoop again
     }
 

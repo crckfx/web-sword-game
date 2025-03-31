@@ -31,8 +31,6 @@ export class Trigger extends GameObject {
             this.action_RUN();
         else
             this.action_REJECT();
-
-
     }
 
 }
