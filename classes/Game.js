@@ -42,6 +42,9 @@ export class Game {
     controlsBlocked = false;
     currentCutScene = null;
 
+    gamepad = null;
+
+
 
     constructor() {
         // create the game grid for a level instead though
@@ -80,40 +83,45 @@ export class Game {
     // MAIN UPDATE
     // -------------------------------------------------------------------
     update(delta) {
+        // handle gamepad if exist
+        if (this.controls.gamepadHandler.gamepad) {
+            this.controls.gamepadHandler.pollGamepad();
+        }
+
+        // do player world movement
         const distance = moveTowards(player, player.destination, player.speed);
         const hasArrived = distance < 1;
 
-
+        
         if (hasArrived && !this.controlsBlocked) {
             this.tryMove();
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
             // (but only if we don't have one set already)
-            if (player.interactTarget === null) {
-                const interactOffset = direction_to_2D(player.isFacing);
-                const interactCell = add_two_vectors(playerCell, interactOffset);
+            const interactOffset = direction_to_2D(player.isFacing);
+            const interactCell = add_two_vectors(playerCell, interactOffset);
 
-                if (this.grid[interactCell.y] && this.grid[interactCell.y][interactCell.x]) {
-                    const occupant = this.grid[interactCell.y][interactCell.x].occupant;
-                    // if (typeof(cell.occupant) === "object") {
-                    if (occupant instanceof GameObject) {
-                        player.interactTarget = occupant;
-                    }
-                };
-            }
+            if (this.grid[interactCell.y] && this.grid[interactCell.y][interactCell.x]) {
+                const occupant = this.grid[interactCell.y][interactCell.x].occupant;
+                if (occupant instanceof GameObject) {
+                    player.interactTarget = occupant;
+                }
+            };
 
         }
 
         // this.waterAnimations.step(delta);
         player.step(delta);
 
-        if (this.controls.current_dpad_dir !== null) this.dpadTime += delta;
-
-        // scene override
+        // if there's a cutScene, advance it
         if (this.currentCutScene) {
             this.currentCutScene.step();
         }
+
+        // if there's a dpad dir, increment its time
+        if (this.controls.current_dpad_dir) this.dpadTime += delta;
+
     }
 
     // -------------------------------------------------------------------
@@ -295,8 +303,6 @@ export class Game {
             return;
         }
 
-
-
         let nextX = player.destination.x;
         let nextY = player.destination.y;
 
@@ -305,8 +311,6 @@ export class Game {
         if (this.dpadTime < 150) {
             player.animations.play(`stand${player.isFacing}`);
         } else {
-
-
             switch (player.isFacing) {
                 case 'Left':
                     nextX -= CELL_PX;
@@ -326,8 +330,8 @@ export class Game {
                     break;
             }
 
-            const x = nextX / CELL_PX;
-            const y = nextY / CELL_PX;
+            const x = cellCoords(nextX);
+            const y = cellCoords(nextY);
 
             if (this.grid[y] && this.grid[y][x]) {
                 const occupant = this.grid[y][x].occupant;
@@ -439,11 +443,11 @@ export class Game {
         // this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
         this.gameLoop.stop();
         this.pauseTimestamp = performance.now();
-        if (this.currentLevel) this.cacheLevel();                  // write relevant existing level data into game
+        // if (this.currentLevel) this.cacheLevel();                  // write relevant existing level data into game
         this.bindLevel(level, options);     // load a new level
         const pauseDuration = performance.now() - this.pauseTimestamp;
         this.gameLoop.lastFrameTime += pauseDuration;
-        this.pauseTimestamp = null;        
+        this.pauseTimestamp = null;
         this.gameLoop.start();            // ! start the gameLoop again
     }
 
@@ -508,4 +512,28 @@ export class Game {
     }
     // ---------------------------------------------------------------------------------
 
+
+    updateGamepad() {
+        // console.log(performance.now());
+        // console.log(
+        //     // this.gamepad.buttons[0].pressed,
+        //     this.gamepad.buttons[12].pressed,
+        //     this.gamepad.buttons[13].pressed,
+        //     this.gamepad.buttons[14].pressed,
+        //     this.gamepad.buttons[15].pressed,
+        // ); // A
+
+
+
+        for (let i=12; i<16; i++) {
+            const b =  this.gamepad.buttons[i];
+            if (b.pressed) {
+                console.log(b)
+            }
+        }
+        
+        // up, down, left, right
+
+        
+    }
 }

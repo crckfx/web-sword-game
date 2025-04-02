@@ -1,12 +1,4 @@
 export class KeyboardHandler {
-    constructor(controls) {
-        //
-        this.controls = controls;
-        // Bind methods to the correct 'this'
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.handleKeyUp = this.handleKeyUp.bind(this);
-    }
-
     keyboard = {
         arrowleft: false,
         arrowup: false,
@@ -29,6 +21,14 @@ export class KeyboardHandler {
         s: 'Y',
         escape: 'ESCAPE',
     };
+    constructor(controls) {
+        //
+        this.controls = controls;
+        // Bind methods to the correct 'this'
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+    }
+
 
     handleKeyDown(event) {
         const key = event.key.toLowerCase();

@@ -1,3 +1,4 @@
+import { GamepadHandler } from "./GamepadHandler.js";
 import { KeyboardHandler } from "./KeyboardHandler.js";
 import { PointerHandler } from "./PointerHandler.js";
 
@@ -25,15 +26,16 @@ export class GameControls {
         this.HtmlControls = HtmlControls;
         this.pointerHandler = new PointerHandler(this);
         this.keyboardHandler = new KeyboardHandler(this);
+        this.gamepadHandler = new GamepadHandler(this);
 
-        this.bang_A = bang_A;   // pass in functions
-        this.bang_B = bang_B;   // pass in functions
-        this.bang_Y = bang_Y;   // pass in functions
-        this.bang_X = bang_X;   // pass in functions
-        this.bang_pause = bang_pause;   // pass in functions
-        this.bang_resume = bang_resume;   // pass in functions
+        this.bang_A = bang_A;               // pass in functions
+        this.bang_B = bang_B;               // pass in functions
+        this.bang_Y = bang_Y;               // pass in functions
+        this.bang_X = bang_X;               // pass in functions
+        this.bang_pause = bang_pause;       // pass in functions
+        this.bang_resume = bang_resume;     // pass in functions (game resume)
+        this.bang_dpad = bang_dpad;         // pass in functions (DPAD)
         this.game = game;
-        this.bang_dpad = bang_dpad;
     }
 
     // function to translate keyboard events to the 'game'
@@ -122,9 +124,6 @@ export class GameControls {
     release_btn(input) {
         this.buttonStates[input] = false;
         this.HtmlControls.buttons[input].classList.remove('active');
-        // console.log(`released ${input}.`);
-        // if (input === 'Y') this.bang_Y(false);
-
     }
     // --------------------------------------------
 
@@ -162,9 +161,6 @@ export class GameControls {
         document.addEventListener('pointermove', this.pointerHandler.handlePointerMove);
 
         this.HtmlControls.pauseMenu.resumeBtn.onclick = () => this.bang_resume();
-
-
     }
-
 
 }

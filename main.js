@@ -5,6 +5,8 @@ import { modifyInventoryTexture } from "./helper/invMenu.js";
 import { get_game_cutScenes } from "./loader/cutScene-loader.js";
 import { load_levels } from "./levels/level-helper.js";
 
+
+
 // the entry point
 async function start_game() {
     const startTime = performance.now(); // debug - for logging time at end
