@@ -51,10 +51,14 @@ export class Renderer {
 
     // A.K.A. "render_entire_grid"
     draw() {
-        if (!this.game.controlsBlocked) {
-            // this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
+        if (!this.game.currentCutScene) {
             this.camera.centreOn(player.position.x, player.position.y);
         }
+        
+        // if (!this.game.controlsBlocked) {
+        //     // this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
+        //     this.camera.centreOn(player.position.x, player.position.y);
+        // }
 
         // clear it
         this.ctx.clearRect(0, 0, this.camera.size.x, this.camera.size.y);

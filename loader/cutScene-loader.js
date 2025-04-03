@@ -119,7 +119,7 @@ function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boat
     const boat = level.doodads.boat;
 
     return new CutScene({
-        load: function () {
+        launch: function () {
             boat.texture = texture;
             this.boat = boat;
             const boatStart = boat.position.duplicate();
@@ -128,14 +128,13 @@ function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boat
             player.animations.play(`stand${travelDirection}`);
             player.position.overwrite(boatStart.x, boatStart.y);
             player.destination.overwrite(boatStart.x, boatStart.y);
-
+            // return this;
+            // this.isRunning = true;
         },
-
-        launch: function () {
-            return this;
-        },
+        
 
         step: function () {
+            if (!this.isRunning) return;
             const distance = moveTowards(boat, boatTarget, 2);
             player.position.overwrite(boat.position.x, boat.position.y);
             player.destination.overwrite(boat.position.x, boat.position.y);
@@ -146,6 +145,7 @@ function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boat
         },
 
         finish: function () {
+            this.isRunning = false;
             // being an exit, no need to snap the positions (we should be off-screen)
             swordGame.currentCutScene = null;
             swordGame.controlsBlocked = false;
@@ -153,6 +153,7 @@ function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boat
             swordGame.load_new_level(nextLevel, {
                 cutScene: nextCutScene,
             });
+
         }
     })
 }

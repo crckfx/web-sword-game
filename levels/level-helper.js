@@ -39,17 +39,20 @@ export function load_levels() {
                             dialogues: [
                                 get_dialogue_choice(
                                     "Travel to level 2?",
-                                    // () => swordGame.load_new_level(swordGame.levels[1]),
-                                    () => {
+
+                                    function () {
                                         swordGame.exitDialogue();
                                         swordGame.controlsBlocked = true;
                                         setTimeout(function () {
-                                            swordGame.currentCutScene = swordGame.cutScenes.level_1_exit.load();
+                                            swordGame.currentCutScene = swordGame.cutScenes.level_1_exit;
+                                            swordGame.currentCutScene.launch();
                                             setTimeout(function () {
-                                                swordGame.currentCutScene = swordGame.cutScenes.level_1_exit.launch();
+                                                swordGame.currentCutScene.isRunning = true;
                                             }, 300)
                                         }, 300)
+
                                     },
+
                                     () => swordGame.exitDialogue(),
                                     'boat?? maybe?'
                                 ),
@@ -84,7 +87,7 @@ export function load_levels() {
             houseDoor: new Trigger({
                 name: 'doorTrigger',
                 message: 'to go into da house',
-                position: new Vector2(0,0),
+                position: new Vector2(0, 0),
                 action_RUN: function () {
                     player.destination.overwrite(player.position.x, player.position.y);
                     swordGame.controlsBlocked = true;
@@ -123,9 +126,10 @@ export function load_levels() {
                                             swordGame.exitDialogue();
                                             swordGame.controlsBlocked = true;
                                             setTimeout(function () {
-                                                swordGame.cutScenes.level_2_exit.load();
+                                                swordGame.currentCutScene = swordGame.cutScenes.level_2_exit                                                
+                                                swordGame.currentCutScene.launch();
                                                 setTimeout(function () {
-                                                    swordGame.currentCutScene = swordGame.cutScenes.level_2_exit.launch();
+                                                    swordGame.currentCutScene.isRunning = true;
                                                 }, 300)
                                             }, 300)
                                         },
@@ -167,7 +171,7 @@ export function load_levels() {
                     player.animations.play('standDown')
                     setTimeout(() => {
                         swordGame.currentCutScene = swordGame.cutScenes.L2_transition_into_house.launch();
-                    }, 200);                    
+                    }, 200);
                 },
                 walkable: true,
             })

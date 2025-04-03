@@ -9,10 +9,13 @@ import { Vector2 } from "../Vector2.js";
 export class GamepadHandler {
     gamepad = null;
 
+    buttonAliases = new Array(17).fill(null);
+
     buttons = new Array(17).fill(false);
     constructor(controls) {
         this.controls = controls;
 
+        this.createButtonAliases();
 
         window.addEventListener("gamepadconnected", (e) => {
             console.log(
@@ -28,6 +31,7 @@ export class GamepadHandler {
 
 
     pollGamepad() {
+        // read the buttons from the gamepad
         const readButtons = { ...this.gamepad.buttons }
 
         // handle buttons
@@ -37,42 +41,47 @@ export class GamepadHandler {
             if (pressed !== this.buttons[i]) {
                 this.buttons[i] = pressed;
                 // console.log(i) 
-                this.controls.fire_control_event(this.lolABXY(i), pressed)                
+                this.controls.fire_control_event(this.buttonAliases[i], pressed)                
             }
         }
 
+        if (this.buttons[9] !== readButtons[9].pressed) {
+            this.buttons[9] = readButtons[9].pressed;
+            this.controls.fire_control_event(this.buttonAliases[9], this.buttons[9])
+        }
+        
 
-        // handle dpad
+        // handle dpad (buttons 12, 13, 14, 15)
         for (let i = 12; i < 16; i++) {
+            // check if the button is is pressed
             const pressed = readButtons[i].pressed;
             if (pressed !== this.buttons[i]) {
-
+                // update the local state for the button
                 this.buttons[i] = pressed;
-                // console.log(`changed state button ${i}`);
-                this.controls.fire_control_event(this.lolDirection(i), pressed)
-
+                // fire the control event for a dpad state change
+                this.controls.fire_control_event(this.buttonAliases[i], pressed)
             }
         }
+
+        
     };
 
 
-    lolDirection(i) {
-        if (i === 12) return 'Up';
-        if (i === 13) return 'Down';
-        if (i === 14) return 'Left';
-        if (i === 15) return 'Right';
-        return null;
+
+    createButtonAliases() {
+
+        this.buttonAliases[0] = 'A';
+        this.buttonAliases[1] = 'B';
+        this.buttonAliases[2] = 'X';
+        this.buttonAliases[3] = 'Y';
+        
+        this.buttonAliases[9] = 'ESCAPE';
+
+        this.buttonAliases[12] = 'Up';
+        this.buttonAliases[13] = 'Down';
+        this.buttonAliases[14] = 'Left';
+        this.buttonAliases[15] = 'Right';
     }
-
-
-    lolABXY(i) {
-        if (i === 0) return 'A';
-        if (i === 1) return 'B';
-        if (i === 2) return 'X';
-        if (i === 3) return 'Y';
-        return null;
-    }
-
 }
 
 

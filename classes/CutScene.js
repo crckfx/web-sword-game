@@ -1,7 +1,9 @@
 export class CutScene {
+    running = false;
     constructor({ step, launch, finish, load }) {
         //
         // this.game = game ?? null;
+        
         this.step = step ?? null;
 
         this.load = load ?? null;

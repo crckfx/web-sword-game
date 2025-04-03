@@ -10,10 +10,6 @@ export class GameLoop {
         this.isRunning = false;
         this.rafId = 0;
 
-        // KEEPING TRACK OF THE TEXTURE SHIFTING?
-        this.drawCycleCount = 48;
-        this.drawCount = 0;
-
     }
 
     mainLoop = (timestamp) => {
@@ -50,11 +46,6 @@ export class GameLoop {
             cancelAnimationFrame(this.rafId);
         }
         this.isRunning = false;
-    }
-
-
-    increment_draw_count() {
-        this.drawCount = (this.drawCount + 1) % this.drawCycleCount;
     }
 
 

@@ -59,6 +59,7 @@ export class Game {
         });
         // create the loop
         this.gameLoop = new GameLoop(this.update.bind(this), this.renderer.draw.bind(this.renderer));
+
         // create the controls
         this.controls = new GameControls({
             HtmlControls: getHtmlControls(), // the onscreen controls (dpad, buttons)
@@ -84,16 +85,16 @@ export class Game {
     // -------------------------------------------------------------------
     update(delta) {
         // handle gamepad if exist
-        if (this.controls.gamepadHandler.gamepad) {
-            this.controls.gamepadHandler.pollGamepad();
-        }
+        // importantly, gamepad is before pause exit. otherwise, you couldn't unpause with gamepad.
+        if (this.controls.gamepadHandler.gamepad) this.controls.gamepadHandler.pollGamepad();
+        // do nothing if the game is paused
+        if (this.isPaused) return;
 
         // do player world movement
         const distance = moveTowards(player, player.destination, player.speed);
         const hasArrived = distance < 1;
 
-        
-        if (hasArrived && !this.controlsBlocked) {
+        if (hasArrived) {
             this.tryMove();
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
             player.interactTarget = null;
@@ -129,21 +130,16 @@ export class Game {
     // pause and resume game functions
     pause() {
         this.isPaused = true;
-        this.gameLoop.stop();
-        this.pauseTimestamp = performance.now(); // Capture when we paused
         console.log("pause game");
         // this.renderer.drawPauseMenu();
         pauseMenu.classList.add('paused');
+        this.controlsBlocked = true;
     }
+
     resume() {
-        if (this.pauseTimestamp) {
-            const pauseDuration = performance.now() - this.pauseTimestamp;
-            this.gameLoop.lastFrameTime += pauseDuration; // Shift it forward
-            this.pauseTimestamp = null;
-        }
-        pauseMenu.classList.remove('paused');
-        this.gameLoop.start();
         console.log("resume game");
+        pauseMenu.classList.remove('paused');
+        this.controlsBlocked = false;
         this.isPaused = false;
     }
 
@@ -297,9 +293,13 @@ export class Game {
     // function to execute player movement
     tryMove() {
 
-        if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
+        if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory || this.isPaused) {
             player.animations.play(`stand${player.isFacing}`);
             // swit
+            return;
+        }
+
+        if (this.controlsBlocked) {
             return;
         }
 
@@ -512,28 +512,4 @@ export class Game {
     }
     // ---------------------------------------------------------------------------------
 
-
-    updateGamepad() {
-        // console.log(performance.now());
-        // console.log(
-        //     // this.gamepad.buttons[0].pressed,
-        //     this.gamepad.buttons[12].pressed,
-        //     this.gamepad.buttons[13].pressed,
-        //     this.gamepad.buttons[14].pressed,
-        //     this.gamepad.buttons[15].pressed,
-        // ); // A
-
-
-
-        for (let i=12; i<16; i++) {
-            const b =  this.gamepad.buttons[i];
-            if (b.pressed) {
-                console.log(b)
-            }
-        }
-        
-        // up, down, left, right
-
-        
-    }
 }

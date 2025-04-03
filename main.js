@@ -19,7 +19,7 @@ async function start_game() {
     player.texture = swordGame.textures.spriteDefault;
     player.receiveItem(new Item({ name: 'Egg', invTexture: swordGame.images.egg, description: "An egg." }));
     player.receiveItem(new Item({ name: 'Badghetti', texture: swordGame.images.ghetti_16, invTexture: swordGame.images.ghetti_32, description: "Would have been sadghetti, but cook was too sad to make it." }));
-    // player.receiveItem(new Item({ name: 'ticket', invTexture: swordGame.images.ticket, description: "Ticket to some boat ride." }));
+    player.receiveItem(new Item({ name: 'ticket', invTexture: swordGame.images.ticket, description: "Ticket to some boat ride." }));
     modifyInventoryTexture(swordGame.textures.inventoryItems);
 
     // (for debugging) map change buttons on the pauseMenu
