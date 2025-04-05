@@ -158,7 +158,7 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                 break;
             case 'tree':
                 mapCtx.drawImage(
-                    // images.tree,
+                    // floor gets the whole thing drawn onto it
                     images.trees_oak,
                     4 * CELL_PX, 1 * CELL_PX, 2 * CELL_PX, 2 * CELL_PX,
                     (CELL_PX * i) - CELL_PX / 2,
@@ -166,7 +166,7 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                     CELL_PX * 2,
                     CELL_PX * 2,
                 );
-                // overlay canvas gets top 1.5 cell (leave a half cell for perspective rendering)
+                // overlay gets top 1.5*cell (omitting a half cell for perspective rendering)
                 overlayCtx.drawImage(
                     images.trees_oak,
                     4 * CELL_PX, 1 * CELL_PX, CELL_PX * 2, CELL_PX * 1.5,
@@ -182,34 +182,39 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                 // ie. make sure there is another largetree element ABOVE this. 
                 // otherwise, don't draw. we need a cell underneath this one to be a tree otherwise 
                 if (check_tree_cell(grid, i, j, 'largeTree')) {
-                    if (grid[j][i - 1] && grid[j][i - 1].occupant === 'largeTree' && check_tree_cell(grid, i - 1, j, 'largeTree')) {
-                        // console.log(`there is another tree to the left of ${i},${j}`)
-                        // todo: draw meshtree, but first figure out rules
-                    } else {
-                        // console.log(`no tree to the left of ${i},${j}`)
-                        // todo: draw meshtree, but first figure out rules
-                    }
-
                     mapCtx.drawImage(
                         images.tree_S_A,
-                        0, CELL_PX, CELL_PX * 2, CELL_PX * 2, // crops
-                        CELL_PX * (i) - CELL_PX / 2, // Destination X
-                        CELL_PX * (j - 1), // Destination Y 
-                        CELL_PX * 2, CELL_PX * 2 // Destination width and height
+                        0, 0, gridCells(2), gridCells(3), // crops
+                        gridCells(i) - gridCells(0.5), // Destination X
+                        gridCells(j - 2), // Destination Y 
+                        gridCells(2), gridCells(3) // Destination width and height
                     );
 
-                    // overlay canvas gets top 1 cell
+                    // overlay canvas gets always gets top 2 cell
                     overlayCtx.drawImage(
                         images.tree_S_A,
                         0, 0, // Crop from (x=0, y=0) in the texture
-                        CELL_PX * 2, CELL_PX, // Crop width and height (2x wide, 1x tall)
-                        CELL_PX * (i) - CELL_PX / 2, // Destination X
-                        CELL_PX * (j - 2), // Destination Y 
-                        CELL_PX * 2, CELL_PX // Destination width and height
+                        gridCells(2), gridCells(2), // Crop width and height (2x wide, 1x tall)
+                        gridCells(i) - gridCells(0.5), // Destination X
+                        gridCells(j - 2), // Destination Y 
+                        gridCells(2), gridCells(2) // Destination width and height
                     );
 
-                    // apply_largeTree_x_overlays(grid, images.tree_S_A, overlayCtx, i, j, 'largeTree');
-                    // TODO: WRITE A NEW FUNCTION TO HANDLE THE SIDE OVERLAYS; THE TOP IS ALREADY DONE
+                    if (grid[j][i - 1] && grid[j][i - 1].occupant === 'largeTree' && check_tree_cell(grid, i - 1, j, 'largeTree')) {
+                        // console.log(`there is another tree to the left of ${i},${j}`)
+                        // overlay canvas always gets top 2.5 cell (it is 3 high)
+                        // also, overlay canvas gets a mesh texture if there's a same tree to its left (todo: check me)
+                        overlayCtx.drawImage(
+                            images.meshTree,
+                            gridCells(0.75), 0, gridCells(2.25), gridCells(2.5),
+                            // 96px,
+                            gridCells(i-1) + gridCells(0.25), // Destination X
+                            gridCells(j - 2), // Destination Y 
+                            gridCells(2.25), gridCells(2.5) // Destination width and height
+                        );
+                    } else {
+                        // console.log(`no tree to the left of ${i},${j}`)
+                    }
                 } else {
                     // console.log('skipping tree cell that does not have down,right,down-right neighbours');
                 }
@@ -306,42 +311,24 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     const newItem = new Item({ name: 'miscItem', position: { x: gridCells(x), y: gridCells(y) }, invTexture: images.questionMark });
                     grid[y][x].occupant = newItem;
                     break;
-                // case 'trigger':
-                //     // if (level.triggers[triggerCount]) {
-                //     //     const trigger = level.triggers[triggerCount];
-                //     //     const position = new Vector2(gridCells(x), gridCells(y));
-                //     //     const doodad = new Doodad({name: 'boat', position: position, texture: images.boat_southEast, trigger: trigger})
-                //     //     grid[y][x].occupant = doodad;
-                //     //     triggerCount++;
-                //     // } else {
-                //     //     console.error(`you don't have a ${triggerCount}th trigger in your set?`)
-                //     // }
-                //     break;
                 case 'boat':
                     const doodad = level.doodads.boat;
                     doodad.position = new Vector2(gridCells(x), gridCells(y));
                     grid[y][x].occupant = doodad;
                     break;
                 case 'house':
-                    // doodad.position.x = gridCells(x);
-                    // doodad.position.y = gridCells(y);
-
-                    // grid[y][x].occupant = level.doodads.house;
                     grid[y][x].occupant = 'house';
                     break;
+
                 case 'houseDoor':
-                    // doodad.position.x = gridCells(x);
-                    // doodad.position.y = gridCells(y);
                     grid[y][x].occupant = level.triggers.houseDoor;
                     grid[y][x].occupant.position = new Vector2(gridCells(x), gridCells(y));
-
                     break;
+
                 case 'door':
-
                     grid[y][x].occupant = level.triggers.door;
-                    // grid[y][x].occupant = level.doodads.house;
-                    // grid[y][x].occupant = 'door';
                     break;
+
                 case null:
                     // do nothing if the cell was made null
                     break;
