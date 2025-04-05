@@ -51,31 +51,29 @@ export class Renderer {
 
     // A.K.A. "render_entire_grid"
     draw() {
-        if (!this.game.currentCutScene) {
-            this.camera.centreOn(player.position.x, player.position.y);
-        }
-        
-        // if (!this.game.controlsBlocked) {
-        //     // this.camera.pos.overwrite(player.position.x - MIDDLE_CELL.x, player.position.y - MIDDLE_CELL.y)
-        //     this.camera.centreOn(player.position.x, player.position.y);
-        // }
+        // centre camera if a cutScene isn't running
+        if (!this.game.currentCutScene) { this.camera.centreOn(player.position.x, player.position.y); }
+
+        if (this.game.isPaused) { return; }
+
 
         // clear it
         this.ctx.clearRect(0, 0, this.camera.size.x, this.camera.size.y);
         // draw black first
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.camera.size.x, this.camera.size.y); // ?? could do an image background here instead
-        
+
+        // console.log(`floor / wadder frame is ${this.game.waterAnimations.frame}`)
         // draw it up
         // draw the **floor+doodad** base texture
         this.ctx.drawImage(
-            this.drawKit.floors.canvas,
+            this.drawKit.wadders[this.game.waterAnimations.frame],
             this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,    // draw a section of the floor
             0, 0, this.camera.size.x, this.camera.size.y                 // at this specified pos + size
         );
 
-        for (let j=-1; j<=CAMERA_CELLS.y; j++) {
-            for (let i=-1; i<=CAMERA_CELLS.x; i++) {
+        for (let j = -1; j <= CAMERA_CELLS.y; j++) {
+            for (let i = -1; i <= CAMERA_CELLS.x; i++) {
                 const x = cellCoords(this.camera.pos.x) + i;
                 const y = cellCoords(this.camera.pos.y) + j
                 // console.log(x, y);

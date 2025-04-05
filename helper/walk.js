@@ -61,6 +61,6 @@ export function get_standard_entity_animations() {
 export function get_standard_water_animation() {
     const WATER_FRAMES = createFrames(1200, 3, 0, 0);
     return new Animations({
-        primary: new FrameIndexPattern(WATER_FRAMES)
+        primary: new FrameIndexPattern(WATER_FRAMES),
     })
 }

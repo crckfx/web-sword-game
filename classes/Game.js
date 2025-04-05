@@ -18,6 +18,7 @@ import { Trigger } from "./objects/Trigger.js";
 import { GameObject } from "./objects/GameObject.js";
 import { Doodad } from "./objects/Doodad.js";
 import { get_standard_water_animation } from "../helper/walk.js";
+import { command_back, command_dpad, command_interact, command_togglePause, enterPlayerInventory } from "../helper/commandHelper.js";
 
 export class Game {
     grid = null;
@@ -65,29 +66,34 @@ export class Game {
             HtmlControls: getHtmlControls(), // the onscreen controls (dpad, buttons)
             game: this, // reference to the game
             // bind controls to game functions
-            bang_dpad: this.command_dpad.bind(this),
-            bang_A: this.command_interact.bind(this),
-            bang_B: this.command_back.bind(this),
+            // bang_dpad: this.command_dpad.bind(this),
+            // bang_A: this.command_interact.bind(this),
+            // bang_B: this.command_back.bind(this),
+            bang_dpad: command_dpad,
+            bang_A: command_interact,
+            bang_B: command_back,
             bang_Y: () => {
 
                 console.log(cellCoords(this.renderer.camera.pos.x), cellCoords(this.renderer.camera.pos.y), cellCoords(player.position.x), cellCoords(player.position.y))
             },
-            bang_X: this.enterPlayerInventory.bind(this),
-            bang_pause: this.command_togglePause.bind(this),
-            bang_resume: this.command_togglePause.bind(this),
+            bang_X: enterPlayerInventory,
+            // bang_pause: this.command_togglePause.bind(this),
+            // bang_resume: this.command_togglePause.bind(this),
+            bang_pause: command_togglePause,
+            bang_resume: command_togglePause,
         });
         // 
-        // this.waterAnimations = get_standard_water_animation();
-        // this.waterAnimations.play('primary')
+        this.waterAnimations = get_standard_water_animation();
+        this.waterAnimations.play('primary')
     }
 
     // MAIN UPDATE
     // -------------------------------------------------------------------
     update(delta) {
         // handle gamepad if exist
-        // importantly, gamepad is before pause exit. otherwise, you couldn't unpause with gamepad.
+        // importantly, gamepad is checked before pause exit. otherwise, you couldn't unpause the game by using the gamepad.
         if (this.controls.gamepadHandler.gamepad) this.controls.gamepadHandler.pollGamepad();
-        // do nothing if the game is paused
+        // however, if the game IS paused, we ONLY need updates for controller. so exit here if paused.
         if (this.isPaused) return;
 
         // do player world movement
@@ -97,9 +103,9 @@ export class Game {
         if (hasArrived) {
             this.tryMove();
             const playerCell = new Vector2(cellCoords(player.position.x), cellCoords(player.position.y));
+            // null the interactTarget before checking the cell
             player.interactTarget = null;
             // "can the player interact with the cell they are facing?"
-            // (but only if we don't have one set already)
             const interactOffset = direction_to_2D(player.isFacing);
             const interactCell = add_two_vectors(playerCell, interactOffset);
 
@@ -112,7 +118,7 @@ export class Game {
 
         }
 
-        // this.waterAnimations.step(delta);
+        this.waterAnimations.step(delta);
         player.step(delta);
 
         // if there's a cutScene, advance it
@@ -131,103 +137,20 @@ export class Game {
     pause() {
         this.isPaused = true;
         console.log("pause game");
-        // this.renderer.drawPauseMenu();
-        pauseMenu.classList.add('paused');
+        this.renderer.drawPauseMenu();
+        // pauseMenu.classList.add('paused');
         this.controlsBlocked = true;
     }
 
     resume() {
         console.log("resume game");
-        pauseMenu.classList.remove('paused');
-        this.controlsBlocked = false;
+        // pauseMenu.classList.remove('paused');
+        if (!this.currentCutScene) { this.controlsBlocked = false; }
         this.isPaused = false;
     }
 
     // commands
     // -------------------------------------------------------------------
-    // aka "player presses 'A' with a valid target"
-    command_interact() {
-        if (this.isPaused) {
-            return;
-        } else if (this.isInDialogue) {
-            if (this.currentDialogue !== null)
-                this.handleDialogueInteract();
-        } else if (this.isInInventory) {
-            this.handleInventoryInteract();
-            return;
-        } else {
-            this.handleWorldInteract();
-            return;
-        }
-    }
-
-
-    // function to try a mov whenever dpad gets pressed (in case dpad);
-    command_dpad(direction) {
-        if (direction === null) {
-            this.dpadTime = 0;
-            return;
-        }
-        // check and trigger inventory move if game is in inventory?
-        if (this.isInInventory) {
-            // console.log('yes ! in inventory and pressing a dpad on');
-            if (this.isInDialogue) {
-                if (this.currentDialogue.options !== null) {
-                    this.promptIndex = tryPromptMove(
-                        direction,
-                        this.currentDialogue.options.length,
-                        this.promptIndex
-                    );
-                }
-                return;
-            } else {
-                tryInventoryMove(direction);
-                return;
-            }
-        } else if (this.isInDialogue) {
-            if (this.currentDialogue.options !== null) {
-                this.promptIndex = tryPromptMove(
-                    direction,
-                    this.currentDialogue.options.length,
-                    this.promptIndex
-                );
-            }
-            return;
-        } else {
-            // regular world case
-            if (player.isFacing === direction) this.dpadTime += 150;
-        }
-
-
-    }
-
-    // function to handle press on the BACK (B) button
-    command_back() {
-        if (this.isPaused) {
-            this.resume();
-        } else if (this.isInDialogue) {
-            if (this.isInInventory) {
-                // handle dialogue inside of inventory
-                this.exitDialogue();
-            } else if (this.currentDialogueSet) {
-                // handle dialogueSet outside of inventory
-                if (this.currentDialogueSet.canExit)
-                    this.exitDialogue();
-            } else {
-                // handle a loaded dialogue with no set?
-                // todo: implement dialogue-specific canExit?
-                this.exitDialogue();
-            }
-        } else if (this.isInInventory) {
-            this.controls.release_dpad();
-            this.exitPlayerInventory();
-        }
-    }
-
-    command_togglePause() {
-        this.isPaused ? this.resume() : this.pause();
-    }
-
 
     // launch a SINGLE dialogue (hopefully make me obsolete)
     launch_single_dialogue(dialogue, object) {
@@ -273,29 +196,18 @@ export class Game {
 
     // ---------
 
-    enterPlayerInventory() {
-        if (!this.isPaused && !this.isInDialogue) {
-            this.controls.release_dpad();
-
-            this.renderer.shouldDrawPlayerInventory = true;
-            this.isInInventory = true;
-        }
-    }
-    exitPlayerInventory() {
-        this.renderer.shouldDrawPlayerInventory = false;
-        this.isInInventory = false;
-        // this.controls.current_dpad_dir = null;
-        player.bagCursorIndex = 0;
-    }
 
     // ---------    
 
     // function to execute player movement
     tryMove() {
-
-        if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory || this.isPaused) {
+        // note: "isPaused" is escaped before we can reach here
+        // escape if: 
+        //      1. no dpad dir (could be problematic during move cutScenes maybe?)
+        //      2. in dialogue - player can't move during a dialogue
+        //      3. in inventory - same as dialogue
+        if (!this.controls.current_dpad_dir || this.isInDialogue || this.isInInventory) {
             player.animations.play(`stand${player.isFacing}`);
-            // swit
             return;
         }
 
@@ -340,8 +252,10 @@ export class Game {
                     player.destination.x = nextX;
                     player.destination.y = nextY;
                 } else if (occupant instanceof Trigger) {
+                    // the occupant is a trigger
                     if (occupant.walkable) {
-                        occupant.tryRun();
+                        // the trigger is walkable
+                        occupant.tryRun(); // try run the trigger
                     }
                 }
             }
@@ -440,7 +354,6 @@ export class Game {
     // function to halt the game loop and unload level and load new level 
     load_new_level(level, options) {
         this.exitDialogue();                // exit any existing dialogues
-        // this.pause();                       // ! pause the game loop during load (possibly optional, probably safe)
         this.gameLoop.stop();
         this.pauseTimestamp = performance.now();
         // if (this.currentLevel) this.cacheLevel();                  // write relevant existing level data into game

@@ -19,6 +19,7 @@ export function load_levels() {
         gridY: NUM_GRID.y,
         map: map_5,
         images: swordGame.images,
+        textures: swordGame.textures,
         entities: swordGame.entities,
 
         doodads: {
@@ -81,6 +82,7 @@ export function load_levels() {
         gridY: 15,
         map: map_expedition,
         images: swordGame.images,
+        textures: swordGame.textures,
         entities: swordGame.entities,
 
         triggers: {
@@ -151,6 +153,7 @@ export function load_levels() {
         gridY: 12,
         map: map_island,
         images: swordGame.images,
+        textures: swordGame.textures,
         entities: swordGame.entities,
     });
 
@@ -159,6 +162,8 @@ export function load_levels() {
         gridY: 7,
         map: map_indoors,
         images: swordGame.images,
+        textures: swordGame.textures,
+
         entities: swordGame.entities,
 
         triggers: {

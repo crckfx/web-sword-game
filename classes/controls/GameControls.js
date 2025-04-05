@@ -60,7 +60,7 @@ export class GameControls {
                 break;
             case 'ESCAPE':
                 if (on) {
-                    this.bang_pause();
+                    this.bang_pause(this.game);
                 }
                 break;
             default:
@@ -79,14 +79,14 @@ export class GameControls {
         }
         this.current_dpad_dir = direction;
         this.HtmlControls.dpad[this.current_dpad_dir].classList.add('active');
-        this.bang_dpad(direction);
+        this.bang_dpad(this.game, direction);
     }
 
     release_dpad() {
         if (this.current_dpad_dir !== null) {
             this.HtmlControls.dpad[this.current_dpad_dir].classList.remove('active');
             this.current_dpad_dir = null;
-            this.bang_dpad(null);
+            this.bang_dpad(this.game, null);
         }
     }
     // --------------------------------------------
@@ -101,15 +101,15 @@ export class GameControls {
         switch (input) {
             case 'X':
                 this.buttonStates[input] = true;
-                this.bang_X();
+                this.bang_X(this.game);
                 break;
             case 'A':
                 this.buttonStates[input] = true;
-                this.bang_A();
+                this.bang_A(this.game);
                 break;
             case 'B':
                 this.buttonStates[input] = true;
-                this.bang_B();
+                this.bang_B(this.game);
                 break;
             case 'Y':
                 this.buttonStates[input] = true;
@@ -160,7 +160,7 @@ export class GameControls {
         document.addEventListener('pointerup', this.pointerHandler.handlePointerUp);
         document.addEventListener('pointermove', this.pointerHandler.handlePointerMove);
 
-        this.HtmlControls.pauseMenu.resumeBtn.onclick = () => this.bang_resume();
+        this.HtmlControls.pauseMenu.resumeBtn.onclick = () => this.bang_resume(this.game);
     }
 
 }

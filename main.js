@@ -42,6 +42,6 @@ window.onload = () => {
 }
 
 window.onblur = () => {
-    swordGame.pause();
+    if (!swordGame.isPaused) swordGame.pause();
 }
 

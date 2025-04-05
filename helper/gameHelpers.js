@@ -5,6 +5,7 @@ import { cellCoords, compare_two_vec2 } from "./grid.js";
 import { give_item_to } from "./interactions.js";
 import { modifyInventoryTexture } from "./invMenu.js";
 import { player } from "../loader/world-loader.js";
+import { exitPlayerInventory } from "./commandHelper.js";
 
 // dialogues
 // --------------------
@@ -41,7 +42,7 @@ export function get_dialogue_inventory(game, item) {
             new DialogueOption("Okay", game.exitDialogue.bind(game)),
             new DialogueOption("Exit", () => {
                 game.exitDialogue();
-                game.exitPlayerInventory();
+                exitPlayerInventory(game);
             }),
         ],
     })
