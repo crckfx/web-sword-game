@@ -65,10 +65,7 @@ export class Game {
         this.controls = new GameControls({
             HtmlControls: getHtmlControls(), // the onscreen controls (dpad, buttons)
             game: this, // reference to the game
-            // bind controls to game functions
-            // bang_dpad: this.command_dpad.bind(this),
-            // bang_A: this.command_interact.bind(this),
-            // bang_B: this.command_back.bind(this),
+
             bang_dpad: command_dpad,
             bang_A: command_interact,
             bang_B: command_back,
@@ -77,8 +74,6 @@ export class Game {
                 console.log(cellCoords(this.renderer.camera.pos.x), cellCoords(this.renderer.camera.pos.y), cellCoords(player.position.x), cellCoords(player.position.y))
             },
             bang_X: enterPlayerInventory,
-            // bang_pause: this.command_togglePause.bind(this),
-            // bang_resume: this.command_togglePause.bind(this),
             bang_pause: command_togglePause,
             bang_resume: command_togglePause,
         });

@@ -160,19 +160,19 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                 mapCtx.drawImage(
                     // images.tree,
                     images.trees_oak,
-                    4 * CELL_PX, 2 * CELL_PX, CELL_PX * 2, CELL_PX,
+                    4 * CELL_PX, 1 * CELL_PX, 2 * CELL_PX, 2 * CELL_PX,
                     (CELL_PX * i) - CELL_PX / 2,
-                    CELL_PX * (j),
+                    CELL_PX * (j - 1),
                     CELL_PX * 2,
-                    CELL_PX,
+                    CELL_PX * 2,
                 );
-                // overlay canvas gets top 1 cell
+                // overlay canvas gets top 1.5 cell (leave a half cell for perspective rendering)
                 overlayCtx.drawImage(
                     images.trees_oak,
-                    4 * CELL_PX, 1 * CELL_PX, CELL_PX * 2, CELL_PX,
+                    4 * CELL_PX, 1 * CELL_PX, CELL_PX * 2, CELL_PX * 1.5,
                     CELL_PX * (i) - CELL_PX / 2, // offset to center the tree
                     CELL_PX * (j - 1), // Destination Y (unchanged)
-                    CELL_PX * 2, CELL_PX// Destination width and height
+                    CELL_PX * 2, CELL_PX * 1.5// Destination width and height
                 );
                 break;
             case 'largeTree':
@@ -271,10 +271,8 @@ export function applyFloorToLevelLayer(grid, parsedFloorLayout) {
             if (cell.occupant && cell.occupant === 'water') {
                 cell.occupant = null;
             }
-            // for water, insert an occupant too
-            if (tile === 'water') {
-                cell.occupant = 'water';
-            }
+            // for water, insert an occupant, too (this is for walk viability calculations).
+            if (tile === 'water') { cell.occupant = 'water'; }
         }
     }
 }
@@ -282,7 +280,6 @@ export function applyFloorToLevelLayer(grid, parsedFloorLayout) {
 
 // translate an occupant name into a game entity
 export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entities) {
-    let triggerCount = 0;
     const grid = level.grid;
 
     for (const { x, y, occupant } of parsedOccupantLayout) {
@@ -309,17 +306,17 @@ export function applyOccupantsToLevel(level, parsedOccupantLayout, images, entit
                     const newItem = new Item({ name: 'miscItem', position: { x: gridCells(x), y: gridCells(y) }, invTexture: images.questionMark });
                     grid[y][x].occupant = newItem;
                     break;
-                case 'trigger':
-                    // if (level.triggers[triggerCount]) {
-                    //     const trigger = level.triggers[triggerCount];
-                    //     const position = new Vector2(gridCells(x), gridCells(y));
-                    //     const doodad = new Doodad({name: 'boat', position: position, texture: images.boat_southEast, trigger: trigger})
-                    //     grid[y][x].occupant = doodad;
-                    //     triggerCount++;
-                    // } else {
-                    //     console.error(`you don't have a ${triggerCount}th trigger in your set?`)
-                    // }
-                    break;
+                // case 'trigger':
+                //     // if (level.triggers[triggerCount]) {
+                //     //     const trigger = level.triggers[triggerCount];
+                //     //     const position = new Vector2(gridCells(x), gridCells(y));
+                //     //     const doodad = new Doodad({name: 'boat', position: position, texture: images.boat_southEast, trigger: trigger})
+                //     //     grid[y][x].occupant = doodad;
+                //     //     triggerCount++;
+                //     // } else {
+                //     //     console.error(`you don't have a ${triggerCount}th trigger in your set?`)
+                //     // }
+                //     break;
                 case 'boat':
                     const doodad = level.doodads.boat;
                     doodad.position = new Vector2(gridCells(x), gridCells(y));
