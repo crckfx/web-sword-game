@@ -1,6 +1,7 @@
 import { createDialogueDrawKit } from "../helper/promptMenu.js";
 import { createInventoryBackground, createInventoryItemsTexture } from "../helper/invMenu.js";
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../helper/extract-helper.js";
+import { saveCanvasAsPNG } from "../helper/random.js";
 
 export async function loadImage(url) {
     return new Promise((resolve, reject) => {
@@ -60,6 +61,9 @@ export async function load_image_resources(images, textures) {
             ghetti_16: "images/ghetti_16.png",
             ghetti_32: "images/ghetti_32.png",
             grassTileBasic: "images/tiles/grass.png",
+
+
+            house_blackDoor: "images/house_blackDoor.png",
         };
 
         // use a 'Promise.all' to load all images in parallel
@@ -87,7 +91,7 @@ export async function load_image_resources(images, textures) {
         images.boat_down = extract_texture_modular(images.boats, 64*3, 64*3, 64, 64);
         images.boat_up = extract_texture_modular(images.boats, 0,0, 64, 64);
         images.boat_southEast = extract_texture_modular(images.boats, 64*4, 64*2, 64, 64);
-        // saveCanvasAsPNG(images.boat);
+        // saveCanvasAsPNG(images.house);
 
         // reserving the "textures" names for alternate data structures (ie. not just an img or canvas)
         // the dialogue and inventory textures

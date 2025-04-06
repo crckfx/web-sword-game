@@ -2,42 +2,26 @@ export function createDrawKit(mapLayers, mapWidthPx, mapHeightPx) {
     const dkCanv_floor = document.createElement('canvas');
     dkCanv_floor.width = mapWidthPx;
     dkCanv_floor.height = mapHeightPx;
-    const dkCtx_floor = dkCanv_floor.getContext('2d');
-    
-    const dkCanv_floorsOnly = document.createElement('canvas');
-    dkCanv_floorsOnly.width = mapWidthPx;
-    dkCanv_floorsOnly.height = mapHeightPx;
-    const dkCtx_floorsOnly = dkCanv_floorsOnly.getContext('2d');
-    
-    const dkCanv_occ = document.createElement('canvas');
-    dkCanv_occ.width = mapWidthPx;
-    dkCanv_occ.height = mapHeightPx;
-    const dkCtx_occ = dkCanv_floor.getContext('2d');
-    
-    const dkCanv_over = document.createElement('canvas');
-    dkCanv_over.width = mapWidthPx;
-    dkCanv_over.height = mapHeightPx;
-    const dkCtx_over = dkCanv_over.getContext('2d');
-    
-    
-    
+
+    // create the drawKit object
     const levelDrawKit = {
+        // wadders = new idea to extend the drawKit
+        wadders: [
+            newCanvasPair(mapWidthPx, mapHeightPx),
+            newCanvasPair(mapWidthPx, mapHeightPx),
+            newCanvasPair(mapWidthPx, mapHeightPx),
+        ],
+
         floors: {
-            floorsOnlyCtx: dkCtx_floorsOnly,
-            floorsOnly: dkCanv_floorsOnly,
+            storedFloor: newCanvasPair(mapWidthPx, mapHeightPx),
             canvas: dkCanv_floor,
-            ctx: dkCtx_floor
+            ctx: dkCanv_floor.getContext('2d')
         },
-        occupants: {
-            canvas: dkCanv_occ,
-            ctx: dkCtx_occ
-        },
-        overlays: {
-            canvas: dkCanv_over,
-            ctx: dkCtx_over
-        }
+        occupants: newCanvasPair(mapWidthPx, mapHeightPx),
+        overlays: newCanvasPair(mapWidthPx, mapHeightPx),
     }
     
+    // draw each of the map layers onto the main floor canvas
     for (let i = 0; i < mapLayers.length; i++) {
         const layer = mapLayers[i];
         levelDrawKit.floors.ctx.drawImage(
@@ -46,11 +30,24 @@ export function createDrawKit(mapLayers, mapWidthPx, mapHeightPx) {
         )
     }
     
-    levelDrawKit.floors.floorsOnlyCtx.drawImage(
+    // write the finished canvas to "storedFloor" (currently is part of the 'floors' object)
+    levelDrawKit.floors.storedFloor.ctx.drawImage(
         levelDrawKit.floors.canvas,
         0, 0, levelDrawKit.floors.canvas.width, levelDrawKit.floors.canvas.height
     )
 
+    // return the complete drawkit
     return levelDrawKit;
+}
 
+// helper function to create a canvas+ctx pair
+function newCanvasPair(width, height) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    return {
+        canvas: canvas,
+        ctx: ctx,
+    }
 }

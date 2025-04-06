@@ -2,7 +2,7 @@ import { GameObject } from "./GameObject.js";
 import { Vector2 } from "../Vector2.js";
 
 export class Trigger extends GameObject {
-    constructor({ name, position, message, condition, action_RUN, action_REJECT, walkable }) {
+    constructor({ name, position, message, condition, action_PROCEED, action_REJECT, walkable }) {
         super({
             position: position ?? new Vector2(0, 0),
         });
@@ -12,8 +12,8 @@ export class Trigger extends GameObject {
         this.message = message ?? "undefined trigger event message";
         
         this.condition = condition ?? null;
-        this.action_RUN =
-            action_RUN ??
+        this.action_PROCEED =
+            action_PROCEED ??
             function () { console.log(`unhandled run case for trigger '${this.name}'`) };;
         this.action_REJECT =
             action_REJECT ??
@@ -28,7 +28,7 @@ export class Trigger extends GameObject {
             shouldRun = this.condition();
         // now run the appropriate action;
         if (shouldRun)
-            this.action_RUN();
+            this.action_PROCEED();
         else
             this.action_REJECT();
     }

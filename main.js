@@ -31,6 +31,7 @@ async function start_game() {
     swordGame.controls.bind();
 
     swordGame.bindLevel(swordGame.levels[0]);
+    // swordGame.bindLevel(swordGame.levels[1]);
     const loadTime = performance.now() - startTime;
     console.log(`starting loop. load time was ${loadTime}`)
     swordGame.gameLoop.start();

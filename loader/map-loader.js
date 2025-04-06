@@ -118,18 +118,19 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                 );
             }
         } else if (cell.occupant instanceof Trigger) {
+            // make a HOUSE out of a door trigger
             if (cell.occupant.name === 'doorTrigger') {
-                console.log(`this doooooodad is a door`)
+                console.log(`this trigger is a door`)
                 cell.occupant.position = new Vector2(gridCells(i), gridCells(j));
                 mapCtx.drawImage(images.house,
-                    0, 0, 144, 208,
-                    gridCells(i - 1) - 8, gridCells(j - 5),
+                    // 0, 0, 144, 208,
+                    gridCells(i - 1) - 6, gridCells(j - 5),
                     144, 208,
                 )
                 overlayCtx.drawImage(images.house,
-                    0, 0, 144, 168,
-                    gridCells(i - 1) - 8, gridCells(j - 5),
-                    144, 168,
+                    0, 0, 144, 161,
+                    gridCells(i - 1) - 6, gridCells(j - 5),
+                    144, 161,
                 )
             } else if (cell.occupant.name === 'door') {
                 cell.occupant.position = new Vector2(gridCells(i), gridCells(j));
@@ -200,12 +201,32 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                         gridCells(2), gridCells(2) // Destination width and height
                     );
 
+                    // overlay canvas gets always gets top 2 cell
+                    overlayCtx.drawImage(
+                        images.tree_S_A,
+                        0, 0, // Crop from (x=0, y=0) in the texture
+                        gridCells(0.5), gridCells(3), // Crop width and height (2x wide, 1x tall)
+                        gridCells(i) - gridCells(0.5), // Destination X
+                        gridCells(j - 2), // Destination Y 
+                        gridCells(0.5), gridCells(3) // Destination width and height
+                    );
+                    // overlay canvas gets always gets top 2 cell
+                    overlayCtx.drawImage(
+                        images.tree_S_A,
+                        gridCells(1.5), 0, // Crop from (x=0, y=0) in the texture
+                        gridCells(0.5), gridCells(3), // Crop width and height (2x wide, 1x tall)
+                        gridCells(i) + gridCells(1), // Destination X
+                        gridCells(j - 2), // Destination Y 
+                        gridCells(0.5), gridCells(3) // Destination width and height
+                    );
+
                     if (grid[j][i - 1] && grid[j][i - 1].occupant === 'largeTree' && check_tree_cell(grid, i - 1, j, 'largeTree')) {
                         // console.log(`there is another tree to the left of ${i},${j}`)
                         // overlay canvas always gets top 2.5 cell (it is 3 high)
                         // also, overlay canvas gets a mesh texture if there's a same tree to its left (todo: check me)
                         overlayCtx.drawImage(
                             images.meshTree,
+                            // draw from 48px in x, draw it 
                             gridCells(0.75), 0, gridCells(2.25), gridCells(2.5),
                             // 96px,
                             gridCells(i-1) + gridCells(0.25), // Destination X
@@ -214,6 +235,7 @@ export function occupantSwitch(mapCtx, overlayCtx, grid, images, i, j) {
                         );
                     } else {
                         // console.log(`no tree to the left of ${i},${j}`)
+
                     }
                 } else {
                     // console.log('skipping tree cell that does not have down,right,down-right neighbours');

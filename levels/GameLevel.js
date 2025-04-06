@@ -36,12 +36,14 @@ export class GameLevel {
         return grid;
     }
 
+    // function to load a map into a gameLevel
     loadMap(map, images, entities, textures) {
         // "LOAD MAP FLOORS"
         const mapLayers = [];
         const mapWidthPx = CELL_PX * this.numGrid.x;
         const mapHeightPx = CELL_PX * this.numGrid.y;
 
+        // build the mapLayers array
         for (let i = 0; i < map.floors.length; i++) {
             const floor = map.floors[i];
             // push a layer for each floor layer; assume the values are filled out for now
@@ -61,6 +63,8 @@ export class GameLevel {
             mapLayers.push(layer);
         }
         console.log(`finished building ${mapLayers.length} map layers for floor`)
+
+        // create the drawKit
         this.drawKit = createDrawKit(mapLayers, mapWidthPx, mapHeightPx);
 
 
@@ -78,57 +82,34 @@ export class GameLevel {
                     occupantSwitch(
                         this.drawKit.occupants.ctx,
                         this.drawKit.overlays.ctx,
-                        this.grid,
-                        images, i, j)
+                        this.grid,images, i, j)
                 }
             }
         }
 
-        const canvas_water_two = document.createElement('canvas');
-        const ctx_water_two = canvas_water_two.getContext('2d')
-        const canvas_water_three = document.createElement('canvas');
-        const ctx_water_three = canvas_water_three.getContext('2d')
-        canvas_water_two.width = mapWidthPx;
-        canvas_water_two.height = mapHeightPx;
-        canvas_water_three.width = mapWidthPx;
-        canvas_water_three.height = mapHeightPx;
-        this.drawKit.water_part_two = {
-            canvas: canvas_water_two,
-            ctx: ctx_water_two,
-        }
-        this.drawKit.water_part_three = {
-            canvas: canvas_water_three,
-            ctx: ctx_water_three,
-        }
+        // draw the occupants layer onto the base floors layer
+        this.drawKit.floors.ctx.drawImage(
+            this.drawKit.occupants.canvas,
+            0,0
+        )
 
-        let waterCount = 0;
-        ctx_water_two.drawImage(
-            this.drawKit.floors.canvas,
-            0, 0, this.drawKit.floors.canvas.width, this.drawKit.floors.canvas.height
-        )
-        ctx_water_three.drawImage(
-            this.drawKit.floors.canvas,
-            0, 0
-        )
-        this.drawKit.wadders = [
-            this.drawKit.floors.canvas,
-            canvas_water_two,
-            canvas_water_three,
-        ]
+        for (let i=0; i<this.drawKit.wadders.length; i++) {
+            const wadder = this.drawKit.wadders[i];
+            wadder.ctx.drawImage(
+                this.drawKit.floors.canvas,
+                0,0
+            )
+        }
+        
         // draw each of the level's cells onto the occupants layer
+        let waterCount = 0;
         for (let j = 0; j < this.numGrid.y; j++) {
             for (let i = 0; i < this.numGrid.x; i++) { 
                 const cell = this.grid[j][i];
                 if (cell.floor === 'water') {
                     waterCount++;
-
-                    // ctx_water_two.fillStyle = 'red'
-                    // ctx_water_two.fillRect(gridCells(i), gridCells(j), CELL_PX, CELL_PX);
-
-                    ctx_water_two.drawImage(textures.water[1], gridCells(i), gridCells(j), CELL_PX, CELL_PX);
-                    ctx_water_three.drawImage(textures.water[2], gridCells(i), gridCells(j), CELL_PX, CELL_PX);
-
-                    // 
+                    this.drawKit.wadders[1].ctx.drawImage(textures.water[1], gridCells(i), gridCells(j), CELL_PX, CELL_PX);
+                    this.drawKit.wadders[2].ctx.drawImage(textures.water[2], gridCells(i), gridCells(j), CELL_PX, CELL_PX);
                 }
             }
         }

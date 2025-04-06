@@ -43,8 +43,20 @@ export function get_game_cutScenes() {
         'Down',
     );
 
-    const L2_door_transition = create_door_transition(swordGame.levels[1].triggers.houseDoor, swordGame.levels[3].triggers.door, swordGame.levels[3], 'Up');
-    const L2_transition_into_house = create_door_transition(swordGame.levels[3].triggers.door, swordGame.levels[1].triggers.houseDoor, swordGame.levels[1], 'Down');
+    const L2_door_transition = create_door_transition(
+        swordGame.levels[1], swordGame.levels[1].triggers.houseDoor,
+        swordGame.levels[3], swordGame.levels[3].triggers.door,
+        'Up',
+        true,
+        false,
+    );
+    const L2_transition_into_house = create_door_transition(
+        swordGame.levels[3], swordGame.levels[3].triggers.door,
+        swordGame.levels[1], swordGame.levels[1].triggers.houseDoor,
+        'Down',
+        false,
+        true
+    );
 
     return {
         level_1_entrance: level_1_entrance,
@@ -102,7 +114,7 @@ function create_entry_boat_cutscene(level, texture, boatStart, boatTarget, dismo
             const newX = boatTarget.x + gridCells(dismountVec.x);
             const newY = boatTarget.y + gridCells(dismountVec.y);
             player.animations.play(`stand${dismountDirection}`);
-            
+
             setTimeout(() => {
                 player.destination.overwrite(newX, newY)
                 player.position.overwrite(newX, newY)
@@ -131,7 +143,7 @@ function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boat
             // return this;
             // this.isRunning = true;
         },
-        
+
 
         step: function () {
             if (!this.isRunning) return;
@@ -159,7 +171,7 @@ function create_exit_boat_cutscene(level, nextLevel, nextCutScene, texture, boat
 }
 
 
-function create_door_arrive_cutScene(door, travelDirection) {
+function create_door_out_cutScene(door, travelDirection, overwriteDoorNew = false) {
     const doorPos = door.position.duplicate();
     const exitVec = direction_to_2D(travelDirection);
     exitVec.x *= CELL_PX;
@@ -167,37 +179,46 @@ function create_door_arrive_cutScene(door, travelDirection) {
     const exitCell = add_two_vectors(doorPos, exitVec);
 
     return new CutScene({
-        launch: function() {
+        launch: function () {
             player.isFacing = travelDirection;
             player.position.overwrite(doorPos.x, doorPos.y);
-
             swordGame.renderer.camera.centreOn(exitCell.x, exitCell.y)
             player.destination.overwrite(exitCell.x, exitCell.y)
             return this;
         },
-        step: function() {
+        step: function () {
             // no need to handle movement, only need to change the destination in this context and movement will still be handled
             if (player.position.x === exitCell.x && player.position.y === exitCell.y) {
                 this.finish();
             }
         },
-        finish: function() {
+        finish: function () {
+            if (overwriteDoorNew) { redrawHouseDoorOnWadders(swordGame.currentLevel, doorPos); }
             swordGame.currentCutScene = null;
             swordGame.controlsBlocked = false;
         }
     });
 }
 
-function create_door_transition(doorIn, doorOut, newLevel, travelDirection) {
+function create_door_transition(oldLevel, doorIn, newLevel, doorOut, travelDirection, overwriteDoorOld = false, overwriteDoorNew = false) {
     const inDoorPos = doorIn.position.duplicate();
     const outDoorPos = doorOut.position.duplicate();
 
-    return new CutScene({
-        launch: function() {
+    // pass the overwriteDoorNew to the arrival cutScene
+    const doorOutCutScene = create_door_out_cutScene(doorOut, travelDirection, overwriteDoorNew)
+
+    // create the doorIn scene with the doorOut scene contained in its finish()
+    const doorInCutScene = new CutScene({
+        launch: function () {
+            // if the doorIn "opens" before it is walked through
+            if (overwriteDoorOld) { openHouseDoorOnWadders(oldLevel, inDoorPos); }
+            // if the doorOut "opens" before it is walked through (ie. exiting a house)
+            if (overwriteDoorNew) { openHouseDoorOnWadders(newLevel, outDoorPos); }
+            // update the player data
             player.isFacing = travelDirection;
             player.animations.play(`walk${travelDirection}`);
             player.destination.overwrite(inDoorPos.x, inDoorPos.y);
-            return this;
+            return this;    
         },
 
         step: function () {
@@ -205,10 +226,36 @@ function create_door_transition(doorIn, doorOut, newLevel, travelDirection) {
                 this.finish();
             }
         },
-        finish: function() {
+        finish: function () {
+            // "close" an opened door in the old map before loading the new one
+            if (overwriteDoorOld) { redrawHouseDoorOnWadders(oldLevel, inDoorPos); }
+
+            // note: we handle only the 'closing' of an outDoor in the out cutScene
             swordGame.load_new_level(newLevel, {
-                cutScene: create_door_arrive_cutScene(doorOut, travelDirection),
+                cutScene: doorOutCutScene,
             })
+
         }
     })
+
+    // return the doorIn cutScene, whose finish function loads a new level and plugs in the doorOut cutScene
+    return doorInCutScene;
+}
+
+function redrawHouseDoorOnWadders(level, doorPos) {
+    for (let i = 0; i < level.drawKit.wadders.length; i++) {
+        level.drawKit.wadders[i].ctx.drawImage(
+            swordGame.images.house,
+            41, 161, 24, 36,
+            doorPos.x + 3, doorPos.y + 1, 24, 36
+        )
+    }
+}
+
+function openHouseDoorOnWadders(level, doorPos) {
+    for (let i = 0; i < level.drawKit.wadders.length; i++) {
+        const ctx = level.drawKit.wadders[i].ctx;
+        ctx.fillStyle = 'black';
+        ctx.fillRect(doorPos.x + 3, doorPos.y + 1, 24, 36)
+    }
 }

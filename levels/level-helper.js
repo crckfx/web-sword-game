@@ -5,6 +5,7 @@ import { Trigger } from "../classes/objects/Trigger.js";
 import { Vector2 } from "../classes/Vector2.js";
 import { NUM_GRID } from "../document.js";
 import { get_dialogue_choice } from "../helper/gameHelpers.js";
+import { gridCells } from "../helper/grid.js";
 import { player, swordGame } from "../loader/world-loader.js";
 import { map_5 } from "../maps/map_5.js";
 import { map_expedition } from "../maps/map_expedition.js";
@@ -34,7 +35,7 @@ export function load_levels() {
                         return index > -1
                     },
 
-                    action_RUN: function () {
+                    action_PROCEED: function () {
                         swordGame.launch_set_of_dialogues(new SetOfDialogues({
                             // heading: 'boat?? maybe?',
                             dialogues: [
@@ -90,10 +91,11 @@ export function load_levels() {
                 name: 'doorTrigger',
                 message: 'to go into da house',
                 position: new Vector2(0, 0),
-                action_RUN: function () {
+                action_PROCEED: function () {
                     player.destination.overwrite(player.position.x, player.position.y);
                     swordGame.controlsBlocked = true;
                     player.animations.play('standUp')
+                    // the drawKit handling is done BY the cutScene
                     setTimeout(() => {
                         swordGame.currentCutScene = swordGame.cutScenes.L2_door_transition.launch();
                     }, 200);
@@ -118,7 +120,7 @@ export function load_levels() {
                     name: 'return home trigger',
                     // texture: swordGame.images.boat_up,
                     message: 'to return back to the first map',
-                    action_RUN: function () {
+                    action_PROCEED: function () {
                         swordGame.launch_set_of_dialogues(
                             new SetOfDialogues({
                                 dialogues: [
@@ -128,7 +130,7 @@ export function load_levels() {
                                             swordGame.exitDialogue();
                                             swordGame.controlsBlocked = true;
                                             setTimeout(function () {
-                                                swordGame.currentCutScene = swordGame.cutScenes.level_2_exit                                                
+                                                swordGame.currentCutScene = swordGame.cutScenes.level_2_exit
                                                 swordGame.currentCutScene.launch();
                                                 setTimeout(function () {
                                                     swordGame.currentCutScene.isRunning = true;
@@ -171,7 +173,7 @@ export function load_levels() {
                 name: 'door',
                 message: 'to go back outta da house',
                 position: new Vector2(null, null),
-                action_RUN: function () {
+                action_PROCEED: function () {
                     swordGame.controlsBlocked = true;
                     player.animations.play('standDown')
                     setTimeout(() => {

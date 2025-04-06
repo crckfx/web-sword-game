@@ -27,17 +27,20 @@ export function remove_item_from_cell(game, item) {
     const grid = game.grid;
     if (grid[gridY] && grid[gridY][gridX]) {
         console.log(`should probably remove item from map at '${gridX},${gridY}'`)
-        // hopefully grab the correct drawkit for this :)
-        const texture = game.renderer.drawKit.floors;
-        texture.ctx.clearRect(posX, posY, CELL_PX, CELL_PX);
-        // now we need to slice out `game.textures.mapFloor.floorOnly` at this same position and draw it at this same position
-        texture.ctx.drawImage(texture.floorsOnly,
-            posX, posY, CELL_PX, CELL_PX,
-            posX, posY, CELL_PX, CELL_PX
-        )
+        for (let i = 0; i < game.currentLevel.drawKit.wadders.length; i++) {
+            const ctx = game.currentLevel.drawKit.wadders[i].ctx;
+            ctx.clearRect(posX, posY, CELL_PX, CELL_PX);
+
+            ctx.drawImage(
+                // now we need to slice out `game.textures.mapFloor.floorOnly` at this same position and draw it at this same position
+                game.renderer.drawKit.floors.storedFloor.canvas,
+                posX, posY, CELL_PX, CELL_PX,
+                posX, posY, CELL_PX, CELL_PX
+            );
+        }
         item.position = null;
         grid[gridY][gridX].occupant = null;
     } else {
         console.warn(`oh no, item doesn't exist at '${x},${y}'`)
-    };    
+    };
 }

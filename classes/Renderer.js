@@ -67,7 +67,7 @@ export class Renderer {
         // draw it up
         // draw the **floor+doodad** base texture
         this.ctx.drawImage(
-            this.drawKit.wadders[this.game.waterAnimations.frame],
+            this.drawKit.wadders[this.game.waterAnimations.frame].canvas,
             this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,    // draw a section of the floor
             0, 0, this.camera.size.x, this.camera.size.y                 // at this specified pos + size
         );
