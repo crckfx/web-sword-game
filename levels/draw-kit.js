@@ -12,11 +12,8 @@ export function createDrawKit(mapLayers, mapWidthPx, mapHeightPx) {
             newCanvasPair(mapWidthPx, mapHeightPx),
         ],
 
-        floors: {
-            storedFloor: newCanvasPair(mapWidthPx, mapHeightPx),
-            canvas: dkCanv_floor,
-            ctx: dkCanv_floor.getContext('2d')
-        },
+        storedFloor: newCanvasPair(mapWidthPx, mapHeightPx), // moved outside of "floors"
+        floors: newCanvasPair(mapWidthPx, mapHeightPx),
         occupants: newCanvasPair(mapWidthPx, mapHeightPx),
         overlays: newCanvasPair(mapWidthPx, mapHeightPx),
     }
@@ -30,8 +27,8 @@ export function createDrawKit(mapLayers, mapWidthPx, mapHeightPx) {
         )
     }
     
-    // write the finished canvas to "storedFloor" (currently is part of the 'floors' object)
-    levelDrawKit.floors.storedFloor.ctx.drawImage(
+    // write the finished canvas to "storedFloor" 
+    levelDrawKit.storedFloor.ctx.drawImage(
         levelDrawKit.floors.canvas,
         0, 0, levelDrawKit.floors.canvas.width, levelDrawKit.floors.canvas.height
     )

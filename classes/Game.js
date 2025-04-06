@@ -166,7 +166,6 @@ export class Game {
             this.currentDialogueSet = DS;
             DS.launch();
 
-
             const d = this.currentDialogueSet.getDialogue();
 
             if (d.options) {
@@ -250,7 +249,7 @@ export class Game {
                     // the occupant is a trigger
                     if (occupant.walkable) {
                         // the trigger is walkable
-                        occupant.tryRun(); // try run the trigger
+                        occupant.tryProceed(); // try run the trigger
                     }
                 }
             }
@@ -328,11 +327,11 @@ export class Game {
                 console.log(`Interacted with item ${t.name}`);
                 worldInteract_Item(this, t);
             } else if (t instanceof Trigger) {
-                t.tryRun();
+                t.tryProceed();
             } else if (t instanceof Doodad) {
                 console.log(`interacted with doodad ${t.name}`)
                 if (t.trigger) {
-                    t.trigger.tryRun();
+                    t.trigger.tryProceed();
                 }
             } else {
                 console.log("not sure what you're interacting with", t);

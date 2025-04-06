@@ -33,7 +33,7 @@ export function remove_item_from_cell(game, item) {
 
             ctx.drawImage(
                 // now we need to slice out `game.textures.mapFloor.floorOnly` at this same position and draw it at this same position
-                game.renderer.drawKit.floors.storedFloor.canvas,
+                game.renderer.drawKit.storedFloor.canvas,
                 posX, posY, CELL_PX, CELL_PX,
                 posX, posY, CELL_PX, CELL_PX
             );

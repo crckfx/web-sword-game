@@ -2,6 +2,7 @@ import { createDialogueDrawKit } from "../helper/promptMenu.js";
 import { createInventoryBackground, createInventoryItemsTexture } from "../helper/invMenu.js";
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../helper/extract-helper.js";
 import { saveCanvasAsPNG } from "../helper/random.js";
+import { createPauseMenuDrawKit } from "../helper/pauseMenu.js";
 
 export async function loadImage(url) {
     return new Promise((resolve, reject) => {
@@ -96,6 +97,7 @@ export async function load_image_resources(images, textures) {
         // reserving the "textures" names for alternate data structures (ie. not just an img or canvas)
         // the dialogue and inventory textures
         textures.sampleText = createDialogueDrawKit(images.dialogue_background);
+        textures.pauseMenu = createPauseMenuDrawKit();
         textures.inventoryBg = createInventoryBackground(images.inventory_border);
         textures.inventoryItems = createInventoryItemsTexture();
         // ^^^^ these are all SPECIAL textures (contain a canvas and a ctx for redraws)

@@ -147,10 +147,17 @@ export class Renderer {
 
     // draw the pause menu (currently still HTML {unlike inventory/bag} )
     drawPauseMenu() {
+        // fill a translucent background
         this.ctx.fillStyle = '#000000aa';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.font = "12px serif";
-        this.ctx.fillStyle = 'red';
+
+        // this.ctx.fillStyle = 'red';
+        this.ctx.drawImage(
+            this.game.textures.pauseMenu.canvas,
+            gridCells(0.5), gridCells(2)
+        )
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = "600 20px Courier";
         this.ctx.fillText("paused", 0, 40)
     }
 

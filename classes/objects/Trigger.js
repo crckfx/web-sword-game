@@ -20,7 +20,7 @@ export class Trigger extends GameObject {
             function () { console.log(`unhandled reject case for trigger '${this.name}'`) };
     }
 
-    tryRun() {
+    tryProceed() {
         // default to true
         let shouldRun = true;
         // if there's a condition function, overwrite shouldRun by running it
