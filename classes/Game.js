@@ -1,14 +1,12 @@
 import { GameControls } from "./controls/GameControls.js";
 import { Renderer } from "./Renderer.js";
 import { Item } from "./objects/Item.js";
-import { getHtmlControls, CAMERA_CELLS, CELL_PX, pauseMenu, NUM_GRID } from "../document.js";
+import { getHtmlControls, CAMERA_CELLS, CELL_PX, } from "../document.js";
 import { GameLoop } from "./GameLoop.js";
 import { cellCoords, gridCells, moveTowards } from "../helper/grid.js";
 import { Vector2 } from "./Vector2.js";
 import { Entity } from "./objects/Entity.js";
 import { player } from "../loader/world-loader.js";
-import { tryPromptMove } from "../helper/promptMenu.js";
-import { tryInventoryMove } from "../helper/invMenu.js";
 import { direction_to_2D } from "../helper/directions.js";
 
 import { SetOfDialogues } from "./dialogue/SetOfDialogues.js";

@@ -160,7 +160,6 @@ export class GameControls {
         document.addEventListener('pointerup', this.pointerHandler.handlePointerUp);
         document.addEventListener('pointermove', this.pointerHandler.handlePointerMove);
 
-        this.HtmlControls.pauseMenu.resumeBtn.onclick = () => this.bang_resume(this.game);
     }
 
 }

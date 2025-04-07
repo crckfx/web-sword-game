@@ -22,11 +22,6 @@ async function start_game() {
     player.receiveItem(new Item({ name: 'ticket', invTexture: swordGame.images.ticket, description: "Ticket to some boat ride." }));
     modifyInventoryTexture(swordGame.textures.inventoryItems);
 
-    // (for debugging) map change buttons on the pauseMenu
-    swordGame.controls.HtmlControls.pauseMenu.load_main_map_btn.onclick = () =>
-        swordGame.load_new_level(swordGame.levels[0]);
-    swordGame.controls.HtmlControls.pauseMenu.load_expedition_map_btn.onclick = () =>
-        swordGame.load_new_level(swordGame.levels[1]);
 
     swordGame.controls.bind();
 

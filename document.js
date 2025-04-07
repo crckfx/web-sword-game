@@ -17,7 +17,7 @@ export const ctx = canvas.getContext("2d");
 export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');
 const panelRight = document.getElementById('panel_right');
-export const pauseMenu = document.getElementById('pauseMenu');
+// export const pauseMenu = document.getElementById('pauseMenu');
 
 
 export const MIDDLE_CELL = {
@@ -58,8 +58,7 @@ function resize() {
     const finalHeight = height - PADDING;
     canvas.style.width = `${finalWidth}px`;
     canvas.style.height = `${finalHeight}px`;
-    pauseMenu.style.width = `${finalWidth}px`;
-    pauseMenu.style.height = `${finalHeight}px`;
+
 
 }
 
@@ -77,13 +76,7 @@ export function getHtmlControls() {
             X: document.getElementById('control_X'),
             Y: document.getElementById('control_Y'),
         },
-        pauseMenu: {
-            container: document.getElementById('pauseMenu'),
-            resumeBtn: document.getElementById('pauseMenu_resumeBtn'),
-            load_main_map_btn: document.getElementById('pauseMenu_load_main_map_btn'),
-            load_expedition_map_btn: document.getElementById('pauseMenu_load_expedition_map_btn'),
 
-        },
     };
 
     return HTMLcontrols;
