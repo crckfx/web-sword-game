@@ -17,8 +17,6 @@ export const ctx = canvas.getContext("2d");
 export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');
 const panelRight = document.getElementById('panel_right');
-// export const pauseMenu = document.getElementById('pauseMenu');
-
 
 export const MIDDLE_CELL = {
     x: CELL_PX * ((CAMERA_CELLS.x - 1) / 2),
