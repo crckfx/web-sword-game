@@ -108,7 +108,7 @@ export function modifyInventoryTexture(texture) {
             const invTexture = slot.invTexture ?? swordGame.images.questionMark;
             const x = i % 6;
             const y = i < 6 ? 0 : 1;
-            console.log(`should update an inventory texture at slot i:${i}, pos:'${x}','${y}'`);
+            // console.log(`should update an inventory texture at slot i:${i}, pos:'${x}','${y}'`);
             // draw the background texture
             texture.ctx.drawImage(
                 invTexture,

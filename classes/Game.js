@@ -133,13 +133,11 @@ export class Game {
         this.isPaused = true;
         console.log("pause game");
         this.renderer.drawPauseMenu();
-        // pauseMenu.classList.add('paused');
         this.controlsBlocked = true;
     }
 
     resume() {
         console.log("resume game");
-        // pauseMenu.classList.remove('paused');
         if (!this.currentCutScene) { this.controlsBlocked = false; }
         this.isPaused = false;
     }

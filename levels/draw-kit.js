@@ -13,7 +13,7 @@ export function createDrawKit(mapLayers, mapWidthPx, mapHeightPx) {
         ],
 
         storedFloor: newCanvasPair(mapWidthPx, mapHeightPx), // moved outside of "floors"
-        floors: newCanvasPair(mapWidthPx, mapHeightPx),
+        mapFloorCombined: newCanvasPair(mapWidthPx, mapHeightPx),
         occupants: newCanvasPair(mapWidthPx, mapHeightPx),
         overlays: newCanvasPair(mapWidthPx, mapHeightPx),
     }
@@ -21,16 +21,20 @@ export function createDrawKit(mapLayers, mapWidthPx, mapHeightPx) {
     // draw each of the map layers onto the main floor canvas
     for (let i = 0; i < mapLayers.length; i++) {
         const layer = mapLayers[i];
-        levelDrawKit.floors.ctx.drawImage(
+        levelDrawKit.mapFloorCombined.ctx.drawImage(
+            layer.texture.canvas,
+            0, 0, layer.texture.canvas.width, layer.texture.canvas.height
+        )
+        levelDrawKit.storedFloor.ctx.drawImage(
             layer.texture.canvas,
             0, 0, layer.texture.canvas.width, layer.texture.canvas.height
         )
     }
     
-    // write the finished canvas to "storedFloor" 
-    levelDrawKit.storedFloor.ctx.drawImage(
-        levelDrawKit.floors.canvas,
-        0, 0, levelDrawKit.floors.canvas.width, levelDrawKit.floors.canvas.height
+    // write the 'finished' canvas to "storedFloor" (remember, the 'floors')
+    levelDrawKit.mapFloorCombined.ctx.drawImage(
+        levelDrawKit.storedFloor.canvas,
+        0, 0, levelDrawKit.storedFloor.canvas.width, levelDrawKit.storedFloor.canvas.height
     )
 
     // return the complete drawkit

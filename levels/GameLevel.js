@@ -88,7 +88,7 @@ export class GameLevel {
         }
 
         // draw the occupants layer onto the base floors layer
-        this.drawKit.floors.ctx.drawImage(
+        this.drawKit.mapFloorCombined.ctx.drawImage(
             this.drawKit.occupants.canvas,
             0,0
         )
@@ -96,7 +96,7 @@ export class GameLevel {
         for (let i=0; i<this.drawKit.wadders.length; i++) {
             const wadder = this.drawKit.wadders[i];
             wadder.ctx.drawImage(
-                this.drawKit.floors.canvas,
+                this.drawKit.mapFloorCombined.canvas,
                 0,0
             )
         }

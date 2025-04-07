@@ -159,6 +159,7 @@ export class Renderer {
         this.ctx.fillStyle = 'white';
         this.ctx.font = "600 20px Courier";
         this.ctx.fillText("paused", 0, 40)
+        // this.ctx
     }
 
     drawInventory() {
