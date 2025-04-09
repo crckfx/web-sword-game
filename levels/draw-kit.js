@@ -42,7 +42,7 @@ export function createDrawKit(mapLayers, mapWidthPx, mapHeightPx) {
 }
 
 // helper function to create a canvas+ctx pair
-function newCanvasPair(width, height) {
+export function newCanvasPair(width, height) {
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;

@@ -43,6 +43,16 @@ export class Game {
 
     gamepad = null;
 
+    pauseMenu = {
+        index: 0,
+        options: [
+            "resume",
+            "undefined 1",
+            "undefined 2",
+            "undefined 3",
+        ]
+    };
+
 
 
     constructor() {

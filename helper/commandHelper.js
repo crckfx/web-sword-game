@@ -1,10 +1,15 @@
 import { player } from "../loader/world-loader.js";
 import { tryInventoryMove } from "./invMenu.js";
+import { tryPauseMove } from "./pauseMenu.js";
 import { tryPromptMove } from "./promptMenu.js";
+
 
 // aka "player presses 'A' with a valid target"
 export function command_interact(game) {
     if (game.isPaused) {
+        //
+        if (game.pauseMenu.index === 0) game.resume();
+        // 
         return;
     } else if (game.isInDialogue) {
         if (game.currentDialogue !== null)
@@ -20,9 +25,19 @@ export function command_interact(game) {
 
 // function to try a mov whenever dpad gets pressed (in case dpad);
 export function command_dpad(game, direction) {
+
     if (direction === null) {
         game.dpadTime = 0;
         return;
+    }
+    if (game.isPaused) {
+        const index = tryPauseMove(direction);
+        if (index !== undefined) {
+            console.log("ayy check out mr move in pause", index);
+            // game.renderer.redrawPauseMenu(index);
+        }
+
+
     }
     // check and trigger inventory move if game is in inventory?
     if (game.isInInventory) {

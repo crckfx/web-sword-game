@@ -7,16 +7,17 @@
 
     <link rel="stylesheet" href="./layout.css">
     <link rel="stylesheet" href="./controls.css">
-    <link rel="stylesheet" href="./menu.css">
 </head>
 
 <body>
     <div class="container">
+
+        <!-- canvas / game screen -->
         <div id="panel_center" class="item large">
-
             <canvas id="game_canv"></canvas>
-
         </div>
+
+        <!-- the left 'controller' -->
         <div id="panel_left" class="panel item small control">
             <div class="ctrlblock">
                 <svg width="48" height="48" viewBox="0 0 48 48">
@@ -27,25 +28,28 @@
                 </svg>
             </div>
         </div>
+
+        <!-- the right 'controller' -->
         <div id="panel_right" class="panel item small control">
             <div class="ctrlblock">
                 <svg width="48" height="48" viewBox="0 0 48 48">
+
                     <circle r="8" cx="24" cy="10" class="control" id="control_Y" />
                     <text x="24" y="11" class="btn_text" text-anchor="middle" dominant-baseline="middle">Y</text>
 
                     <circle r="8" cx="24" cy="38" class="control" id="control_A" />
                     <text x="24" y="39" class="btn_text" text-anchor="middle" dominant-baseline="middle">A</text>
 
-
                     <circle r="8" cx="10" cy="24" class="control" id="control_X" />
                     <text x="10" y="25" class="btn_text" text-anchor="middle" dominant-baseline="middle">X</text>
 
-
                     <circle r="8" cx="38" cy="24" class="control" id="control_B" />
                     <text x="38" y="25" class="btn_text" text-anchor="middle" dominant-baseline="middle">B</text>
+
                 </svg>
             </div>
         </div>
+
     </div>
 
     <script type="module" src="./main.js"></script>

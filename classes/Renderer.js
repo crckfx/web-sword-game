@@ -92,7 +92,7 @@ export class Renderer {
         this.ctx.drawImage(
             // player.texture[index],
             player.texture[player.frame],
-            player.position.x - this.camera.pos.x, player.position.y - 8 - this.camera.pos.y,
+            player.position.x - this.camera.pos.x, player.position.y - 12 - this.camera.pos.y,
             CELL_PX, CELL_PX
         );
 
@@ -113,7 +113,7 @@ export class Renderer {
             entity.getEntitySprite(),
             // entity.texture[entity.frame],
             entity.position.x - camX,
-            entity.position.y - 8 - camY,
+            entity.position.y - 12 - camY,
             CELL_PX,
             CELL_PX
         );
@@ -151,20 +151,21 @@ export class Renderer {
         this.ctx.fillStyle = '#000000aa';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+        const baseCanv = this.game.textures.pauseMenu.canvas;
         // this.ctx.fillStyle = 'red';
         this.ctx.drawImage(
-            this.game.textures.pauseMenu.canvas,
-            gridCells(0.5), gridCells(2)
+            baseCanv, gridCells(0.5), gridCells(2)
         )
-        this.ctx.fillStyle = 'white';
-        this.ctx.font = "600 20px Courier";
-        this.ctx.fillText("paused", 0, 40)
+
+        // this.ctx.fillStyle = 'white';
+        // this.ctx.font = "600 20px Courier";
+        // this.ctx.fillText("paused", 0, 40)
         // this.ctx
+
+        // this.ctx.
     }
 
     drawInventory() {
-        this.ctx.fillstyle = "#000000aa";
-        // this.ctx.fillRect(0,0,this.canvas.width, this.canvas.height)
         // draw the inventory background
         const posX = CELL_PX * 1.75;
         const posY = CELL_PX * 0.75;

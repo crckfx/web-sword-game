@@ -1,16 +1,11 @@
+import { newCanvasPair } from "../levels/draw-kit.js";
+import { swordGame } from "../loader/world-loader.js";
+import { direction_to_1D } from "./directions.js";
 import { gridCells } from "./grid.js";
 
 // function to create the base dialogue layout
 export function createPauseMenuDrawKit() {
-    const pauseOptions = [
-        "resume",
-        "undefined",
-        "undefined",
-        "undefined",
-    ]
-
-
-   // get the pixel sizes for the texture (relative to the main pixel base) 
+    // get the pixel sizes for the texture (relative to the main pixel base) 
     const widthPx = gridCells(10);
     const heightPx = gridCells(5);
     // create a canvas, set its size, get a context
@@ -22,22 +17,21 @@ export function createPauseMenuDrawKit() {
     // return a special 'texture' (including context)
 
     ctx.fillStyle = 'green'
-    ctx.fillRect(0,0,canvas.width, canvas.height)
-    ctx.fillStyle = 'white';
-    ctx.font = "600 20px Courier";
-    ctx.fillText("paused", 0, 40)
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     // draw a box
-    const optionWidth = canvas.width/2 - 12;
+    const optionWidth = canvas.width / 2 - 12;
     const optionHeight = 24;
     const optionStartX = canvas.width / 2;
+    ctx.fillStyle = 'white';
+    ctx.font = "600 20px Courier";
     ctx.strokeStyle = 'white';
 
     // four options?
-    for (let i=0; i<pauseOptions.length; i++) {
+    for (let i = 0; i < swordGame.pauseMenu.options.length; i++) {
         const offset_y = i * 36 + 12;
         ctx.strokeRect(optionStartX, offset_y, optionWidth, optionHeight);
-        ctx.fillText(pauseOptions[i], optionStartX + 4, 30 + i*36)
+        ctx.fillText(swordGame.pauseMenu.options[i], optionStartX + 4, 30 + i * 36)
     }
 
 
@@ -47,5 +41,30 @@ export function createPauseMenuDrawKit() {
         ctx: ctx,
         widthPx: widthPx,
         heightPx: heightPx,
+        selector: newCanvasPair(widthPx, heightPx)
     }
 }
+
+export function tryPauseMove(direction) {
+    if (direction === 'Left' || direction === 'Right') {
+        return;
+    }
+
+    if (direction === 'Up' || direction === 'Down') {
+
+        const moveDir1D = direction_to_1D(direction);
+        // console.log(`move in pause menu?`);
+        const result = swordGame.pauseMenu.index + moveDir1D;
+        if (result < 0) {
+            swordGame.pauseMenu.index = swordGame.pauseMenu.options.length - 1;
+        } else if (result > swordGame.pauseMenu.options.length - 1) {
+            swordGame.pauseMenu.index = 0;
+        } else {
+            swordGame.pauseMenu.index = result;
+        }
+
+        return swordGame.pauseMenu.index;
+    }
+}
+
+// export function 
