@@ -21,7 +21,7 @@ export function createPauseMenuDrawKit() {
 
     // draw a box
     const optionWidth = canvas.width / 2 - 12;
-    const optionHeight = 24;
+    const optionHeight = 28;
     const optionStartX = canvas.width / 2;
     ctx.fillStyle = 'white';
     ctx.font = "600 20px Courier";
@@ -37,6 +37,7 @@ export function createPauseMenuDrawKit() {
 
     return {
         // image: backgroundImage, // for use later as a static background
+        // baseCanv: newCanvasPair(widthPx, heightPx),
         canvas: canvas,
         ctx: ctx,
         widthPx: widthPx,
@@ -51,7 +52,6 @@ export function tryPauseMove(direction) {
     }
 
     if (direction === 'Up' || direction === 'Down') {
-
         const moveDir1D = direction_to_1D(direction);
         // console.log(`move in pause menu?`);
         const result = swordGame.pauseMenu.index + moveDir1D;

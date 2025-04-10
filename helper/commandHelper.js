@@ -34,7 +34,8 @@ export function command_dpad(game, direction) {
         const index = tryPauseMove(direction);
         if (index !== undefined) {
             console.log("ayy check out mr move in pause", index);
-            // game.renderer.redrawPauseMenu(index);
+            // game.renderer.redrawPauseSelector();
+            game.renderer.drawPauseMenu();
         }
 
 

@@ -47,6 +47,7 @@ export function newCanvasPair(width, height) {
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
     return {
         canvas: canvas,
         ctx: ctx,

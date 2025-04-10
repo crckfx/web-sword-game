@@ -9,12 +9,16 @@
 ## Pause Menu
 the idea is: store and draw a 'position' in the pause menu; like the **inventory** or **prompt dialogues**
 
-- [x] *create pauseMenu in Game context (ie. replace htmlControls' pauseMenu)*
-- [x] *keep track of pauseMenu position*
-- [ ] *draw a position in the pauseMenu*
+- [x] create pauseMenu in Game context (ie. replace htmlControls' pauseMenu)
+- [x] keep track of pauseMenu position
+- [x] draw a position in the pauseMenu
+- [ ] employ some menu options other than 'resume'
 
-
+**bonus**
+- [ ] use textures for pauseMenu (like in )
+- [ ] *(optional)* turn this process into a menu generator thing
 
 
 ## General
 - [x] (possibly) shift the player (and entities) up 1-4 pixels - *currently player is offset -12px*
+- [ ] ?

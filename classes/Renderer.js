@@ -145,24 +145,39 @@ export class Renderer {
         this.ctx.strokeRect(x, y, CELL_PX);
     }
 
-    // draw the pause menu (currently still HTML {unlike inventory/bag} )
-    drawPauseMenu() {
+
+    drawPauseBackground() {
         // fill a translucent background
         this.ctx.fillStyle = '#000000aa';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);        
+    }
 
+    // draw the pause menu 
+    drawPauseMenu() {
+        this.redrawPauseSelector();        
         const baseCanv = this.game.textures.pauseMenu.canvas;
-        // this.ctx.fillStyle = 'red';
+        const selectorCanvas = this.game.textures.pauseMenu.selector.canvas;
         this.ctx.drawImage(
             baseCanv, gridCells(0.5), gridCells(2)
         )
+        this.ctx.drawImage(
+            selectorCanvas, gridCells(0.5), gridCells(2)
+        )
+    }
 
-        // this.ctx.fillStyle = 'white';
-        // this.ctx.font = "600 20px Courier";
-        // this.ctx.fillText("paused", 0, 40)
-        // this.ctx
+    redrawPauseSelector() {
+        const selectorCanvas = this.game.textures.pauseMenu.selector.canvas;
+        const selectorCtx = this.game.textures.pauseMenu.selector.ctx;
 
-        // this.ctx.
+        selectorCtx.clearRect(0, 0, selectorCanvas.width, selectorCanvas.height);
+        selectorCtx.strokeStyle = '#FF0000FF';
+
+        const offset_y = this.game.pauseMenu.index * 36 + 12;
+        const optionWidth = selectorCanvas.width / 2 - 12;
+        const optionHeight = 24;
+        const optionStartX = selectorCanvas.width / 2;
+
+        selectorCtx.strokeRect(optionStartX, offset_y, optionWidth, optionHeight);
     }
 
     drawInventory() {

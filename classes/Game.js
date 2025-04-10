@@ -139,7 +139,8 @@ export class Game {
     // pause and resume game functions
     pause() {
         this.isPaused = true;
-        console.log("pause game");
+        console.log("pause game");       
+        this.renderer.drawPauseBackground();
         this.renderer.drawPauseMenu();
         this.controlsBlocked = true;
     }
