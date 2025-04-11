@@ -4,49 +4,35 @@ import { direction_to_1D } from "./directions.js";
 import { gridCells } from "./grid.js";
 
 // function to create the base dialogue layout
-export function createPauseMenuDrawKit() {
-    // get the pixel sizes for the texture (relative to the main pixel base) 
-    const widthPx = gridCells(10);
-    const heightPx = gridCells(5);
+export function createPauseMenuDrawKit(menu, widthPx, heightPx) {
     const baseCanv = newCanvasPair(widthPx, heightPx);
-    // create a canvas, set its size, get a context
-    const canvas = document.createElement('canvas');
-    canvas.width = widthPx;
-    canvas.height = heightPx;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    ctx.imageSmoothingEnabled = false;
-    // return a special 'texture' (including context)
-
-    ctx.fillStyle = 'green'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     // draw a box
-    const optionWidth = canvas.width / 2 - 12;
+    const optionWidth = widthPx / 2 - 12;
     const optionHeight = 28;
     const optionStartX = gridCells(3);
-    ctx.fillStyle = 'white';
-    ctx.font = "600 24px Courier";
-    ctx.strokeStyle = 'white';
+
+    baseCanv.ctx.fillStyle = 'green'
+    baseCanv.ctx.fillRect(0, 0, widthPx, heightPx)
+    baseCanv.ctx.fillStyle = 'white';
+    baseCanv.ctx.font = "600 24px Courier";
+    baseCanv.ctx.strokeStyle = 'white';
 
     // four options?
-    for (let i = 0; i < swordGame.pauseMenu.options.length; i++) {
+    for (let i = 0; i < menu.options.length; i++) {
         const offset_y = 9 + i * 36;
-        ctx.strokeRect(optionStartX, offset_y, optionWidth, optionHeight);
-        ctx.fillText(swordGame.pauseMenu.options[i], optionStartX + 4, 30 + i * 36)
+        baseCanv.ctx.strokeRect(optionStartX, offset_y, optionWidth, optionHeight);
+        baseCanv.ctx.fillText(menu.options[i], optionStartX + 4, 30 + i * 36)
     }
 
-
     return {
-        // image: backgroundImage, // for use later as a static background
-        baseCanv: newCanvasPair(widthPx, heightPx),
-        canvas: canvas,
-        ctx: ctx,
-        widthPx: widthPx,
-        heightPx: heightPx,
-        optionWidth: optionWidth,
-        optionHeight: optionHeight,
-        optionStartX: optionStartX,
-        selector: newCanvasPair(widthPx, heightPx)
+        baseCanv: baseCanv, // the actual menu pair
+        selector: newCanvasPair(widthPx, heightPx), // an overlay pair for the menu's selector
+        widthPx: widthPx,               // pause menu sizing
+        heightPx: heightPx,             // pause menu sizing
+        optionWidth: optionWidth,       // menu option sizing
+        optionHeight: optionHeight,     // menu option sizing
+        optionStartX: optionStartX,     // menu option sizing
     }
 }
 

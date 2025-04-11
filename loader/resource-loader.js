@@ -3,6 +3,7 @@ import { createInventoryBackground, createInventoryItemsTexture } from "../helpe
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../helper/extract-helper.js";
 import { saveCanvasAsPNG } from "../helper/random.js";
 import { createPauseMenuDrawKit } from "../helper/pauseMenu.js";
+import { gridCells } from "../helper/grid.js";
 
 export async function loadImage(url) {
     return new Promise((resolve, reject) => {
@@ -99,7 +100,6 @@ export async function load_image_resources(game) {
         // reserving the "textures" names for alternate data structures (ie. not just an img or canvas)
         // the dialogue and inventory textures
         textures.sampleText = createDialogueDrawKit(images.dialogue_background);
-        textures.pauseMenu = createPauseMenuDrawKit();
         textures.inventoryBg = createInventoryBackground(images.inventory_border);
         textures.inventoryItems = createInventoryItemsTexture();
         // ^^^^ these are all SPECIAL textures (contain a canvas and a ctx for redraws)

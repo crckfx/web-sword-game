@@ -52,7 +52,8 @@ export class Game {
             "?? 1",
             "?? 2",
             "?? 3",
-        ]
+        ],
+        
     };
 
 
@@ -90,6 +91,9 @@ export class Game {
         // 
         this.waterAnimations = get_standard_water_animation();
         this.waterAnimations.play('primary')
+
+        
+        this.pauseMenu.drawKit = createPauseMenuDrawKit(this.pauseMenu, gridCells(10), gridCells(5));
     }
 
     // MAIN UPDATE

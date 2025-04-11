@@ -155,8 +155,8 @@ export class Renderer {
     // draw the pause menu 
     drawPauseMenu() {
         this.redrawPauseSelector();        
-        const baseCanv = this.game.textures.pauseMenu.canvas;
-        const selectorCanvas = this.game.textures.pauseMenu.selector.canvas;
+        const baseCanv = this.game.pauseMenu.drawKit.baseCanv.canvas;
+        const selectorCanvas = this.game.pauseMenu.drawKit.selector.canvas;
         this.ctx.drawImage(
             baseCanv, gridCells(0.5), gridCells(2)
         )
@@ -167,7 +167,7 @@ export class Renderer {
 
     redrawPauseSelector() {
         // const pdk = this.game.textures.pauseMenu; // 'pause draw kit'
-        const pdk = this.game.textures.pauseMenu; // 'pause draw kit'
+        const pdk = this.game.pauseMenu.drawKit; // 'pause draw kit'
 
         const selectorCanvas = pdk.selector.canvas;
         const selectorCtx = pdk.selector.ctx;

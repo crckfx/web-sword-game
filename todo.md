@@ -15,7 +15,7 @@ the idea is: store and draw a 'position' in the pause menu; like the **inventory
 - [ ] employ some menu options other than 'resume'
 
 **bonus**
-- [ ] use textures for pauseMenu (like in )
+- [ ] use textures for pauseMenu (like inventory)
 - [ ] *(optional)* turn this process into a menu generator thing
 
 
