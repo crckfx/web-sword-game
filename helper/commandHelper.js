@@ -31,19 +31,12 @@ export function command_dpad(game, direction) {
         return;
     }
     if (game.isPaused) {
-        const index = tryPauseMove(direction);
-        if (index !== undefined) {
-            console.log("ayy check out mr move in pause", index);
-            // game.renderer.redrawPauseSelector();
-            game.renderer.drawPauseMenu();
-        }
-
-
+        tryPauseMove(direction);
     }
     // check and trigger inventory move if game is in inventory?
     if (game.isInInventory) {
-        // console.log('yes ! in inventory and pressing a dpad on');
         if (game.isInDialogue) {
+            // note: reaching here is not top-down; we are handling both inventory and regular dialogues
             if (game.currentDialogue.options !== null) {
                 game.promptIndex = tryPromptMove(
                     direction,

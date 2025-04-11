@@ -13,7 +13,7 @@ const MAX_SIZE = new Vector2(1650, 1350);
 export const canvas = document.getElementById('game_canv');
 canvas.width = CAMERA_CELLS.x * CELL_PX; 
 canvas.height= CAMERA_CELLS.y * CELL_PX;
-export const ctx = canvas.getContext("2d");
+// export const ctx = canvas.getContext("2d");
 export const panelCenter = document.getElementById('panel_center');
 const panelLeft = document.getElementById('panel_left');
 const panelRight = document.getElementById('panel_right');
@@ -32,7 +32,7 @@ const observer = new ResizeObserver(resize);
 observer.observe(panelCenter);
 
 
-// function to set the canvas size based on its parent (note - overflow:hidden protects against parent growth)
+// function to set the canvas size based on its parent (note - 'overflow:hidden' protects against parent growth)
 function resize() {
     // use the container's dimensions to determine orientation
     const rect = panelCenter.getBoundingClientRect();

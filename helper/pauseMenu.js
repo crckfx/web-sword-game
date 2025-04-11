@@ -8,6 +8,7 @@ export function createPauseMenuDrawKit() {
     // get the pixel sizes for the texture (relative to the main pixel base) 
     const widthPx = gridCells(10);
     const heightPx = gridCells(5);
+    const baseCanv = newCanvasPair(widthPx, heightPx);
     // create a canvas, set its size, get a context
     const canvas = document.createElement('canvas');
     canvas.width = widthPx;
@@ -22,14 +23,14 @@ export function createPauseMenuDrawKit() {
     // draw a box
     const optionWidth = canvas.width / 2 - 12;
     const optionHeight = 28;
-    const optionStartX = canvas.width / 2;
+    const optionStartX = gridCells(3);
     ctx.fillStyle = 'white';
-    ctx.font = "600 20px Courier";
+    ctx.font = "600 24px Courier";
     ctx.strokeStyle = 'white';
 
     // four options?
     for (let i = 0; i < swordGame.pauseMenu.options.length; i++) {
-        const offset_y = i * 36 + 12;
+        const offset_y = 9 + i * 36;
         ctx.strokeRect(optionStartX, offset_y, optionWidth, optionHeight);
         ctx.fillText(swordGame.pauseMenu.options[i], optionStartX + 4, 30 + i * 36)
     }
@@ -37,11 +38,14 @@ export function createPauseMenuDrawKit() {
 
     return {
         // image: backgroundImage, // for use later as a static background
-        // baseCanv: newCanvasPair(widthPx, heightPx),
+        baseCanv: newCanvasPair(widthPx, heightPx),
         canvas: canvas,
         ctx: ctx,
         widthPx: widthPx,
         heightPx: heightPx,
+        optionWidth: optionWidth,
+        optionHeight: optionHeight,
+        optionStartX: optionStartX,
         selector: newCanvasPair(widthPx, heightPx)
     }
 }
@@ -63,7 +67,7 @@ export function tryPauseMove(direction) {
             swordGame.pauseMenu.index = result;
         }
 
-        return swordGame.pauseMenu.index;
+        swordGame.renderer.drawPauseMenu();
     }
 }
 

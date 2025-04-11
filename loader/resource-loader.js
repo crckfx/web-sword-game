@@ -14,7 +14,9 @@ export async function loadImage(url) {
 }
 
 
-export async function load_image_resources(images, textures) {
+export async function load_image_resources(game) {
+    const images = game.images;
+    const textures = game.textures;
     try {
         const imageKeys = {
             // entities

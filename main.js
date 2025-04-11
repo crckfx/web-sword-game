@@ -11,7 +11,7 @@ import { load_levels } from "./levels/level-helper.js";
 async function start_game() {
     const startTime = performance.now(); // debug - for logging time at end
     // async resource load
-    await load_image_resources(swordGame.images, swordGame.textures);
+    await load_image_resources(swordGame);
     load_entities(swordGame.entities, swordGame.textures);
     swordGame.levels = load_levels();
     swordGame.cutScenes = get_game_cutScenes();

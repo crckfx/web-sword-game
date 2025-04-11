@@ -166,18 +166,18 @@ export class Renderer {
     }
 
     redrawPauseSelector() {
-        const selectorCanvas = this.game.textures.pauseMenu.selector.canvas;
-        const selectorCtx = this.game.textures.pauseMenu.selector.ctx;
+        // const pdk = this.game.textures.pauseMenu; // 'pause draw kit'
+        const pdk = this.game.textures.pauseMenu; // 'pause draw kit'
+
+        const selectorCanvas = pdk.selector.canvas;
+        const selectorCtx = pdk.selector.ctx;
 
         selectorCtx.clearRect(0, 0, selectorCanvas.width, selectorCanvas.height);
         selectorCtx.strokeStyle = '#FF0000FF';
 
         const offset_y = this.game.pauseMenu.index * 36 + 12;
-        const optionWidth = selectorCanvas.width / 2 - 12;
-        const optionHeight = 24;
-        const optionStartX = selectorCanvas.width / 2;
 
-        selectorCtx.strokeRect(optionStartX, offset_y, optionWidth, optionHeight);
+        selectorCtx.strokeRect(pdk.optionStartX, offset_y, pdk.optionWidth, pdk.optionHeight);
     }
 
     drawInventory() {
