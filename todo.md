@@ -20,5 +20,5 @@ the idea is: store and draw a 'position' in the pause menu; like the **inventory
 
 
 ## General
-- [x] (possibly) shift the player (and entities) up 1-4 pixels - *currently player is offset -12px*
-- [ ] ?
+- [x] shift the player (and entities) up 1-4 pixels - *currently player is offset -12px*
+- [ ] add player + entity shadows

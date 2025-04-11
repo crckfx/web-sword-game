@@ -1,7 +1,7 @@
 import { player } from "../loader/world-loader.js";
-import { tryInventoryMove } from "./invMenu.js";
-import { tryPauseMove } from "./pauseMenu.js";
-import { tryPromptMove } from "./promptMenu.js";
+import { tryInventoryMove } from "../menus/invMenu.js";
+import { tryPauseMove } from "../menus/pauseMenu.js";
+import { tryPromptMove } from "../menus/promptMenu.js";
 
 
 // aka "player presses 'A' with a valid target"

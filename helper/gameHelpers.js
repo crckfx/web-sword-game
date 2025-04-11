@@ -3,7 +3,7 @@ import { DialogueOption } from "../classes/dialogue/DialogueOption.js";
 import { SetOfDialogues } from "../classes/dialogue/SetOfDialogues.js";
 import { cellCoords, compare_two_vec2 } from "./grid.js";
 import { give_item_to } from "./interactions.js";
-import { modifyInventoryTexture } from "./invMenu.js";
+import { modifyInventoryTexture } from "../menus/invMenu.js";
 import { player } from "../loader/world-loader.js";
 import { exitPlayerInventory } from "./commandHelper.js";
 

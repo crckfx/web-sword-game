@@ -1,5 +1,5 @@
 import { CELL_PX } from "../document.js";
-import { direction_to_1D } from "./directions.js";
+import { direction_to_1D } from "../helper/directions.js";
 
 // function to split text (prepare for dialogue)
 export function wrapText(input, charLimit = 25) {

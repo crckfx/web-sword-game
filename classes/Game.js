@@ -17,7 +17,7 @@ import { GameObject } from "./objects/GameObject.js";
 import { Doodad } from "./objects/Doodad.js";
 import { get_standard_water_animation } from "../helper/walk.js";
 import { command_back, command_dpad, command_interact, command_togglePause, enterPlayerInventory } from "../helper/commandHelper.js";
-import { createPauseMenuDrawKit } from "../helper/pauseMenu.js";
+import { createPauseMenuDrawKit } from "../menus/pauseMenu.js";
 
 export class Game {
     grid = null;

@@ -1,7 +1,7 @@
 import { load_entities, player, swordGame } from "./loader/world-loader.js";
 import { Item } from "./classes/objects/Item.js";
 import { load_image_resources } from "./loader/resource-loader.js";
-import { modifyInventoryTexture } from "./helper/invMenu.js";
+import { modifyInventoryTexture } from "./menus/invMenu.js";
 import { get_game_cutScenes } from "./loader/cutScene-loader.js";
 import { load_levels } from "./levels/level-helper.js";
 

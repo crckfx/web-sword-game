@@ -1,8 +1,8 @@
-import { createDialogueDrawKit } from "../helper/promptMenu.js";
-import { createInventoryBackground, createInventoryItemsTexture } from "../helper/invMenu.js";
+import { createDialogueDrawKit } from "../menus/promptMenu.js";
+import { createInventoryBackground, createInventoryItemsTexture } from "../menus/invMenu.js";
 import { extract_single_sprite, extract_sized_single_texture, extract_texture_modular, extractSprites } from "../helper/extract-helper.js";
 import { saveCanvasAsPNG } from "../helper/random.js";
-import { createPauseMenuDrawKit } from "../helper/pauseMenu.js";
+import { createPauseMenuDrawKit } from "../menus/pauseMenu.js";
 import { gridCells } from "../helper/grid.js";
 
 export async function loadImage(url) {

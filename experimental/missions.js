@@ -3,7 +3,7 @@ import { SetOfDialogues } from "../classes/dialogue/SetOfDialogues.js";
 import { Item } from "../classes/objects/Item.js";
 import { get_dialogue_choice } from "../helper/gameHelpers.js";
 import { give_item_to } from "../helper/interactions.js";
-import { modifyInventoryTexture } from "../helper/invMenu.js";
+import { modifyInventoryTexture } from "../menus/invMenu.js";
 import { player } from "../loader/world-loader.js";
 
 

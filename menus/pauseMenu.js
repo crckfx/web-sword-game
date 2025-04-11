@@ -1,7 +1,7 @@
 import { newCanvasPair } from "../levels/draw-kit.js";
 import { swordGame } from "../loader/world-loader.js";
-import { direction_to_1D } from "./directions.js";
-import { gridCells } from "./grid.js";
+import { direction_to_1D } from "../helper/directions.js";
+import { gridCells } from "../helper/grid.js";
 
 // function to create the base dialogue layout
 export function createPauseMenuDrawKit(menu, widthPx, heightPx) {

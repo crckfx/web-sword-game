@@ -2,7 +2,7 @@ import { Entity } from "../classes/objects/Entity.js";
 
 import { Game } from "../classes/Game.js";
 import { Item } from "../classes/objects/Item.js";
-import { wrapText } from "../helper/promptMenu.js";
+import { wrapText } from "../menus/promptMenu.js";
 
 
 import { get_standard_entity_animations } from "../helper/walk.js";
