@@ -151,7 +151,7 @@ export class Renderer {
             0, 0, 64, 64,
             // entity.texture[entity.frame],
             d.position.x - 16 - camX,
-            d.position.y - 16 - camY,
+            d.position.y - 20 - camY,
             CELL_PX * 2,
             CELL_PX * 2
         );
