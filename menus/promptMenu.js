@@ -30,7 +30,7 @@ export function createDialogueDrawKit(backgroundImage) {
     const canvas = document.createElement('canvas');
     canvas.width = widthPx;
     canvas.height = heightPx;
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d', { alpha: true });
     ctx.imageSmoothingEnabled = false;
     // return a special 'texture' (including context)
     return {

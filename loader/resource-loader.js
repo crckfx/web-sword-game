@@ -68,6 +68,7 @@ export async function load_image_resources(game) {
 
 
             house_blackDoor: "images/house_blackDoor.png",
+            entityShadow: "images/entityShadow_3.png",
         };
 
         // use a 'Promise.all' to load all images in parallel

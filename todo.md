@@ -16,8 +16,11 @@ the idea is: store and draw a 'position' in the pause menu; like the **inventory
 
 **bonus**
 - [ ] use textures for pauseMenu (like inventory)
-- [ ] *(optional)* turn this process into a menu generator thing
+- [ ] *(optional)* turn the pauseMenu process into a menu generator thing
 
+## Missions
+- [ ] create a second mission (currently only apple)
+- [ ] chain two missions together
 
 ## General
 - [x] shift the player (and entities) up 1-4 pixels - *currently player is offset -12px*

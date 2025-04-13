@@ -6,6 +6,7 @@ import { Vector2 } from "./Vector2.js";
 import { Camera } from "./Camera.js";
 import { Entity } from "./objects/Entity.js";
 import { Doodad } from "./objects/Doodad.js";
+import { direction_to_2D } from "../helper/directions.js";
 
 export class Renderer {
     shouldDrawPlayerInventory = false;
@@ -49,56 +50,65 @@ export class Renderer {
 
     // A.K.A. "render_entire_grid"
     draw() {
-        // centre camera if a cutScene isn't running
-        if (!this.game.currentCutScene) { this.camera.centreOn(player.position.x, player.position.y); }
 
+        // do nothing if paused
         if (this.game.isPaused) { return; }
 
+        // centre camera if a cutScene isn't running
+        if (!this.game.currentCutScene) { this.camera.centreOn(player.position.x, player.position.y); }
+        
+        // per-frame caching
+        const camX = this.camera.pos.x;
+        const camY = this.camera.pos.y;
+        const sizeX = this.camera.size.x;
+        const sizeY = this.camera.size.y;
 
-        // clear it
-        this.ctx.clearRect(0, 0, this.camera.size.x, this.camera.size.y);
-        // draw black first
-        this.ctx.fillStyle = 'black';
-        this.ctx.fillRect(0, 0, this.camera.size.x, this.camera.size.y); // ?? could do an image background here instead
+        // clear it up
+        this.ctx.clearRect(0, 0, sizeX, sizeY);
 
-        // console.log(`floor / wadder frame is ${this.game.waterAnimations.frame}`)
         // draw it up
         // draw the **floor+doodad** base texture
         this.ctx.drawImage(
             this.drawKit.wadders[this.game.waterAnimations.frame].canvas,
-            this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,    // draw a section of the floor
-            0, 0, this.camera.size.x, this.camera.size.y                 // at this specified pos + size
+            camX, camY, sizeX, sizeY,    // draw a section of the floor
+            0, 0, sizeX, sizeY                 // at this specified pos + size
         );
 
+        // loop over camera cells to decide what things to draw
         for (let j = -1; j <= CAMERA_CELLS.y; j++) {
             for (let i = -1; i <= CAMERA_CELLS.x; i++) {
-                const x = cellCoords(this.camera.pos.x) + i;
-                const y = cellCoords(this.camera.pos.y) + j
-                // console.log(x, y);
+                const x = cellCoords(camX) + i;
+                const y = cellCoords(camY) + j;
                 if (this.grid[y] && this.grid[y][x]) {
                     const cell = this.grid[y][x];
                     if (cell.occupant instanceof Entity) {
-                        this.drawEntity(cell.occupant, this.camera.pos.x, this.camera.pos.y)
+                        this.drawEntity(cell.occupant, camX, camY)
                     } else if (cell.occupant instanceof Doodad) {
-                        this.drawDoodad(cell.occupant, this.camera.pos.x, this.camera.pos.y)
+                        this.drawDoodad(cell.occupant, camX, camY)
                     }
                 }
             }
         }
 
+        // draw the player shadow
+        const facing = direction_to_2D(player.isFacing);
+        this.ctx.drawImage(
+            this.game.images.entityShadow,              // shadow texture
+            player.position.x + 7 + facing.x - camX,    // position X
+            player.position.y + 14 - camY,              // position Y
+        );
         // draw the **player** texture
         this.ctx.drawImage(
-            // player.texture[index],
             player.texture[player.frame],
-            player.position.x - this.camera.pos.x, player.position.y - 12 - this.camera.pos.y,
+            player.position.x - camX, player.position.y - 12 - camY,
             CELL_PX, CELL_PX
         );
 
         this.ctx.drawImage(
             // this.textures.mapOverlays.canvas,
             this.drawKit.overlays.canvas,
-            this.camera.pos.x, this.camera.pos.y, this.camera.size.x, this.camera.size.y,
-            0, 0, this.camera.size.x, this.camera.size.y
+            camX, camY, sizeX, sizeY,
+            0, 0, sizeX, sizeY
         );
         if (this.shouldDrawPlayerInventory) this.drawInventory();
         if (this.shouldDrawDialogueBox) this.drawDialogueBox();
@@ -107,18 +117,29 @@ export class Renderer {
 
     // draw an entity specifically
     drawEntity(entity, camX, camY) {
+        const posX =  entity.position.x;
+        const posY =  entity.position.y;
+
+        const facing = direction_to_2D(entity.isFacing);
+
+        this.ctx.drawImage(
+            this.game.images.entityShadow,
+            posX + 7 + facing.x - camX, 
+            posY + 14 - camY,
+            
+        );
         this.ctx.drawImage(
             entity.getEntitySprite(),
             // entity.texture[entity.frame],
-            entity.position.x - camX,
-            entity.position.y - 12 - camY,
+            posX - camX,
+            posY - 12 - camY,
             CELL_PX,
             CELL_PX
         );
         if (entity.hasAlert) {
             this.drawCellBorder(
-                entity.position.x - camX,
-                entity.position.y - camY,
+                posX - camX,
+                posY - camY,
                 "red"
             );
         }
