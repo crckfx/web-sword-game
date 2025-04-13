@@ -51,10 +51,10 @@ export class Renderer {
     // A.K.A. "render_entire_grid"
     draw() {
 
-        // do nothing if paused
+        // do nothing and return if paused
         if (this.game.isPaused) { return; }
 
-        // centre camera if a cutScene isn't running
+        // centre the camera if a cutScene isn't running
         if (!this.game.currentCutScene) { this.camera.centreOn(player.position.x, player.position.y); }
         
         // per-frame caching
@@ -104,8 +104,8 @@ export class Renderer {
             CELL_PX, CELL_PX
         );
 
+        // draw the overlay component
         this.ctx.drawImage(
-            // this.textures.mapOverlays.canvas,
             this.drawKit.overlays.canvas,
             camX, camY, sizeX, sizeY,
             0, 0, sizeX, sizeY
@@ -119,30 +119,30 @@ export class Renderer {
     drawEntity(entity, camX, camY) {
         const posX =  entity.position.x;
         const posY =  entity.position.y;
-
         const facing = direction_to_2D(entity.isFacing);
 
+        // draw entity shadow
         this.ctx.drawImage(
             this.game.images.entityShadow,
             posX + 7 + facing.x - camX, 
             posY + 14 - camY,
-            
         );
+        // draw entity body
         this.ctx.drawImage(
             entity.getEntitySprite(),
             // entity.texture[entity.frame],
             posX - camX,
             posY - 12 - camY,
-            CELL_PX,
-            CELL_PX
+            CELL_PX, CELL_PX // source texture is 0.5 size, so you have to scale it
         );
-        if (entity.hasAlert) {
-            this.drawCellBorder(
-                posX - camX,
-                posY - camY,
-                "red"
-            );
-        }
+
+        // if (entity.hasAlert) {
+        //     this.drawCellBorder(
+        //         posX - camX,
+        //         posY - camY,
+        //         "red"
+        //     );
+        // }
     }
 
     drawDoodad(d, camX, camY) {
@@ -173,15 +173,10 @@ export class Renderer {
 
     // draw the pause menu 
     drawPauseMenu() {
+        const pdk = this.game.pauseMenu.drawKit;
         this.redrawPauseSelector();        
-        const baseCanv = this.game.pauseMenu.drawKit.baseCanv.canvas;
-        const selectorCanvas = this.game.pauseMenu.drawKit.selector.canvas;
-        this.ctx.drawImage(
-            baseCanv, gridCells(0.5), gridCells(2)
-        )
-        this.ctx.drawImage(
-            selectorCanvas, gridCells(0.5), gridCells(2)
-        )
+        this.ctx.drawImage(pdk.baseCanv.canvas, gridCells(0.5), gridCells(2));
+        this.ctx.drawImage(pdk.selector.canvas, gridCells(0.5), gridCells(2));
     }
 
     redrawPauseSelector() {

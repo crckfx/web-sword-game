@@ -129,6 +129,10 @@ export class Game {
 
         this.waterAnimations.step(delta);
         player.step(delta);
+        for (const key in this.entities) {
+            const e = this.entities[key];
+            e.step();
+        }
 
         // if there's a cutScene, advance it
         if (this.currentCutScene) {

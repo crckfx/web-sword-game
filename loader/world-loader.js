@@ -1,8 +1,6 @@
 import { Entity } from "../classes/objects/Entity.js";
 
 import { Game } from "../classes/Game.js";
-import { Item } from "../classes/objects/Item.js";
-import { wrapText } from "../menus/promptMenu.js";
 
 
 import { get_standard_entity_animations } from "../helper/walk.js";
@@ -11,10 +9,7 @@ import { Vector2 } from "../classes/Vector2.js";
 import { gridCells } from "../helper/grid.js";
 
 import { SetOfDialogues } from "../classes/dialogue/SetOfDialogues.js";
-import { Dialogue } from "../classes/dialogue/Dialogue.js";
-import { DialogueOption } from "../classes/dialogue/DialogueOption.js";
 import { appleMission } from "../experimental/missions.js";
-import { NUM_GRID } from "../document.js";
 
 
 export const player = new Player({
@@ -35,6 +30,7 @@ export function load_entities(entities, textures) {
         name: 'gary',
         texture: textures.spriteRed,
         interactMessage: "hello my name a gary",
+        animations: get_standard_entity_animations(),
     });
 
     entities.fred = new Entity({
@@ -50,6 +46,7 @@ export function load_entities(entities, textures) {
         interactCondition: () => player.bag.findSlotByName('apple'),
         interactAction: () => appleMission(swordGame, entities.fred),
         message_satisfied: "Thank you I was very hungry",
+        animations: get_standard_entity_animations(),
     });
 
 
@@ -67,11 +64,13 @@ export function load_entities(entities, textures) {
                 ],
             heading: 'george',
             canExit: true
-        })
+        }),
+        animations: get_standard_entity_animations(),
     });
     entities.harold = new Entity({
         name: 'harold',
         texture: textures.spriteYellow,
+        animations: get_standard_entity_animations(),
         interactMessage: new SetOfDialogues({
             dialogues: [
                 "You there...Ogre!",
@@ -85,6 +84,7 @@ export function load_entities(entities, textures) {
     entities.steve = new Entity({
         name: 'steve',
         texture: textures.spriteYellow,
+        animations: get_standard_entity_animations(),
         interactMessage: new SetOfDialogues({
             heading: 'Steve',
             dialogues: [
